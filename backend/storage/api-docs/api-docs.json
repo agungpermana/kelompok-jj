@@ -105,7 +105,7 @@
                     "Admin - Harga Sampah"
                 ],
                 "summary": "Tambah harga sampah baru (Admin)",
-                "description": "Menambahkan data harga dan poin sampah baru. Jika jenis sampah belum ada, akan dibuat otomatis.",
+                "description": "Menambahkan data tarif harga dan poin baru untuk jenis sampah yang sudah ada di database.",
                 "operationId": "0f648729cd8cf8c5041ad816d75a04d7",
                 "requestBody": {
                     "required": true,
@@ -113,25 +113,17 @@
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "nama_jenis_sampah",
-                                    "satuan",
+                                    "jenis_sampah_id",
                                     "harga_per_satuan",
                                     "nilai_poin_per_satuan",
                                     "berlaku_mulai",
                                     "status"
                                 ],
                                 "properties": {
-                                    "nama_jenis_sampah": {
-                                        "description": "Nama jenis sampah",
-                                        "type": "string",
-                                        "example": "Plastik",
-                                        "maxLength": 100
-                                    },
-                                    "satuan": {
-                                        "description": "Satuan ukur",
-                                        "type": "string",
-                                        "example": "kg",
-                                        "maxLength": 20
+                                    "jenis_sampah_id": {
+                                        "description": "ID jenis sampah dari database",
+                                        "type": "integer",
+                                        "example": 1
                                     },
                                     "harga_per_satuan": {
                                         "description": "Harga per satuan (Rp)",
@@ -166,12 +158,6 @@
                                             "aktif",
                                             "nonaktif"
                                         ]
-                                    },
-                                    "keterangan": {
-                                        "description": "Keterangan tambahan",
-                                        "type": "string",
-                                        "example": "Harga khusus bulan September",
-                                        "nullable": true
                                     }
                                 },
                                 "type": "object"
@@ -1486,6 +1472,508 @@
                                         "message": {
                                             "type": "string",
                                             "example": "Pengajuan tidak dapat dijadwalkan."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/admin/voucher": {
+            "get": {
+                "tags": [
+                    "Admin - Voucher"
+                ],
+                "summary": "Daftar voucher (Admin)",
+                "description": "Mengambil daftar voucher penukaran poin. Mendukung pencarian berdasarkan nama voucher, filter berdasarkan status, dan pagination.",
+                "operationId": "21d045a0f806b1507481bad07b0b6003",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Pencarian berdasarkan nama voucher",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "Rp10.000"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "Filter berdasarkan status",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "tersedia",
+                            "enum": [
+                                "tersedia",
+                                "habis",
+                                "tidak_aktif"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Jumlah data per halaman",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 15
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Daftar voucher berhasil diambil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Daftar voucher berhasil diambil."
+                                        },
+                                        "data": {
+                                            "description": "Daftar voucher.",
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/VoucherListItem"
+                                            }
+                                        },
+                                        "meta": {
+                                            "$ref": "#/components/schemas/PaginationMeta"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Admin - Voucher"
+                ],
+                "summary": "Tambah voucher baru (Admin)",
+                "description": "Menambahkan data voucher penukaran poin baru ke dalam sistem.",
+                "operationId": "f65846269c7f9f71fd8afd5b80bb8215",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "nama_voucher",
+                                    "poin_dibutuhkan"
+                                ],
+                                "properties": {
+                                    "nama_voucher": {
+                                        "description": "Nama voucher",
+                                        "type": "string",
+                                        "example": "Voucher Rp10.000"
+                                    },
+                                    "deskripsi": {
+                                        "description": "Deskripsi voucher",
+                                        "type": "string",
+                                        "example": "Voucher senilai Rp10.000",
+                                        "nullable": true
+                                    },
+                                    "poin_dibutuhkan": {
+                                        "description": "Jumlah poin yang dibutuhkan untuk menukar voucher",
+                                        "type": "integer",
+                                        "example": 1000
+                                    },
+                                    "jumlah_tersedia": {
+                                        "description": "Jumlah voucher yang tersedia",
+                                        "type": "integer",
+                                        "example": 100
+                                    },
+                                    "status": {
+                                        "description": "Status voucher",
+                                        "type": "string",
+                                        "example": "tersedia",
+                                        "enum": [
+                                            "tersedia",
+                                            "habis",
+                                            "tidak_aktif"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Data voucher berhasil ditambahkan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Data voucher berhasil ditambahkan."
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/VoucherListItem"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validasi gagal",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The given data was invalid."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/admin/voucher/{id}": {
+            "get": {
+                "tags": [
+                    "Admin - Voucher"
+                ],
+                "summary": "Detail voucher (Admin)",
+                "description": "Mengambil detail data voucher berdasarkan ID.",
+                "operationId": "6bf78d28988c22600c9a3348eef8e860",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID Voucher",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detail voucher berhasil diambil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Detail voucher berhasil diambil."
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/VoucherListItem"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Data voucher tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Data voucher tidak ditemukan."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Admin - Voucher"
+                ],
+                "summary": "Perbarui voucher (Admin)",
+                "description": "Memperbarui data voucher. Field bersifat opsional (partial update).",
+                "operationId": "146c6ec3392f5dc5a0c386c49b17d0c2",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID Voucher",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "nama_voucher": {
+                                        "description": "Nama voucher",
+                                        "type": "string",
+                                        "example": "Voucher Rp10.000",
+                                        "maxLength": 100
+                                    },
+                                    "deskripsi": {
+                                        "description": "Deskripsi voucher",
+                                        "type": "string",
+                                        "example": "Voucher senilai Rp10.000",
+                                        "nullable": true
+                                    },
+                                    "poin_dibutuhkan": {
+                                        "description": "Jumlah poin yang dibutuhkan untuk menukar voucher",
+                                        "type": "integer",
+                                        "example": 1000
+                                    },
+                                    "jumlah_tersedia": {
+                                        "description": "Jumlah voucher yang tersedia",
+                                        "type": "integer",
+                                        "example": 100
+                                    },
+                                    "status": {
+                                        "description": "Status voucher",
+                                        "type": "string",
+                                        "example": "tersedia",
+                                        "enum": [
+                                            "tersedia",
+                                            "habis",
+                                            "tidak_aktif"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Data voucher berhasil diperbarui",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Data voucher berhasil diperbarui."
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/VoucherListItem"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Data voucher tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Data voucher tidak ditemukan."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validasi gagal",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The given data was invalid."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Admin - Voucher"
+                ],
+                "summary": "Hapus voucher (Admin)",
+                "description": "Menghapus data voucher berdasarkan ID.",
+                "operationId": "382e687b4c7db5f133a778a61eea39f6",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID Voucher",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Data voucher berhasil dihapus",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Data voucher berhasil dihapus."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Data voucher tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Data voucher tidak ditemukan."
                                         }
                                     },
                                     "type": "object"
@@ -3950,6 +4438,89 @@
                 },
                 "type": "object"
             },
+            "Voucher": {
+                "title": "Voucher",
+                "description": "Voucher penukaran poin yang tersedia untuk warga.",
+                "required": [
+                    "voucher_id",
+                    "nama_voucher",
+                    "poin_dibutuhkan",
+                    "jumlah_tersedia",
+                    "status"
+                ],
+                "properties": {
+                    "voucher_id": {
+                        "description": "ID unik voucher.",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "nama_voucher": {
+                        "description": "Nama voucher.",
+                        "type": "string",
+                        "example": "Voucher Rp10.000",
+                        "maxLength": 100
+                    },
+                    "deskripsi": {
+                        "description": "Deskripsi voucher.",
+                        "type": "string",
+                        "example": "Voucher senilai Rp10.000",
+                        "nullable": true
+                    },
+                    "poin_dibutuhkan": {
+                        "description": "Jumlah poin yang dibutuhkan untuk menukar voucher.",
+                        "type": "integer",
+                        "example": 1000
+                    },
+                    "jumlah_tersedia": {
+                        "description": "Jumlah voucher yang tersedia.",
+                        "type": "integer",
+                        "example": 100
+                    },
+                    "status": {
+                        "description": "Status ketersediaan voucher.",
+                        "type": "string",
+                        "example": "tersedia",
+                        "enum": [
+                            "tersedia",
+                            "habis",
+                            "tidak_aktif"
+                        ]
+                    },
+                    "created_at": {
+                        "description": "Waktu voucher dibuat.",
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "updated_at": {
+                        "description": "Waktu voucher terakhir diperbarui.",
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "VoucherListItem": {
+                "title": "Voucher (Item Admin)",
+                "description": "Voucher beserta jumlah total penukaran poin.",
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/Voucher"
+                    },
+                    {
+                        "properties": {
+                            "total_ditukar": {
+                                "description": "Total jumlah voucher yang telah ditukar warga.",
+                                "type": "integer",
+                                "example": 12
+                            }
+                        },
+                        "type": "object"
+                    }
+                ]
+            },
             "JenisSampah": {
                 "title": "Jenis Sampah",
                 "description": "Entitas katalog jenis sampah.",
@@ -4018,12 +4589,16 @@
     },
     "tags": [
         {
-            "name": "Admin - Warga",
-            "description": "CRUD Data Warga oleh Admin"
-        },
-        {
             "name": "Admin - Jenis Sampah",
             "description": "API Master Data Jenis Sampah untuk Admin (Kelola data jenis sampah, kategori, satuan, keterangan, dan status)."
+        },
+        {
+            "name": "Admin - Voucher",
+            "description": "API Master Data Voucher untuk Admin (Kelola voucher penukaran poin, jumlah poin, stok ketersediaan, dan status)."
+        },
+        {
+            "name": "Admin - Warga",
+            "description": "CRUD Data Warga oleh Admin"
         },
         {
             "name": "Auth",

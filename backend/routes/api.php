@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\Admin\JadwalPenjemputanController as AdminJadwalPen
 use App\Http\Controllers\Api\Admin\WargaController as AdminWargaController;
 use App\Http\Controllers\Api\Admin\JenisSampahController as AdminJenisSampahController;
 use App\Http\Controllers\Api\Admin\HargaSampahController as AdminHargaSampahController;
+use App\Http\Controllers\Api\Admin\VoucherController as AdminVoucherController;
 use App\Http\Controllers\Api\Pengepul\StokSampahController as PengepulStokSampahController;
 
 // Default code
@@ -107,6 +108,12 @@ Route::middleware('auth:sanctum')->group(function () {
             '/admin/jenis-sampah',
             [AdminHargaSampahController::class, 'jenisSampahList']
         );
+
+        Route::get('/admin/voucher', [AdminVoucherController::class, 'index']);
+        Route::post('/admin/voucher', [AdminVoucherController::class, 'store']);
+        Route::get('/admin/voucher/{id}', [AdminVoucherController::class, 'show']);
+        Route::put('/admin/voucher/{id}', [AdminVoucherController::class, 'update']);
+        Route::delete('/admin/voucher/{id}', [AdminVoucherController::class, 'destroy']);
     });
 
 
