@@ -25,6 +25,7 @@ class HargaSampah extends Model
     {
         return [
             'harga_per_satuan' => 'decimal:2',
+            'nilai_poin_per_satuan' => 'float',
             'berlaku_mulai' => 'date',
             'berlaku_selesai' => 'date',
         ];

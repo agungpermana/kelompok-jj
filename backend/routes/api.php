@@ -3,12 +3,13 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\Warga\JenisSampahController;
+use App\Http\Controllers\Api\Warga\JenisSampahController as WargaJenisSampahController;
 use App\Http\Controllers\Api\Warga\PengajuanPenjemputanController;
 use App\Http\Controllers\Api\Petugas\JadwalPenjemputanController;
 use App\Http\Controllers\Api\Petugas\SetoranController;
 use App\Http\Controllers\Api\Admin\PengajuanPenjemputanController as AdminPengajuanPenjemputanController;
 use App\Http\Controllers\Api\Admin\JadwalPenjemputanController as AdminJadwalPenjemputanController;
+use App\Http\Controllers\Api\Admin\JenisSampahController as AdminJenisSampahController;
 use App\Http\Controllers\Api\Pengepul\StokSampahController as PengepulStokSampahController;
 
 // Default code
@@ -65,6 +66,13 @@ Route::middleware('auth:sanctum')->group(function () {
             '/admin/jadwal',
             [AdminJadwalPenjemputanController::class, 'index']
         );
+
+        Route::get('/admin/jenis-sampah', [AdminJenisSampahController::class, 'index']);
+        Route::post('/admin/jenis-sampah', [AdminJenisSampahController::class, 'store']);
+        Route::get('/admin/jenis-sampah/{id}', [AdminJenisSampahController::class, 'show']);
+        Route::put('/admin/jenis-sampah/{id}', [AdminJenisSampahController::class, 'update']);
+        Route::patch('/admin/jenis-sampah/{id}', [AdminJenisSampahController::class, 'update']);
+        Route::delete('/admin/jenis-sampah/{id}', [AdminJenisSampahController::class, 'destroy']);
 
     });
 
@@ -138,11 +146,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::get(
             '/warga/jenis-sampah',
-            [JenisSampahController::class, 'index']
+            [WargaJenisSampahController::class, 'index']
         );
         Route::get(
             '/warga/jenis-sampah/{id}',
-             [JenisSampahController::class, 'show']
+             [WargaJenisSampahController::class, 'show']
         );
         Route::get(
             '/warga/pengajuan',

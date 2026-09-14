@@ -14,14 +14,23 @@ class JenisSampah extends Model
 
     protected $fillable = [
         'nama_jenis_sampah',
+        'kategori',
         'satuan',
         'keterangan',
+        'icon',
         'status',
     ];
 
     public function hargaSampah()
     {
         return $this->hasMany(HargaSampah::class, 'jenis_sampah_id', 'jenis_sampah_id');
+    }
+
+    public function hargaAktif()
+    {
+        return $this->hasOne(HargaSampah::class, 'jenis_sampah_id', 'jenis_sampah_id')
+            ->where('status', 'aktif')
+            ->latest('berlaku_mulai');
     }
 
     public function detailPengajuanSampah()
