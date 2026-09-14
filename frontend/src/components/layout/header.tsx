@@ -1,12 +1,16 @@
-'use client';
-
 import React from 'react';
-import { Bell, ChevronDown, CalendarDays, User } from 'lucide-react';
+import Link from 'next/link';
+import { Bell, ChevronDown, CalendarDays, User, ChevronRight } from 'lucide-react';
+
+export interface Breadcrumb {
+  label: string;
+  href?: string;
+}
 
 interface AdminHeaderProps {
   title: string;
   subtitle?: string;
-  breadcrumbs?: { label: string; href?: string }[];
+  breadcrumbs?: Breadcrumb[];
 }
 
 export default function AdminHeader({ title, subtitle, breadcrumbs }: AdminHeaderProps) {

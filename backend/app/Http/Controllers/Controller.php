@@ -29,6 +29,7 @@ use OpenApi\Attributes as OA;
 #[OA\Tag(name: "Warga - Jenis Sampah", description: "Informasi Katalog Jenis Sampah untuk Warga")]
 #[OA\Tag(name: "Warga - Pengajuan", description: "Pengajuan Penjemputan Sampah oleh Warga")]
 #[OA\Tag(name: "Pengepul - Stok Sampah", description: "Katalog & Detail Stok Sampah Tersedia untuk Pengepul")]
+#[OA\Tag(name: "Admin - Warga", description: "CRUD Data Warga oleh Admin")]
 abstract class Controller
 {
     //
