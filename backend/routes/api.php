@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\Admin\WargaController as AdminWargaController;
 use App\Http\Controllers\Api\Admin\JenisSampahController as AdminJenisSampahController;
 use App\Http\Controllers\Api\Admin\HargaSampahController as AdminHargaSampahController;
 use App\Http\Controllers\Api\Admin\VoucherController as AdminVoucherController;
+use App\Http\Controllers\Api\Admin\PengepulController as AdminPengepulController;
 use App\Http\Controllers\Api\Pengepul\StokSampahController as PengepulStokSampahController;
 
 // Default code
@@ -114,6 +115,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/admin/voucher/{id}', [AdminVoucherController::class, 'show']);
         Route::put('/admin/voucher/{id}', [AdminVoucherController::class, 'update']);
         Route::delete('/admin/voucher/{id}', [AdminVoucherController::class, 'destroy']);
+
+        // Pengepul CRUD (akun users dibuat otomatis saat create)
+        Route::get('/admin/pengepul', [AdminPengepulController::class, 'index']);
+        Route::post('/admin/pengepul', [AdminPengepulController::class, 'store']);
+        Route::get('/admin/pengepul/{id}', [AdminPengepulController::class, 'show']);
+        Route::put('/admin/pengepul/{id}', [AdminPengepulController::class, 'update']);
+        Route::delete('/admin/pengepul/{id}', [AdminPengepulController::class, 'destroy']);
     });
 
 

@@ -1487,6 +1487,415 @@
                 ]
             }
         },
+        "/admin/pengepul": {
+            "get": {
+                "tags": [
+                    "Admin - Pengepul"
+                ],
+                "summary": "Daftar semua pengepul",
+                "description": "Mengambil daftar data pengepul beserta akun pengguna, dengan opsi pencarian, filter status, dan pagination.",
+                "operationId": "b0ced7180ea2d2be0481c468feb6c817",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Cari berdasarkan nama pengepul atau no. telepon.",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "Pengepul"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "Filter status akun pengguna (aktif/nonaktif).",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "aktif",
+                            "enum": [
+                                "aktif",
+                                "nonaktif"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Nomor halaman.",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Jumlah data per halaman.",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Daftar pengepul berhasil diambil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "description": "Daftar pengepul.",
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Pengepul"
+                                            }
+                                        },
+                                        "meta": {
+                                            "$ref": "#/components/schemas/PaginationMeta"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Admin - Pengepul"
+                ],
+                "summary": "Tambah pengepul baru",
+                "description": "Menambahkan data pengepul baru sekaligus membuat akun pengguna (users) dengan role 'pengepul' secara otomatis.",
+                "operationId": "1a91d8dfd80e304c76378d0b16328f07",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "username",
+                                    "email",
+                                    "password",
+                                    "nama_pengepul"
+                                ],
+                                "properties": {
+                                    "username": {
+                                        "description": "Username unik untuk akun pengepul",
+                                        "type": "string",
+                                        "example": "pengepul2"
+                                    },
+                                    "email": {
+                                        "description": "Email unik untuk akun pengepul",
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "pengepul2@trashure.test"
+                                    },
+                                    "password": {
+                                        "description": "Password minimal 6 karakter",
+                                        "type": "string",
+                                        "example": "password",
+                                        "minLength": 6
+                                    },
+                                    "nama_pengepul": {
+                                        "description": "Nama lengkap pengepul",
+                                        "type": "string",
+                                        "example": "Pengepul Trashure"
+                                    },
+                                    "alamat": {
+                                        "type": "string",
+                                        "example": "Jl. Pengumpul No. 5, Jakarta",
+                                        "nullable": true
+                                    },
+                                    "no_telepon": {
+                                        "type": "string",
+                                        "example": "081234567892",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Pengepul berhasil ditambahkan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Pengepul berhasil ditambahkan."
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Pengepul"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "422": {
+                        "description": "Validasi gagal",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The given data was invalid."
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Gagal menambahkan pengepul",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Gagal menambahkan pengepul."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/admin/pengepul/{id}": {
+            "get": {
+                "tags": [
+                    "Admin - Pengepul"
+                ],
+                "summary": "Detail pengepul",
+                "description": "Mengambil data detail pengepul beserta akun pengguna berdasarkan ID.",
+                "operationId": "3c57359f5f37a82f78f32e926f753946",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID Pengepul (pengepul_id)",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detail pengepul berhasil diambil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/Pengepul"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Pengepul tidak ditemukan"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Admin - Pengepul"
+                ],
+                "summary": "Perbarui data pengepul",
+                "description": "Memperbarui data pengepul berdasarkan ID. Status akun dan password dapat diubah bila diisi.",
+                "operationId": "07bca4a1044062984d7ee62708691d27",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID Pengepul (pengepul_id)",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "nama_pengepul"
+                                ],
+                                "properties": {
+                                    "nama_pengepul": {
+                                        "type": "string",
+                                        "example": "Pengepul Trashure"
+                                    },
+                                    "alamat": {
+                                        "type": "string",
+                                        "example": "Jl. Pengumpul No. 5, Jakarta",
+                                        "nullable": true
+                                    },
+                                    "no_telepon": {
+                                        "type": "string",
+                                        "example": "081234567892",
+                                        "nullable": true
+                                    },
+                                    "password": {
+                                        "description": "Password baru (opsional)",
+                                        "type": "string",
+                                        "nullable": true,
+                                        "minLength": 6
+                                    },
+                                    "status": {
+                                        "description": "Status akun pengguna",
+                                        "type": "string",
+                                        "example": "aktif",
+                                        "nullable": true,
+                                        "enum": [
+                                            "aktif",
+                                            "nonaktif"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Pengepul berhasil diperbarui",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Pengepul berhasil diperbarui."
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Pengepul"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Pengepul tidak ditemukan"
+                    },
+                    "422": {
+                        "description": "Validasi gagal"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Admin - Pengepul"
+                ],
+                "summary": "Hapus pengepul",
+                "description": "Menghapus data pengepul dan akun pengguna (users) secara permanen (cascade).",
+                "operationId": "743e13fc1ca6e588d6318baa7231bbca",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID Pengepul (pengepul_id)",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Pengepul berhasil dihapus",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Pengepul berhasil dihapus."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Pengepul tidak ditemukan"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/admin/voucher": {
             "get": {
                 "tags": [
@@ -4438,6 +4847,100 @@
                 },
                 "type": "object"
             },
+            "Pengepul": {
+                "title": "Pengepul",
+                "description": "Data pengepul beserta akun pengguna terkait.",
+                "required": [
+                    "pengepul_id",
+                    "user_id",
+                    "nama_pengepul"
+                ],
+                "properties": {
+                    "pengepul_id": {
+                        "description": "ID unik pengepul.",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "user_id": {
+                        "description": "ID akun pengguna (users) terkait.",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "nama_pengepul": {
+                        "description": "Nama pengepul.",
+                        "type": "string",
+                        "example": "Pengepul Trashure",
+                        "maxLength": 100
+                    },
+                    "alamat": {
+                        "description": "Alamat pengepul.",
+                        "type": "string",
+                        "example": "Jl. Pengumpul No. 5, Jakarta",
+                        "nullable": true
+                    },
+                    "no_telepon": {
+                        "description": "Nomor telepon pengepul.",
+                        "type": "string",
+                        "example": "081234567892",
+                        "nullable": true,
+                        "maxLength": 20
+                    },
+                    "user": {
+                        "$ref": "#/components/schemas/PengepulUser"
+                    }
+                },
+                "type": "object"
+            },
+            "PengepulUser": {
+                "title": "Akun Pengguna (Pengepul)",
+                "description": "Akun pengguna yang terhubung dengan data pengepul.",
+                "required": [
+                    "id",
+                    "username",
+                    "email",
+                    "role",
+                    "status"
+                ],
+                "properties": {
+                    "id": {
+                        "description": "ID akun pengguna.",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "username": {
+                        "description": "Username unik.",
+                        "type": "string",
+                        "example": "pengepul"
+                    },
+                    "email": {
+                        "description": "Email unik.",
+                        "type": "string",
+                        "format": "email",
+                        "example": "pengepul@trashure.test"
+                    },
+                    "role": {
+                        "description": "Peran akun.",
+                        "type": "string",
+                        "example": "pengepul",
+                        "enum": [
+                            "pengepul"
+                        ]
+                    },
+                    "status": {
+                        "description": "Status akun.",
+                        "type": "string",
+                        "example": "aktif",
+                        "enum": [
+                            "aktif",
+                            "nonaktif"
+                        ]
+                    }
+                },
+                "type": "object"
+            },
             "Voucher": {
                 "title": "Voucher",
                 "description": "Voucher penukaran poin yang tersedia untuk warga.",
@@ -4591,6 +5094,10 @@
         {
             "name": "Admin - Jenis Sampah",
             "description": "API Master Data Jenis Sampah untuk Admin (Kelola data jenis sampah, kategori, satuan, keterangan, dan status)."
+        },
+        {
+            "name": "Admin - Pengepul",
+            "description": "CRUD Data Pengepul oleh Admin. Saat pengepul ditambahkan, akun pengguna (users) dengan role 'pengepul' juga otomatis dibuat."
         },
         {
             "name": "Admin - Voucher",
