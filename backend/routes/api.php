@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\Petugas\JadwalPenjemputanController;
 use App\Http\Controllers\Api\Petugas\SetoranController;
 use App\Http\Controllers\Api\Admin\PengajuanPenjemputanController as AdminPengajuanPenjemputanController;
 use App\Http\Controllers\Api\Admin\JadwalPenjemputanController as AdminJadwalPenjemputanController;
+use App\Http\Controllers\Api\Admin\WargaController as AdminWargaController;
 use App\Http\Controllers\Api\Pengepul\StokSampahController as PengepulStokSampahController;
 
 // Default code
@@ -65,6 +66,13 @@ Route::middleware('auth:sanctum')->group(function () {
             '/admin/jadwal',
             [AdminJadwalPenjemputanController::class, 'index']
         );
+
+        // Warga CRUD
+        Route::get('/admin/warga', [AdminWargaController::class, 'index']);
+        Route::post('/admin/warga', [AdminWargaController::class, 'store']);
+        Route::get('/admin/warga/{id}', [AdminWargaController::class, 'show']);
+        Route::put('/admin/warga/{id}', [AdminWargaController::class, 'update']);
+        Route::delete('/admin/warga/{id}', [AdminWargaController::class, 'destroy']);
 
     });
 
