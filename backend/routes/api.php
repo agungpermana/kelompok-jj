@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\Petugas\JadwalPenjemputanController;
 use App\Http\Controllers\Api\Petugas\SetoranController;
 use App\Http\Controllers\Api\Admin\PengajuanPenjemputanController as AdminPengajuanPenjemputanController;
 use App\Http\Controllers\Api\Admin\JadwalPenjemputanController as AdminJadwalPenjemputanController;
+use App\Http\Controllers\Api\Admin\HargaSampahController as AdminHargaSampahController;
 use App\Http\Controllers\Api\Pengepul\StokSampahController as PengepulStokSampahController;
 
 // Default code
@@ -66,6 +67,30 @@ Route::middleware('auth:sanctum')->group(function () {
             [AdminJadwalPenjemputanController::class, 'index']
         );
 
+        Route::get(
+            '/admin/harga-sampah',
+            [AdminHargaSampahController::class, 'index']
+        );
+        Route::post(
+            '/admin/harga-sampah',
+            [AdminHargaSampahController::class, 'store']
+        );
+        Route::get(
+            '/admin/harga-sampah/{id}',
+            [AdminHargaSampahController::class, 'show']
+        );
+        Route::put(
+            '/admin/harga-sampah/{id}',
+            [AdminHargaSampahController::class, 'update']
+        );
+        Route::delete(
+            '/admin/harga-sampah/{id}',
+            [AdminHargaSampahController::class, 'destroy']
+        );
+        Route::get(
+            '/admin/jenis-sampah',
+            [AdminHargaSampahController::class, 'jenisSampahList']
+        );
     });
 
 

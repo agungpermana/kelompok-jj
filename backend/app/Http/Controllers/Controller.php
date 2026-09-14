@@ -22,6 +22,7 @@ use OpenApi\Attributes as OA;
 )]
 #[OA\Tag(name: "Auth", description: "Otentikasi & Profil Pengguna")]
 #[OA\Tag(name: "Admin - Pengajuan", description: "Pengelolaan Pengajuan Penjemputan oleh Admin")]
+#[OA\Tag(name: "Admin - Harga Sampah", description: "Pengelolaan Harga & Poin Sampah oleh Admin")]
 #[OA\Tag(name: "Admin - Jadwal", description: "Monitoring Jadwal Penjemputan oleh Admin")]
 #[OA\Tag(name: "Petugas - Jadwal", description: "Operasional Jadwal Penjemputan oleh Petugas")]
 #[OA\Tag(name: "Petugas - Setoran", description: "Pencatatan & Validasi Setoran Sampah oleh Petugas")]

@@ -12,6 +12,546 @@
         }
     ],
     "paths": {
+        "/admin/harga-sampah": {
+            "get": {
+                "tags": [
+                    "Admin - Harga Sampah"
+                ],
+                "summary": "Daftar harga sampah (Admin)",
+                "description": "Mengambil daftar harga sampah beserta data jenis sampah terkait. Mendukung pencarian berdasarkan nama jenis sampah, filter berdasarkan status, dan pagination.",
+                "operationId": "6e2c8489a6ded7bedd841113bfe54dc8",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Pencarian berdasarkan nama jenis sampah",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "Plastik"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "Filter berdasarkan status",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "aktif",
+                            "enum": [
+                                "aktif",
+                                "nonaktif"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Jumlah data per halaman",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 15
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Daftar harga sampah berhasil diambil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Daftar harga & poin sampah berhasil diambil."
+                                        },
+                                        "data": {
+                                            "description": "Data pagination",
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Admin - Harga Sampah"
+                ],
+                "summary": "Tambah harga sampah baru (Admin)",
+                "description": "Menambahkan data harga dan poin sampah baru. Jika jenis sampah belum ada, akan dibuat otomatis.",
+                "operationId": "0f648729cd8cf8c5041ad816d75a04d7",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "nama_jenis_sampah",
+                                    "satuan",
+                                    "harga_per_satuan",
+                                    "nilai_poin_per_satuan",
+                                    "berlaku_mulai",
+                                    "status"
+                                ],
+                                "properties": {
+                                    "nama_jenis_sampah": {
+                                        "description": "Nama jenis sampah",
+                                        "type": "string",
+                                        "example": "Plastik",
+                                        "maxLength": 100
+                                    },
+                                    "satuan": {
+                                        "description": "Satuan ukur",
+                                        "type": "string",
+                                        "example": "kg",
+                                        "maxLength": 20
+                                    },
+                                    "harga_per_satuan": {
+                                        "description": "Harga per satuan (Rp)",
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 5000
+                                    },
+                                    "nilai_poin_per_satuan": {
+                                        "description": "Nilai poin per satuan",
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 50
+                                    },
+                                    "berlaku_mulai": {
+                                        "description": "Tanggal berlaku mulai",
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2026-09-01"
+                                    },
+                                    "berlaku_selesai": {
+                                        "description": "Tanggal berlaku selesai (opsional)",
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2026-12-31",
+                                        "nullable": true
+                                    },
+                                    "status": {
+                                        "description": "Status harga sampah",
+                                        "type": "string",
+                                        "example": "aktif",
+                                        "enum": [
+                                            "aktif",
+                                            "nonaktif"
+                                        ]
+                                    },
+                                    "keterangan": {
+                                        "description": "Keterangan tambahan",
+                                        "type": "string",
+                                        "example": "Harga khusus bulan September",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Data harga dan poin sampah berhasil ditambahkan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Data harga dan poin sampah berhasil ditambahkan."
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validasi gagal",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The given data was invalid."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/admin/harga-sampah/{id}": {
+            "get": {
+                "tags": [
+                    "Admin - Harga Sampah"
+                ],
+                "summary": "Detail harga sampah (Admin)",
+                "description": "Mengambil detail data harga sampah berdasarkan ID beserta data jenis sampah terkait.",
+                "operationId": "c3a8a4f5625825b6c6a9bbad5cd3e29f",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID Harga Sampah",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detail harga sampah berhasil diambil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Detail harga sampah berhasil diambil."
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Data harga sampah tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Data harga sampah tidak ditemukan."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Admin - Harga Sampah"
+                ],
+                "summary": "Perbarui harga sampah (Admin)",
+                "description": "Memperbarui data harga dan poin sampah. Field bersifat opsional (partial update).",
+                "operationId": "521bfecf80871a160f6d53613a019b34",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID Harga Sampah",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "nama_jenis_sampah": {
+                                        "description": "Nama jenis sampah",
+                                        "type": "string",
+                                        "example": "Plastik Premium",
+                                        "maxLength": 100
+                                    },
+                                    "satuan": {
+                                        "description": "Satuan ukur",
+                                        "type": "string",
+                                        "example": "kg",
+                                        "maxLength": 20
+                                    },
+                                    "harga_per_satuan": {
+                                        "description": "Harga per satuan (Rp)",
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 6000
+                                    },
+                                    "nilai_poin_per_satuan": {
+                                        "description": "Nilai poin per satuan",
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 60
+                                    },
+                                    "berlaku_mulai": {
+                                        "description": "Tanggal berlaku mulai",
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2026-09-01"
+                                    },
+                                    "berlaku_selesai": {
+                                        "description": "Tanggal berlaku selesai",
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2026-12-31",
+                                        "nullable": true
+                                    },
+                                    "status": {
+                                        "description": "Status harga sampah",
+                                        "type": "string",
+                                        "example": "aktif",
+                                        "enum": [
+                                            "aktif",
+                                            "nonaktif"
+                                        ]
+                                    },
+                                    "keterangan": {
+                                        "description": "Keterangan tambahan",
+                                        "type": "string",
+                                        "example": "Diperbarui harga terbaru",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Data harga sampah berhasil diperbarui",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Data harga sampah berhasil diperbarui."
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Data harga sampah tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Data harga sampah tidak ditemukan."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validasi gagal",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The given data was invalid."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Admin - Harga Sampah"
+                ],
+                "summary": "Hapus harga sampah (Admin)",
+                "description": "Menghapus data harga dan poin sampah berdasarkan ID.",
+                "operationId": "43045d81e5e000b6078dd127bada8cec",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID Harga Sampah",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Data harga sampah berhasil dihapus",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Data harga sampah berhasil dihapus."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Data harga sampah tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Data harga sampah tidak ditemukan."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/admin/jadwal": {
             "get": {
                 "tags": [
@@ -2194,6 +2734,10 @@
         {
             "name": "Admin - Pengajuan",
             "description": "Pengelolaan Pengajuan Penjemputan oleh Admin"
+        },
+        {
+            "name": "Admin - Harga Sampah",
+            "description": "Pengelolaan Harga & Poin Sampah oleh Admin"
         },
         {
             "name": "Admin - Jadwal",
