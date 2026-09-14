@@ -12,6 +12,8 @@ use App\Http\Controllers\Api\Admin\JadwalPenjemputanController as AdminJadwalPen
 use App\Http\Controllers\Api\Admin\WargaController as AdminWargaController;
 use App\Http\Controllers\Api\Admin\JenisSampahController as AdminJenisSampahController;
 use App\Http\Controllers\Api\Admin\HargaSampahController as AdminHargaSampahController;
+use App\Http\Controllers\Api\Admin\PetugasController as AdminPetugasController;
+use App\Http\Controllers\Api\Admin\PengepulController as AdminPengepulController;
 use App\Http\Controllers\Api\Pengepul\StokSampahController as PengepulStokSampahController;
 
 // Default code
@@ -75,6 +77,20 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/admin/warga/{id}', [AdminWargaController::class, 'show']);
         Route::put('/admin/warga/{id}', [AdminWargaController::class, 'update']);
         Route::delete('/admin/warga/{id}', [AdminWargaController::class, 'destroy']);
+
+        // Petugas CRUD
+        Route::get('/admin/petugas', [AdminPetugasController::class, 'index']);
+        Route::post('/admin/petugas', [AdminPetugasController::class, 'store']);
+        Route::get('/admin/petugas/{id}', [AdminPetugasController::class, 'show']);
+        Route::put('/admin/petugas/{id}', [AdminPetugasController::class, 'update']);
+        Route::delete('/admin/petugas/{id}', [AdminPetugasController::class, 'destroy']);
+
+        // Pengepul CRUD
+        Route::get('/admin/pengepul', [AdminPengepulController::class, 'index']);
+        Route::post('/admin/pengepul', [AdminPengepulController::class, 'store']);
+        Route::get('/admin/pengepul/{id}', [AdminPengepulController::class, 'show']);
+        Route::put('/admin/pengepul/{id}', [AdminPengepulController::class, 'update']);
+        Route::delete('/admin/pengepul/{id}', [AdminPengepulController::class, 'destroy']);
 
         Route::get('/admin/jenis-sampah', [AdminJenisSampahController::class, 'index']);
         Route::post('/admin/jenis-sampah', [AdminJenisSampahController::class, 'store']);

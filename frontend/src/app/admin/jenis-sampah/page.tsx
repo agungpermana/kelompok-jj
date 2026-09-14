@@ -373,8 +373,8 @@ export default function JenisSampahPage() {
                       <td className="py-4 px-4">
                         <span
                           className={`inline-flex items-center px-3 py-1 rounded-md text-xs font-semibold ${isAktif
-                              ? 'bg-[#f0fdf4] text-[#16a34a] border border-[#bbf7d0]'
-                              : 'bg-gray-100 text-gray-600 border border-gray-200'
+                            ? 'bg-[#f0fdf4] text-[#16a34a] border border-[#bbf7d0]'
+                            : 'bg-gray-100 text-gray-600 border border-gray-200'
                             }`}
                         >
                           {isAktif ? 'Aktif' : 'Nonaktif'}
@@ -453,8 +453,8 @@ export default function JenisSampahPage() {
                   key={pageNum}
                   onClick={() => setCurrentPage(pageNum)}
                   className={`min-w-[34px] h-[34px] px-2.5 rounded-lg text-xs font-semibold transition ${isActive
-                      ? 'bg-[#16a34a] text-white shadow-xs'
-                      : 'border border-gray-200 text-gray-600 hover:bg-gray-50'
+                    ? 'bg-[#16a34a] text-white shadow-xs'
+                    : 'border border-gray-200 text-gray-600 hover:bg-gray-50'
                     }`}
                 >
                   {pageNum}
