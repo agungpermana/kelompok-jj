@@ -9,9 +9,9 @@ use App\Http\Controllers\Api\Petugas\JadwalPenjemputanController;
 use App\Http\Controllers\Api\Petugas\SetoranController;
 use App\Http\Controllers\Api\Admin\PengajuanPenjemputanController as AdminPengajuanPenjemputanController;
 use App\Http\Controllers\Api\Admin\JadwalPenjemputanController as AdminJadwalPenjemputanController;
-use App\Http\Controllers\Api\Admin\HargaSampahController as AdminHargaSampahController;
 use App\Http\Controllers\Api\Admin\WargaController as AdminWargaController;
 use App\Http\Controllers\Api\Admin\JenisSampahController as AdminJenisSampahController;
+use App\Http\Controllers\Api\Admin\HargaSampahController as AdminHargaSampahController;
 use App\Http\Controllers\Api\Pengepul\StokSampahController as PengepulStokSampahController;
 
 // Default code
@@ -69,6 +69,20 @@ Route::middleware('auth:sanctum')->group(function () {
             [AdminJadwalPenjemputanController::class, 'index']
         );
 
+        // Warga CRUD
+        Route::get('/admin/warga', [AdminWargaController::class, 'index']);
+        Route::post('/admin/warga', [AdminWargaController::class, 'store']);
+        Route::get('/admin/warga/{id}', [AdminWargaController::class, 'show']);
+        Route::put('/admin/warga/{id}', [AdminWargaController::class, 'update']);
+        Route::delete('/admin/warga/{id}', [AdminWargaController::class, 'destroy']);
+
+        Route::get('/admin/jenis-sampah', [AdminJenisSampahController::class, 'index']);
+        Route::post('/admin/jenis-sampah', [AdminJenisSampahController::class, 'store']);
+        Route::get('/admin/jenis-sampah/{id}', [AdminJenisSampahController::class, 'show']);
+        Route::put('/admin/jenis-sampah/{id}', [AdminJenisSampahController::class, 'update']);
+        Route::patch('/admin/jenis-sampah/{id}', [AdminJenisSampahController::class, 'update']);
+        Route::delete('/admin/jenis-sampah/{id}', [AdminJenisSampahController::class, 'destroy']);
+
         Route::get(
             '/admin/harga-sampah',
             [AdminHargaSampahController::class, 'index']
@@ -93,20 +107,6 @@ Route::middleware('auth:sanctum')->group(function () {
             '/admin/jenis-sampah',
             [AdminHargaSampahController::class, 'jenisSampahList']
         );
-        // Warga CRUD
-        Route::get('/admin/warga', [AdminWargaController::class, 'index']);
-        Route::post('/admin/warga', [AdminWargaController::class, 'store']);
-        Route::get('/admin/warga/{id}', [AdminWargaController::class, 'show']);
-        Route::put('/admin/warga/{id}', [AdminWargaController::class, 'update']);
-        Route::delete('/admin/warga/{id}', [AdminWargaController::class, 'destroy']);
-
-        Route::get('/admin/jenis-sampah', [AdminJenisSampahController::class, 'index']);
-        Route::post('/admin/jenis-sampah', [AdminJenisSampahController::class, 'store']);
-        Route::get('/admin/jenis-sampah/{id}', [AdminJenisSampahController::class, 'show']);
-        Route::put('/admin/jenis-sampah/{id}', [AdminJenisSampahController::class, 'update']);
-        Route::patch('/admin/jenis-sampah/{id}', [AdminJenisSampahController::class, 'update']);
-        Route::delete('/admin/jenis-sampah/{id}', [AdminJenisSampahController::class, 'destroy']);
-
     });
 
 
