@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { LogOut, ChevronDown, ChevronRight, Leaf } from 'lucide-react';
 
 export interface MenuItem {
@@ -28,6 +28,7 @@ interface SidebarProps {
 
 export default function Sidebar({ menuSections, logo }: SidebarProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const [expandedMenus, setExpandedMenus] = useState<string[]>([]);
 
   const toggleMenu = (label: string) => {
@@ -46,6 +47,30 @@ export default function Sidebar({ menuSections, logo }: SidebarProps) {
       return item.children.some((child) => isActive(child.href));
     }
     return false;
+  };
+
+  const handleLogout = async () => {
+    try {
+      const token = localStorage.getItem('trashure_token');
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+
+      if (token) {
+        await fetch(`${apiUrl}/logout`, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: 'application/json',
+          },
+        });
+      }
+    } catch {
+      // Ignore error, proceed with local cleanup
+    } finally {
+      localStorage.removeItem('trashure_token');
+      localStorage.removeItem('trashure_user');
+      document.cookie = 'trashure_token=; path=/; max-age=0';
+      router.push('/login');
+    }
   };
 
   return (
@@ -156,7 +181,10 @@ export default function Sidebar({ menuSections, logo }: SidebarProps) {
 
       {/* Logout Button */}
       <div className="border-t border-gray-100 px-3 py-3">
-        <button className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-[13px] font-semibold text-red-500 hover:bg-red-50 transition-colors duration-200">
+        <button
+          onClick={handleLogout}
+          className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-[13px] font-semibold text-red-500 hover:bg-red-50 transition-colors duration-200"
+        >
           <LogOut className="h-[18px] w-[18px]" strokeWidth={1.8} />
           <span>Keluar</span>
         </button>
