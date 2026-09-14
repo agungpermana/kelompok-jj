@@ -10,11 +10,14 @@ import {
   Trash2,
   ChevronLeft,
   ChevronRight,
+  CheckCircle2,
+  AlertCircle,
+  X,
+  Loader2,
 } from 'lucide-react';
 import ModalTambahEdit, { JenisSampahItem } from '@/components/admin/jenis-sampah/ModalTambahEdit';
 import ModalDetail from '@/components/admin/jenis-sampah/ModalDetail';
 import ModalHapus from '@/components/admin/jenis-sampah/ModalHapus';
-import ToastNotification from '@/components/admin/jenis-sampah/ToastNotification';
 
 export default function JenisSampahPage() {
   const [data, setData] = useState<JenisSampahItem[]>([]);
@@ -36,16 +39,8 @@ export default function JenisSampahPage() {
   const [isModalDeleteOpen, setIsModalDeleteOpen] = useState(false);
   const [activeItem, setActiveItem] = useState<JenisSampahItem | null>(null);
 
-  // Toast state
-  const [toast, setToast] = useState<{
-    show: boolean;
-    type: 'success' | 'error';
-    message: string;
-  }>({ show: false, type: 'success', message: '' });
-
-  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
-    setToast({ show: true, type, message });
-  };
+  // Flash message state
+  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   const getApiUrl = () => {
     return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
@@ -141,7 +136,7 @@ export default function JenisSampahPage() {
       });
 
       if (res.ok) {
-        showToast('Jenis sampah berhasil ditambahkan!');
+        setMessage({ type: 'success', text: 'Jenis sampah berhasil ditambahkan.' });
         fetchData();
         return;
       } else {
@@ -155,7 +150,7 @@ export default function JenisSampahPage() {
         ...formData,
       };
       setData((prev) => [newItem, ...prev]);
-      showToast('Jenis sampah berhasil ditambahkan!');
+      setMessage({ type: 'success', text: 'Jenis sampah berhasil ditambahkan.' });
     }
   };
 
@@ -176,7 +171,7 @@ export default function JenisSampahPage() {
       });
 
       if (res.ok) {
-        showToast('Jenis sampah berhasil diperbarui!');
+        setMessage({ type: 'success', text: 'Jenis sampah berhasil diperbarui.' });
         fetchData();
         return;
       } else {
@@ -195,7 +190,7 @@ export default function JenisSampahPage() {
             : item
         )
       );
-      showToast('Jenis sampah berhasil diperbarui!');
+      setMessage({ type: 'success', text: 'Jenis sampah berhasil diperbarui.' });
     }
   };
 
@@ -210,7 +205,7 @@ export default function JenisSampahPage() {
       });
 
       if (res.ok) {
-        showToast('Jenis sampah berhasil dihapus!');
+        setMessage({ type: 'success', text: 'Jenis sampah berhasil dihapus.' });
         fetchData();
         return;
       } else {
@@ -220,7 +215,7 @@ export default function JenisSampahPage() {
     } catch (err: any) {
       console.warn('Backend delete error, updating locally:', err);
       setData((prev) => prev.filter((item) => item.jenis_sampah_id !== id));
-      showToast('Jenis sampah berhasil dihapus!');
+      setMessage({ type: 'success', text: 'Jenis sampah berhasil dihapus.' });
     }
   };
 
@@ -297,6 +292,7 @@ export default function JenisSampahPage() {
           onClick={() => {
             setActiveItem(null);
             setIsModalAddOpen(true);
+            setMessage(null);
           }}
           className="flex items-center justify-center gap-2 rounded-xl bg-[#16a34a] hover:bg-[#15803d] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition active:scale-[0.98] shrink-0"
         >
@@ -305,29 +301,45 @@ export default function JenisSampahPage() {
         </button>
       </div>
 
+      {/* Flash Message */}
+      {message && (
+        <div className={`mb-4 p-3.5 rounded-xl flex items-start gap-2.5 ${message.type === 'success' ? 'bg-green-50 border border-green-200 text-green-700' : 'bg-red-50 border border-red-200 text-red-700'}`}>
+          {message.type === 'success' ? <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0" /> : <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />}
+          <span className="text-sm">{message.text}</span>
+          <button onClick={() => setMessage(null)} className="ml-auto"><X className="w-4 h-4" /></button>
+        </div>
+      )}
+
       {/* Summary Total Count */}
       <div className="flex items-center justify-between mb-3 px-1">
-        <p className="text-xs font-semibold text-gray-600">
+        <p className="text-sm font-semibold text-gray-700">
           Total {totalItems} jenis sampah
         </p>
       </div>
 
       {/* Data Table */}
-      <div className="rounded-2xl bg-white border border-gray-200/80 shadow-xs overflow-hidden">
+      <div className="rounded-xl bg-white border border-gray-200/80 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="border-b border-gray-150 bg-gray-50/60 text-[11px] font-bold text-gray-500 uppercase tracking-wider">
-                <th className="py-3.5 px-4 text-center w-12">No.</th>
-                <th className="py-3.5 px-4 min-w-[220px]">Jenis Sampah</th>
-                <th className="py-3.5 px-4 w-28">Satuan</th>
-                <th className="py-3.5 px-4">Keterangan</th>
-                <th className="py-3.5 px-4 w-28">Status</th>
-                <th className="py-3.5 px-4 text-center w-36">Aksi</th>
+              <tr className="bg-gray-50/80 text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
+                <th className="py-3 px-5 text-center w-12">No</th>
+                <th className="py-3 px-5 min-w-[220px]">Jenis Sampah</th>
+                <th className="py-3 px-5 w-28">Satuan</th>
+                <th className="py-3 px-5">Keterangan</th>
+                <th className="py-3 px-5 w-28">Status</th>
+                <th className="py-3 px-5 text-center w-36">Aksi</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100 text-sm">
-              {currentItems.length === 0 ? (
+            <tbody className="divide-y divide-gray-50 text-sm">
+              {loading ? (
+                <tr>
+                  <td colSpan={6} className="px-5 py-12 text-center text-gray-400">
+                    <Loader2 className="h-6 w-6 animate-spin mx-auto mb-2 text-gray-300" />
+                    Memuat data...
+                  </td>
+                </tr>
+              ) : currentItems.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="py-12 text-center text-gray-400">
                     <p className="text-sm font-medium">Tidak ada data jenis sampah yang sesuai.</p>
@@ -344,24 +356,24 @@ export default function JenisSampahPage() {
                       className="hover:bg-gray-50/50 transition-colors"
                     >
                       {/* No. */}
-                      <td className="py-4 px-4 text-center text-xs font-medium text-gray-500">
+                      <td className="py-3 px-5 text-center text-xs font-medium text-gray-500">
                         {itemIndex}
                       </td>
 
                       {/* Jenis Sampah: Icon + Name */}
-                      <td className="py-4 px-4">
+                      <td className="py-3 px-5">
                         <span className="font-semibold text-gray-800 text-sm">
                           {item.nama_jenis_sampah}
                         </span>
                       </td>
 
                       {/* Satuan */}
-                      <td className="py-4 px-4 text-sm font-medium text-gray-600">
+                      <td className="py-3 px-5 text-sm font-medium text-gray-600">
                         {item.satuan}
                       </td>
 
                       {/* Keterangan */}
-                      <td className="py-4 px-4 text-xs text-gray-500 max-w-md">
+                      <td className="py-3 px-5 text-xs text-gray-500 max-w-md">
                         {item.keterangan ? (
                           <span className="line-clamp-2">{item.keterangan}</span>
                         ) : (
@@ -370,11 +382,11 @@ export default function JenisSampahPage() {
                       </td>
 
                       {/* Status */}
-                      <td className="py-4 px-4">
+                      <td className="py-3 px-5">
                         <span
-                          className={`inline-flex items-center px-3 py-1 rounded-md text-xs font-semibold ${isAktif
-                              ? 'bg-[#f0fdf4] text-[#16a34a] border border-[#bbf7d0]'
-                              : 'bg-gray-100 text-gray-600 border border-gray-200'
+                          className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold ${isAktif
+                              ? 'bg-green-100 text-green-700'
+                              : 'bg-gray-100 text-gray-600'
                             }`}
                         >
                           {isAktif ? 'Aktif' : 'Nonaktif'}
@@ -382,16 +394,17 @@ export default function JenisSampahPage() {
                       </td>
 
                       {/* Aksi */}
-                      <td className="py-4 px-4">
-                        <div className="flex items-center justify-center gap-1.5">
+                      <td className="py-3 px-5">
+                        <div className="flex items-center justify-center gap-2">
                           {/* View Button */}
                           <button
                             onClick={() => {
                               setActiveItem(item);
                               setIsModalDetailOpen(true);
+                              setMessage(null);
                             }}
                             title="Lihat Detail"
-                            className="p-2 rounded-lg border border-gray-200 text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors shadow-2xs"
+                            className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
                           >
                             <Eye className="w-4 h-4" />
                           </button>
@@ -401,9 +414,10 @@ export default function JenisSampahPage() {
                             onClick={() => {
                               setActiveItem(item);
                               setIsModalEditOpen(true);
+                              setMessage(null);
                             }}
                             title="Edit Data"
-                            className="p-2 rounded-lg border border-gray-200 text-gray-400 hover:text-[#16a34a] hover:bg-green-50 hover:border-green-200 transition-colors shadow-2xs"
+                            className="p-1.5 rounded-lg text-blue-600 hover:bg-blue-50 transition-colors"
                           >
                             <Pencil className="w-4 h-4" />
                           </button>
@@ -413,9 +427,10 @@ export default function JenisSampahPage() {
                             onClick={() => {
                               setActiveItem(item);
                               setIsModalDeleteOpen(true);
+                              setMessage(null);
                             }}
                             title="Hapus Data"
-                            className="p-2 rounded-lg border border-red-100 text-red-400 hover:text-red-600 hover:bg-red-50 hover:border-red-200 transition-colors shadow-2xs"
+                            className="p-1.5 rounded-lg text-red-500 hover:bg-red-50 transition-colors"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
@@ -430,17 +445,17 @@ export default function JenisSampahPage() {
         </div>
 
         {/* Table Footer with Pagination */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-6 py-4 border-t border-gray-100 bg-white">
-          <p className="text-xs text-gray-500 font-medium">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-5 py-3 border-t border-gray-100">
+          <p className="text-[11px] text-gray-400">
             Menampilkan {totalItems > 0 ? startIndex + 1 : 0} - {endIndex} dari {totalItems} jenis sampah
           </p>
 
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1">
             {/* Prev Button */}
             <button
               onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
               disabled={currentPage === 1}
-              className="p-2 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-30 disabled:pointer-events-none transition"
+              className="flex h-7 w-7 items-center justify-center rounded-md text-xs text-gray-400 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
@@ -452,10 +467,11 @@ export default function JenisSampahPage() {
                 <button
                   key={pageNum}
                   onClick={() => setCurrentPage(pageNum)}
-                  className={`min-w-[34px] h-[34px] px-2.5 rounded-lg text-xs font-semibold transition ${isActive
-                      ? 'bg-[#16a34a] text-white shadow-xs'
-                      : 'border border-gray-200 text-gray-600 hover:bg-gray-50'
-                    }`}
+                  className={`flex h-7 w-7 items-center justify-center rounded-md text-xs font-bold transition ${
+                    isActive
+                      ? 'bg-[#16a34a] text-white'
+                      : 'text-gray-500 hover:bg-gray-100'
+                  }`}
                 >
                   {pageNum}
                 </button>
@@ -466,7 +482,7 @@ export default function JenisSampahPage() {
             <button
               onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages || totalPages === 0}
-              className="p-2 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-30 disabled:pointer-events-none transition"
+              className="flex h-7 w-7 items-center justify-center rounded-md text-xs text-gray-400 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             >
               <ChevronRight className="w-4 h-4" />
             </button>
@@ -519,14 +535,6 @@ export default function JenisSampahPage() {
           setActiveItem(null);
         }}
         onConfirm={handleDelete}
-      />
-
-      {/* Toast Feedback */}
-      <ToastNotification
-        show={toast.show}
-        type={toast.type}
-        message={toast.message}
-        onClose={() => setToast((prev) => ({ ...prev, show: false }))}
       />
     </div>
   );

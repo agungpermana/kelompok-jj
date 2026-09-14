@@ -1,7 +1,14 @@
 'use client';
 
 import React from 'react';
-import { Eye, Pencil, Trash2, ChevronLeft, ChevronRight, Ticket } from 'lucide-react';
+import {
+  Eye,
+  Pencil,
+  Trash2,
+  ChevronLeft,
+  ChevronRight,
+  Loader2,
+} from 'lucide-react';
 import { VoucherItem, StatusVoucher } from '@/types/voucher';
 import { formatPoin, labelStatus } from '@/services/voucherService';
 
@@ -10,6 +17,7 @@ interface VoucherTableProps {
   totalData: number;
   currentPage: number;
   itemsPerPage: number;
+  isLoading?: boolean;
   onPageChange: (page: number) => void;
   onView: (item: VoucherItem) => void;
   onEdit: (item: VoucherItem) => void;
@@ -17,28 +25,18 @@ interface VoucherTableProps {
 }
 
 function StatusBadge({ status }: { status: StatusVoucher }) {
-  const base =
-    'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold';
-  switch (status) {
-    case 'tersedia':
-      return (
-        <span className={`${base} bg-[#e6f4ea] text-[#16a34a]`}>
-          {labelStatus(status)}
-        </span>
-      );
-    case 'habis':
-      return (
-        <span className={`${base} bg-red-50 text-red-600`}>
-          {labelStatus(status)}
-        </span>
-      );
-    default:
-      return (
-        <span className={`${base} bg-gray-100 text-gray-500`}>
-          {labelStatus(status)}
-        </span>
-      );
-  }
+  const map: Record<StatusVoucher, string> = {
+    tersedia: 'bg-green-100 text-green-700',
+    habis: 'bg-red-100 text-red-700',
+    tidak_aktif: 'bg-gray-100 text-gray-600',
+  };
+  return (
+    <span
+      className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold ${map[status]}`}
+    >
+      {labelStatus(status)}
+    </span>
+  );
 }
 
 export default function VoucherTable({
@@ -46,6 +44,7 @@ export default function VoucherTable({
   totalData,
   currentPage,
   itemsPerPage,
+  isLoading = false,
   onPageChange,
   onView,
   onEdit,
@@ -54,193 +53,157 @@ export default function VoucherTable({
   const totalPages = Math.ceil(totalData / itemsPerPage) || 1;
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = Math.min(startIndex + items.length, totalData);
+  const lastPage = Math.max(totalPages, 1);
 
   return (
-    <div>
-      {/* Total Data Count Header */}
-      <div className="mb-3 px-1">
-        <h3 className="text-sm font-semibold text-gray-700">
-          Total {totalData} data
-        </h3>
+    <div className="bg-white rounded-xl border border-gray-200/80 shadow-sm overflow-hidden">
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          <thead>
+            <tr className="bg-gray-50/80">
+              <th className="px-5 py-3 text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider w-14">
+                No
+              </th>
+              <th className="px-5 py-3 text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
+                Nama Voucher
+              </th>
+              <th className="px-5 py-3 text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
+                Poin Ditukar
+              </th>
+              <th className="px-5 py-3 text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
+                Tersedia
+              </th>
+              <th className="px-5 py-3 text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
+                Ditukar
+              </th>
+              <th className="px-5 py-3 text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
+                Status
+              </th>
+              <th className="px-5 py-3 text-center text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
+                Aksi
+              </th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-50">
+            {isLoading ? (
+              <tr>
+                <td
+                  colSpan={7}
+                  className="px-5 py-12 text-center text-sm text-gray-400"
+                >
+                  <Loader2 className="h-6 w-6 animate-spin mx-auto mb-2 text-gray-300" />
+                  Memuat data...
+                </td>
+              </tr>
+            ) : items.length === 0 ? (
+              <tr>
+                <td
+                  colSpan={7}
+                  className="px-5 py-12 text-center text-sm text-gray-400"
+                >
+                  Tidak ada data voucher ditemukan.
+                </td>
+              </tr>
+            ) : (
+              items.map((item, idx) => {
+                const rowNumber = startIndex + idx + 1;
+                return (
+                  <tr
+                    key={item.id}
+                    className="hover:bg-gray-50/50 transition-colors"
+                  >
+                    <td className="px-5 py-3 text-sm text-gray-500">
+                      {rowNumber}
+                    </td>
+                    <td className="px-5 py-3">
+                      <p className="text-sm font-medium text-gray-700">
+                        {item.namaVoucher}
+                      </p>
+                      {item.deskripsi && (
+                        <p className="text-xs text-gray-400 max-w-[220px] truncate">
+                          {item.deskripsi}
+                        </p>
+                      )}
+                    </td>
+                    <td className="px-5 py-3 text-sm font-medium text-amber-600">
+                      {formatPoin(item.poinDibutuhkan)} poin
+                    </td>
+                    <td className="px-5 py-3 text-sm text-gray-700">
+                      {item.jumlahTersedia.toLocaleString('id-ID')}
+                    </td>
+                    <td className="px-5 py-3 text-sm text-gray-700">
+                      {(item.totalDitukar ?? 0).toLocaleString('id-ID')}
+                    </td>
+                    <td className="px-5 py-3">
+                      <StatusBadge status={item.status} />
+                    </td>
+                    <td className="px-5 py-3">
+                      <div className="flex items-center justify-center gap-2">
+                        <button
+                          onClick={() => onView(item)}
+                          className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+                          title="Detail"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => onEdit(item)}
+                          className="p-1.5 rounded-lg text-blue-600 hover:bg-blue-50 transition-colors"
+                          title="Edit"
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => onDelete(item)}
+                          className="p-1.5 rounded-lg text-red-500 hover:bg-red-50 transition-colors"
+                          title="Hapus"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })
+            )}
+          </tbody>
+        </table>
       </div>
 
-      {/* Main Table Card */}
-      <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="border-b border-gray-100 bg-white">
-                <th className="py-4 px-5 text-xs font-semibold text-gray-700 w-14">
-                  No.
-                </th>
-                <th className="py-4 px-5 text-xs font-semibold text-gray-700">
-                  Nama Voucher
-                </th>
-                <th className="py-4 px-5 text-xs font-semibold text-gray-700">
-                  Poin Ditukar
-                </th>
-                <th className="py-4 px-5 text-xs font-semibold text-gray-700">
-                  Tersedia
-                </th>
-                <th className="py-4 px-5 text-xs font-semibold text-gray-700">
-                  Ditukar
-                </th>
-                <th className="py-4 px-5 text-xs font-semibold text-gray-700">
-                  Status
-                </th>
-                <th className="py-4 px-5 text-xs font-semibold text-gray-700 text-center w-32">
-                  Aksi
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {items.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={7}
-                    className="py-12 text-center text-sm text-gray-400"
-                  >
-                    Tidak ada data voucher yang sesuai dengan filter.
-                  </td>
-                </tr>
-              ) : (
-                items.map((item, index) => {
-                  const rowNumber = startIndex + index + 1;
-                  return (
-                    <tr
-                      key={item.id}
-                      className="hover:bg-gray-50/60 transition-colors group"
-                    >
-                      {/* No. */}
-                      <td className="py-4 px-5 text-xs text-gray-600 font-medium">
-                        {rowNumber}
-                      </td>
-
-                      {/* Nama Voucher */}
-                      <td className="py-4 px-5">
-                        <div className="flex items-center gap-3">
-                          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 border border-emerald-100 flex-shrink-0">
-                            <Ticket className="h-5 w-5 text-[#16a34a]" strokeWidth={1.8} />
-                          </div>
-                          <div className="min-w-0">
-                            <span className="text-sm font-semibold text-gray-800 block truncate">
-                              {item.namaVoucher}
-                            </span>
-                            {item.deskripsi && (
-                              <span className="text-xs text-gray-400 block truncate max-w-[260px]">
-                                {item.deskripsi}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      </td>
-
-                      {/* Poin Ditukar */}
-                      <td className="py-4 px-5">
-                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-50 border border-amber-100 text-amber-700 font-bold text-sm">
-                          {formatPoin(item.poinDibutuhkan)}
-                          <span className="text-[10px] font-semibold text-amber-500">POIN</span>
-                        </span>
-                      </td>
-
-                      {/* Tersedia */}
-                      <td className="py-4 px-5 text-sm text-gray-700 font-medium">
-                        {item.jumlahTersedia.toLocaleString('id-ID')}
-                      </td>
-
-                      {/* Ditukar */}
-                      <td className="py-4 px-5 text-sm text-gray-700 font-medium">
-                        {(item.totalDitukar ?? 0).toLocaleString('id-ID')}
-                      </td>
-
-                      {/* Status */}
-                      <td className="py-4 px-5">
-                        <StatusBadge status={item.status} />
-                      </td>
-
-                      {/* Aksi */}
-                      <td className="py-4 px-5 text-center">
-                        <div className="flex items-center justify-center gap-1.5">
-                          {/* Detail Button */}
-                          <button
-                            type="button"
-                            onClick={() => onView(item)}
-                            title="Lihat Detail"
-                            className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 text-gray-500 hover:text-gray-800 hover:bg-gray-50 hover:border-gray-300 transition-all cursor-pointer"
-                          >
-                            <Eye className="h-3.5 w-3.5" strokeWidth={1.8} />
-                          </button>
-
-                          {/* Edit Button */}
-                          <button
-                            type="button"
-                            onClick={() => onEdit(item)}
-                            title="Ubah Data"
-                            className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 text-gray-500 hover:text-[#16a34a] hover:bg-gray-50 hover:border-gray-300 transition-all cursor-pointer"
-                          >
-                            <Pencil className="h-3.5 w-3.5" strokeWidth={1.8} />
-                          </button>
-
-                          {/* Delete Button */}
-                          <button
-                            type="button"
-                            onClick={() => onDelete(item)}
-                            title="Hapus Data"
-                            className="flex h-8 w-8 items-center justify-center rounded-lg border border-red-200 text-red-500 hover:bg-red-50 hover:border-red-300 transition-all cursor-pointer"
-                          >
-                            <Trash2 className="h-3.5 w-3.5" strokeWidth={1.8} />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Footer / Pagination */}
-        <div className="flex flex-col sm:flex-row items-center justify-between px-6 py-4 border-t border-gray-100 gap-3">
-          <p className="text-xs text-gray-500">
-            Menampilkan {totalData === 0 ? 0 : startIndex + 1} - {endIndex} dari{' '}
-            {totalData} data
-          </p>
-
-          <div className="flex items-center gap-1.5">
+      {/* Pagination */}
+      <div className="flex items-center justify-between px-5 py-3 border-t border-gray-100">
+        <p className="text-[11px] text-gray-400">
+          Menampilkan {totalData > 0 ? startIndex + 1 : 0} - {endIndex} dari{' '}
+          {totalData} voucher
+        </p>
+        <div className="flex items-center gap-1">
+          <button
+            onClick={() => onPageChange(currentPage - 1)}
+            disabled={currentPage <= 1}
+            className="flex h-7 w-7 items-center justify-center rounded-md text-xs text-gray-400 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </button>
+          {Array.from({ length: lastPage }, (_, i) => i + 1).map((page) => (
             <button
-              type="button"
-              disabled={currentPage <= 1}
-              onClick={() => onPageChange(currentPage - 1)}
-              className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              key={page}
+              onClick={() => onPageChange(page)}
+              className={`flex h-7 w-7 items-center justify-center rounded-md text-xs font-bold transition-colors ${
+                currentPage === page
+                  ? 'bg-[#16a34a] text-white'
+                  : 'text-gray-500 hover:bg-gray-100'
+              }`}
             >
-              <ChevronLeft className="h-4 w-4" />
+              {page}
             </button>
-
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
-              <button
-                key={pageNum}
-                type="button"
-                onClick={() => onPageChange(pageNum)}
-                className={`flex h-8 min-w-8 px-2.5 items-center justify-center rounded-lg text-xs font-semibold transition-colors ${
-                  pageNum === currentPage
-                    ? 'bg-[#057a44] text-white shadow-sm'
-                    : 'border border-gray-200 text-gray-600 hover:bg-gray-50'
-                }`}
-              >
-                {pageNum}
-              </button>
-            ))}
-
-            <button
-              type="button"
-              disabled={currentPage >= totalPages}
-              onClick={() => onPageChange(currentPage + 1)}
-              className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-            >
-              <ChevronRight className="h-4 w-4" />
-            </button>
-          </div>
+          ))}
+          <button
+            onClick={() => onPageChange(currentPage + 1)}
+            disabled={currentPage >= lastPage}
+            className="flex h-7 w-7 items-center justify-center rounded-md text-xs text-gray-400 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          >
+            <ChevronRight className="h-4 w-4" />
+          </button>
         </div>
       </div>
     </div>

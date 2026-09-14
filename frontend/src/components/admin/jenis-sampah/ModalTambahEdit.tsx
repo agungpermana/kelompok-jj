@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { X, Save, AlertCircle } from 'lucide-react';
+import { X, Loader2, AlertCircle } from 'lucide-react';
 
 export interface JenisSampahItem {
   jenis_sampah_id?: number;
@@ -30,6 +30,9 @@ interface ModalTambahEditProps {
 }
 
 const UNITS = ['Kg', 'Pcs', 'Gram', 'Liter'];
+
+const inputClass =
+  'w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-[#16a34a] focus:ring-2 focus:ring-[#16a34a]/10';
 
 export default function ModalTambahEdit({
   isOpen,
@@ -93,33 +96,29 @@ export default function ModalTambahEdit({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4 animate-in fade-in duration-200">
-      <div className="relative w-full max-w-lg rounded-2xl bg-white shadow-2xl border border-gray-100 overflow-hidden">
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-gray-50/50">
-          <div className="flex items-center gap-3">
-            <div>
-              <h3 className="text-base font-bold text-gray-900">
-                {isEdit ? 'Edit Jenis Sampah' : 'Tambah Jenis Sampah'}
-              </h3>
-              <p className="text-xs text-gray-500">
-                {isEdit
-                  ? 'Perbarui master data jenis sampah, satuan, status, dan keterangan.'
-                  : 'Tambahkan data master jenis sampah baru ke dalam sistem.'}
-              </p>
-            </div>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+      <div className="bg-white rounded-2xl w-full max-w-lg shadow-xl mx-4">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+          <div>
+            <h2 className="text-lg font-bold text-gray-900">
+              {isEdit ? 'Edit Jenis Sampah' : 'Tambah Jenis Sampah'}
+            </h2>
+            <p className="text-[11px] text-gray-400 mt-0.5">
+              {isEdit
+                ? 'Perbarui master data jenis sampah, satuan, status, dan keterangan.'
+                : 'Tambahkan data master jenis sampah baru ke dalam sistem.'}
+            </p>
           </div>
           <button
             onClick={onClose}
-            className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
+            className="p-1.5 rounded-lg text-gray-400 hover:bg-gray-100"
           >
-            <X className="w-5 h-5" />
+            <X className="h-5 w-5" />
           </button>
         </div>
 
-        {/* Form Body */}
         <form onSubmit={handleSubmit}>
-          <div className="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
+          <div className="px-6 py-4 space-y-4 max-h-[70vh] overflow-y-auto">
             {error && (
               <div className="flex items-start gap-2.5 p-3 rounded-xl bg-red-50 border border-red-200 text-xs text-red-700">
                 <AlertCircle className="w-4 h-4 shrink-0 text-red-500 mt-0.5" />
@@ -127,31 +126,29 @@ export default function ModalTambahEdit({
               </div>
             )}
 
-            {/* Nama Jenis Sampah */}
             <div>
-              <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+              <label className="block text-xs font-semibold text-gray-700 mb-1">
                 Nama Jenis Sampah <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
                 value={nama}
                 onChange={(e) => setNama(e.target.value)}
+                className={inputClass}
                 placeholder="Contoh: Botol Plastik, Kardus, Besi"
-                className="w-full rounded-xl border border-gray-200 px-3.5 py-2.5 text-sm text-gray-800 placeholder-gray-400 focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500/20 transition"
                 required
               />
             </div>
 
-            {/* Satuan & Status */}
-            <div className="grid grid-cols-2 gap-3.5">
+            <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+                <label className="block text-xs font-semibold text-gray-700 mb-1">
                   Satuan <span className="text-red-500">*</span>
                 </label>
                 <select
                   value={satuan}
                   onChange={(e) => setSatuan(e.target.value)}
-                  className="w-full rounded-xl border border-gray-200 px-3.5 py-2.5 text-sm text-gray-800 focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500/20 transition bg-white cursor-pointer"
+                  className={`${inputClass} bg-white cursor-pointer`}
                 >
                   {UNITS.map((unit) => (
                     <option key={unit} value={unit}>
@@ -162,13 +159,13 @@ export default function ModalTambahEdit({
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+                <label className="block text-xs font-semibold text-gray-700 mb-1">
                   Status <span className="text-red-500">*</span>
                 </label>
                 <select
                   value={status}
                   onChange={(e) => setStatus(e.target.value)}
-                  className="w-full rounded-xl border border-gray-200 px-3.5 py-2.5 text-sm text-gray-800 focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500/20 transition bg-white cursor-pointer"
+                  className={`${inputClass} bg-white cursor-pointer`}
                 >
                   <option value="aktif">Aktif</option>
                   <option value="nonaktif">Nonaktif</option>
@@ -176,37 +173,36 @@ export default function ModalTambahEdit({
               </div>
             </div>
 
-            {/* Keterangan / Deskripsi */}
             <div>
-              <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+              <label className="block text-xs font-semibold text-gray-700 mb-1">
                 Keterangan / Deskripsi
               </label>
               <textarea
                 rows={3}
                 value={keterangan}
                 onChange={(e) => setKeterangan(e.target.value)}
+                className={`${inputClass} resize-none`}
                 placeholder="Deskripsi singkat jenis sampah (misal: kondisi bersih, jenis bahan)..."
-                className="w-full rounded-xl border border-gray-200 px-3.5 py-2.5 text-sm text-gray-800 placeholder-gray-400 focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500/20 transition"
               />
             </div>
           </div>
 
-          {/* Footer */}
-          <div className="flex items-center justify-end gap-3 px-6 py-4 bg-gray-50/70 border-t border-gray-100">
+          <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100">
             <button
               type="button"
               onClick={onClose}
-              className="rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
               disabled={loading}
+              className="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-60"
             >
               Batal
             </button>
             <button
-              type="submit"
+              type="button"
+              onClick={handleSubmit}
               disabled={loading}
-              className="flex items-center gap-2 rounded-xl bg-[#16a34a] hover:bg-[#15803d] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition disabled:opacity-50"
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-[#16a34a] hover:bg-[#15803d] rounded-lg disabled:opacity-60 transition-colors"
             >
-              <Save className="w-4 h-4" />
+              {loading && <Loader2 className="h-4 w-4 animate-spin" />}
               {loading ? 'Menyimpan...' : isEdit ? 'Simpan Perubahan' : 'Tambah Jenis Sampah'}
             </button>
           </div>

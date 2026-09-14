@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { X, Recycle, Mail, User as UserIcon, Phone, MapPin } from 'lucide-react';
+import { X } from 'lucide-react';
 import { PengepulItem, StatusUser } from '@/types/pengepul';
 
 interface PengepulDetailModalProps {
@@ -14,13 +14,13 @@ interface PengepulDetailModalProps {
 function StatusPill({ status }: { status: StatusUser }) {
   if (status === 'aktif') {
     return (
-      <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold bg-[#e6f4ea] text-[#16a34a]">
+      <span className="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold bg-green-100 text-green-700">
         Aktif
       </span>
     );
   }
   return (
-    <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold bg-red-50 text-red-600">
+    <span className="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold bg-red-100 text-red-700">
       Nonaktif
     </span>
   );
@@ -34,115 +34,70 @@ export default function PengepulDetailModal({
 }: PengepulDetailModalProps) {
   if (!isOpen || !item) return null;
 
+  const rows = [
+    { label: 'Nama Pengepul', value: item.namaPengepul },
+    { label: 'Username', value: item.user?.username || '-' },
+    { label: 'Email', value: item.user?.email || '-' },
+    { label: 'No. Telepon', value: item.noTelepon || '-' },
+    { label: 'Alamat', value: item.alamat || '-' },
+  ];
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto bg-black/40 backdrop-blur-xs">
-      <div
-        className="relative w-full max-w-md bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden my-8 animate-in fade-in zoom-in-95 duration-150"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Modal Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-gray-50/50">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+      <div className="bg-white rounded-2xl w-full max-w-md shadow-xl mx-4">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
           <div>
-            <h3 className="text-base font-bold text-gray-900">
-              Detail Pengepul
-            </h3>
-            <p className="text-xs text-gray-500 mt-0.5">
+            <h2 className="text-lg font-bold text-gray-900">Detail Pengepul</h2>
+            <p className="text-[11px] text-gray-400 mt-0.5">
               Informasi lengkap data pengepul.
             </p>
           </div>
           <button
-            type="button"
             onClick={onClose}
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+            className="p-1.5 rounded-lg text-gray-400 hover:bg-gray-100"
           >
-            <X className="h-4 w-4" />
+            <X className="h-5 w-5" />
           </button>
         </div>
 
-        {/* Modal Body */}
-        <div className="p-6">
-          {/* Profile Card */}
-          <div className="flex items-center gap-4 p-4 bg-emerald-50/60 border border-emerald-100 rounded-2xl mb-6">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#16a34a] text-white flex-shrink-0">
-              <Recycle className="h-7 w-7" strokeWidth={1.8} />
-            </div>
+        <div className="px-6 py-4">
+          <div className="flex items-center justify-between mb-4 p-3 bg-green-50 rounded-lg border border-green-100">
             <div>
-              <h4 className="text-base font-bold text-gray-900">
-                {item.namaPengepul}
-              </h4>
-              <div className="mt-1">
-                <StatusPill status={item.user?.status ?? 'aktif'} />
-              </div>
+              <p className="text-sm font-bold text-gray-900">{item.namaPengepul}</p>
+              <p className="text-[11px] text-gray-500">{item.user?.email || '-'}</p>
             </div>
+            <StatusPill status={item.user?.status ?? 'aktif'} />
           </div>
 
-          {/* Data List */}
-          <div className="space-y-4">
-            <div className="flex items-start gap-3">
-              <UserIcon className="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="text-[11px] font-semibold text-gray-400 uppercase">
-                  Username
-                </p>
-                <p className="text-sm font-medium text-gray-800">
-                  {item.user?.username || '-'}
-                </p>
+          <dl className="space-y-3">
+            {rows.map((row) => (
+              <div
+                key={row.label}
+                className="flex items-start justify-between gap-4"
+              >
+                <dt className="text-[11px] font-semibold text-gray-400 uppercase">
+                  {row.label}
+                </dt>
+                <dd className="text-sm font-medium text-gray-700 text-right break-words max-w-[60%]">
+                  {row.value}
+                </dd>
               </div>
-            </div>
-
-            <div className="flex items-start gap-3">
-              <Mail className="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="text-[11px] font-semibold text-gray-400 uppercase">
-                  Email
-                </p>
-                <p className="text-sm font-medium text-gray-800">
-                  {item.user?.email || '-'}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3">
-              <Phone className="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="text-[11px] font-semibold text-gray-400 uppercase">
-                  No. Telepon
-                </p>
-                <p className="text-sm font-medium text-gray-800">
-                  {item.noTelepon || '-'}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3">
-              <MapPin className="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="text-[11px] font-semibold text-gray-400 uppercase">
-                  Alamat
-                </p>
-                <p className="text-sm font-medium text-gray-800 leading-relaxed">
-                  {item.alamat || '-'}
-                </p>
-              </div>
-            </div>
-          </div>
+            ))}
+          </dl>
         </div>
 
-        {/* Modal Footer */}
-        <div className="flex items-center justify-end gap-2.5 px-6 py-4 border-t border-gray-100">
+        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100">
           <button
             type="button"
             onClick={onClose}
-            className="h-10 px-4 rounded-xl border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-colors"
+            className="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
           >
             Tutup
           </button>
           <button
             type="button"
-            onClick={() => {
-              onEdit(item);
-            }}
-            className="h-10 px-5 rounded-xl bg-[#057a44] hover:bg-[#04683a] active:scale-[0.98] text-white text-sm font-semibold shadow-sm transition-all"
+            onClick={() => onEdit(item)}
+            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-[#16a34a] hover:bg-[#15803d] rounded-lg transition-colors"
           >
             Ubah Data
           </button>

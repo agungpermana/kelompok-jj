@@ -1,12 +1,13 @@
 'use client';
 
 import React from 'react';
-import { AlertTriangle, Trash2 } from 'lucide-react';
+import { AlertCircle, Loader2 } from 'lucide-react';
 import { VoucherItem } from '@/types/voucher';
 
 interface VoucherDeleteModalProps {
   isOpen: boolean;
   item: VoucherItem | null;
+  isSubmitting?: boolean;
   onClose: () => void;
   onConfirm: (item: VoucherItem) => void;
 }
@@ -14,48 +15,40 @@ interface VoucherDeleteModalProps {
 export default function VoucherDeleteModal({
   isOpen,
   item,
+  isSubmitting = false,
   onClose,
   onConfirm,
 }: VoucherDeleteModalProps) {
   if (!isOpen || !item) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto bg-black/40 backdrop-blur-xs">
-      <div
-        className="relative w-full max-w-md bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden my-8 animate-in fade-in zoom-in-95 duration-150 p-6"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="flex items-start gap-4">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-red-50 text-red-600 flex-shrink-0">
-            <AlertTriangle className="h-6 w-6" strokeWidth={2} />
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+      <div className="bg-white rounded-2xl w-full max-w-sm shadow-xl mx-4">
+        <div className="px-6 py-5 text-center">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-100 mx-auto mb-4">
+            <AlertCircle className="h-6 w-6 text-red-500" />
           </div>
-          <div>
-            <h3 className="text-base font-bold text-gray-900">
-              Hapus Data Voucher?
-            </h3>
-            <p className="text-xs text-gray-500 mt-1 leading-relaxed">
-              Apakah Anda yakin ingin menghapus voucher{' '}
-              <strong className="text-gray-800">{item.namaVoucher}</strong>?
-              Tindakan ini tidak dapat dibatalkan.
-            </p>
-          </div>
+          <h3 className="text-lg font-bold text-gray-900 mb-2">Hapus Voucher?</h3>
+          <p className="text-sm text-gray-500">
+            Data voucher <span className="font-semibold">{item.namaVoucher}</span>{' '}
+            akan dihapus secara permanen.
+          </p>
         </div>
-
-        <div className="mt-6 flex items-center justify-end gap-2.5">
+        <div className="flex items-center gap-3 px-6 py-4 border-t border-gray-100">
           <button
-            type="button"
             onClick={onClose}
-            className="h-10 px-4 rounded-xl border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-colors"
+            disabled={isSubmitting}
+            className="flex-1 px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-60"
           >
             Batal
           </button>
           <button
-            type="button"
             onClick={() => onConfirm(item)}
-            className="h-10 px-5 rounded-xl bg-red-600 hover:bg-red-700 active:scale-[0.98] text-white text-sm font-semibold shadow-sm transition-all flex items-center gap-1.5"
+            disabled={isSubmitting}
+            className="flex-1 flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-lg disabled:opacity-60 transition-colors"
           >
-            <Trash2 className="h-4 w-4" />
-            <span>Hapus Sekarang</span>
+            {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
+            Hapus
           </button>
         </div>
       </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import AdminHeader from '@/components/layout/header';
 import PengepulFilter from '@/components/admin/pengepul/PengepulFilter';
 import PengepulTable from '@/components/admin/pengepul/PengepulTable';
@@ -14,7 +14,7 @@ import {
   updatePengepulInDB,
   deletePengepulFromDB,
 } from '@/services/pengepulService';
-import { CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
+import { CheckCircle2, AlertCircle, X } from 'lucide-react';
 
 const STATUS_OPTIONS = ['aktif', 'nonaktif'];
 
@@ -38,17 +38,8 @@ export default function PengepulPage() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<PengepulItem | null>(null);
 
-  // Toast state
-  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
-  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
-    if (toastTimer.current) clearTimeout(toastTimer.current);
-    setToast({ message, type });
-    toastTimer.current = setTimeout(() => {
-      setToast(null);
-    }, 3500);
-  };
+  // Flash message state
+  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   // Load data from Database via API (server-side pagination + filter)
   const loadData = useCallback(async (page: number, filterState: FilterState) => {
@@ -66,7 +57,7 @@ export default function PengepulPage() {
     } catch (err: unknown) {
       console.error('Error fetching pengepul data:', err);
       const message = err instanceof Error ? err.message : 'Gagal terhubung ke database backend.';
-      showToast(message, 'error');
+      setMessage({ type: 'error', text: message });
     } finally {
       setIsLoading(false);
     }
@@ -85,12 +76,14 @@ export default function PengepulPage() {
     setSelectedItem(null);
     setFormMode('create');
     setIsFormModalOpen(true);
+    setMessage(null);
   };
 
   const handleOpenEdit = (item: PengepulItem) => {
     setSelectedItem(item);
     setFormMode('edit');
     setIsFormModalOpen(true);
+    setMessage(null);
   };
 
   const handleOpenView = (item: PengepulItem) => {
@@ -110,11 +103,12 @@ export default function PengepulPage() {
     status?: StatusUser;
   }) => {
     setIsSubmitting(true);
+    setMessage(null);
     try {
       const payload = data.payload;
       if (formMode === 'create') {
         await createPengepulInDB(payload);
-        showToast(`Pengepul "${payload.namaPengepul}" beserta akun pengguna berhasil ditambahkan.`);
+        setMessage({ type: 'success', text: `Pengepul "${payload.namaPengepul}" beserta akun pengguna berhasil ditambahkan.` });
       } else if (formMode === 'edit' && data.id) {
         await updatePengepulInDB(data.id, {
           namaPengepul: payload.namaPengepul,
@@ -123,7 +117,7 @@ export default function PengepulPage() {
           ...(payload.password ? { password: payload.password } : {}),
           ...(data.status ? { status: data.status } : {}),
         });
-        showToast(`Perubahan pengepul "${payload.namaPengepul}" berhasil diperbarui.`);
+        setMessage({ type: 'success', text: `Perubahan pengepul "${payload.namaPengepul}" berhasil diperbarui.` });
       }
 
       setIsFormModalOpen(false);
@@ -132,7 +126,7 @@ export default function PengepulPage() {
     } catch (err: unknown) {
       console.error('Save error:', err);
       const message = err instanceof Error ? err.message : 'Gagal menyimpan data ke database.';
-      showToast(message, 'error');
+      setMessage({ type: 'error', text: message });
     } finally {
       setIsSubmitting(false);
     }
@@ -142,37 +136,19 @@ export default function PengepulPage() {
   const handleConfirmDelete = async (item: PengepulItem) => {
     try {
       await deletePengepulFromDB(item.id);
-      showToast(`Data pengepul "${item.namaPengepul}" beserta akunnya berhasil dihapus.`);
+      setMessage({ type: 'success', text: `Data pengepul "${item.namaPengepul}" beserta akunnya berhasil dihapus.` });
       setIsDeleteModalOpen(false);
       const nextPage = items.length === 1 && currentPage > 1 ? currentPage - 1 : currentPage;
       await loadData(nextPage, filter);
     } catch (err: unknown) {
       console.error('Delete error:', err);
       const message = err instanceof Error ? err.message : 'Gagal menghapus data dari database.';
-      showToast(message, 'error');
+      setMessage({ type: 'error', text: message });
     }
   };
 
   return (
     <div className="max-w-[1440px] mx-auto pb-12">
-      {/* Toast Notification */}
-      {toast && (
-        <div
-          className={`fixed bottom-6 right-6 z-50 flex items-center gap-2.5 px-4 py-3 rounded-xl shadow-lg text-sm font-medium animate-in slide-in-from-bottom-5 text-white ${
-            toast.type === 'error'
-              ? 'bg-red-600 shadow-red-900/20'
-              : 'bg-[#057a44] shadow-emerald-900/20'
-          }`}
-        >
-          {toast.type === 'error' ? (
-            <AlertCircle className="h-4 w-4 text-red-200" />
-          ) : (
-            <CheckCircle2 className="h-4 w-4 text-emerald-200" />
-          )}
-          <span>{toast.message}</span>
-        </div>
-      )}
-
       {/* Header with Breadcrumbs */}
       <AdminHeader
         title="Data Pengepul"
@@ -195,26 +171,34 @@ export default function PengepulPage() {
         onOpenCreateModal={handleOpenCreate}
       />
 
-      {/* Table Section */}
-      {isLoading ? (
-        <div className="bg-white rounded-2xl border border-gray-200/80 p-12 flex flex-col items-center justify-center gap-3 shadow-sm">
-          <Loader2 className="h-8 w-8 text-[#16a34a] animate-spin" />
-          <p className="text-sm font-semibold text-gray-600">
-            Memuat data pengepul dari database...
-          </p>
+      {/* Flash Message (diatas tabel) */}
+      {message && (
+        <div className={`mb-4 p-3.5 rounded-xl flex items-start gap-2.5 ${message.type === 'success' ? 'bg-green-50 border border-green-200 text-green-700' : 'bg-red-50 border border-red-200 text-red-700'}`}>
+          {message.type === 'success' ? <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0" /> : <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />}
+          <span className="text-sm">{message.text}</span>
+          <button onClick={() => setMessage(null)} className="ml-auto"><X className="w-4 h-4" /></button>
         </div>
-      ) : (
-        <PengepulTable
-          items={items}
-          totalData={totalData}
-          currentPage={currentPage}
-          itemsPerPage={itemsPerPage}
-          onPageChange={(page) => loadData(page, filter)}
-          onView={handleOpenView}
-          onEdit={handleOpenEdit}
-          onDelete={handleOpenDelete}
-        />
       )}
+
+      {/* Summary Total Count */}
+      <div className="flex items-center justify-between mb-3 px-1">
+        <p className="text-xs font-semibold text-gray-600">
+          Total {totalData} pengepul
+        </p>
+      </div>
+
+      {/* Table Section */}
+      <PengepulTable
+        items={items}
+        totalData={totalData}
+        currentPage={currentPage}
+        itemsPerPage={itemsPerPage}
+        isLoading={isLoading}
+        onPageChange={(page) => loadData(page, filter)}
+        onView={handleOpenView}
+        onEdit={handleOpenEdit}
+        onDelete={handleOpenDelete}
+      />
 
       {/* Modals */}
       <PengepulFormModal
@@ -236,6 +220,7 @@ export default function PengepulPage() {
       <PengepulDeleteModal
         isOpen={isDeleteModalOpen}
         item={selectedItem}
+        isSubmitting={isSubmitting}
         onClose={() => setIsDeleteModalOpen(false)}
         onConfirm={handleConfirmDelete}
       />

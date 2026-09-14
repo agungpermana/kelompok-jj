@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { X, Sparkles, Recycle } from 'lucide-react';
+import { X, Loader2 } from 'lucide-react';
 import { PengepulFormData, PengepulItem, StatusUser } from '@/types/pengepul';
 
 interface PengepulFormModalProps {
@@ -21,6 +21,9 @@ const STATUS_OPTIONS: { value: StatusUser; label: string }[] = [
   { value: 'aktif', label: 'Aktif' },
   { value: 'nonaktif', label: 'Nonaktif' },
 ];
+
+const inputClass =
+  'w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-[#16a34a] focus:ring-2 focus:ring-[#16a34a]/10';
 
 export default function PengepulFormModal({
   isOpen,
@@ -106,47 +109,28 @@ export default function PengepulFormModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto bg-black/40 backdrop-blur-xs">
-      <div
-        className="relative w-full max-w-lg bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden my-8 animate-in fade-in zoom-in-95 duration-150"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Modal Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-gray-50/50">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+      <div className="bg-white rounded-2xl w-full max-w-lg shadow-xl mx-4">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
           <div>
-            <h3 className="text-base font-bold text-gray-900">
-              {mode === 'create' ? 'Tambah Pengepul' : 'Ubah Pengepul'}
-            </h3>
-            <p className="text-xs text-gray-500 mt-0.5">
+            <h2 className="text-lg font-bold text-gray-900">
+              {mode === 'create' ? 'Tambah Pengepul' : 'Edit Pengepul'}
+            </h2>
+            <p className="text-[11px] text-gray-400 mt-0.5">
               {mode === 'create'
-                ? 'Akun pengguna (users) akan dibuat otomatis dengan role pengepul.'
-                : `Perbarui data pengepul "${initialItem?.namaPengepul}".`}
+                ? 'Akun pengguna (users) dibuat otomatis saat pengepul ditambahkan.'
+                : 'Username dan email tidak dapat diubah.'}
             </p>
           </div>
           <button
-            type="button"
             onClick={onClose}
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+            className="p-1.5 rounded-lg text-gray-400 hover:bg-gray-100"
           >
-            <X className="h-4 w-4" />
+            <X className="h-5 w-5" />
           </button>
         </div>
 
-        {/* Modal Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          {/* Info Card */}
-          <div className="flex items-center gap-3 p-3 bg-emerald-50/60 border border-emerald-100 rounded-xl">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#16a34a]/10 flex-shrink-0">
-              <Recycle className="h-5 w-5 text-[#16a34a]" strokeWidth={1.8} />
-            </div>
-            <p className="text-xs text-gray-600 leading-relaxed">
-              {mode === 'create'
-                ? 'Mengisi akun pengguna (username/email) lalu data pengepul. Data tersimpan dalam satu transaksi.'
-                : 'Email dan username tidak dapat diubah. Ubah password hanya jika ingin me-reset.'}
-            </p>
-          </div>
-
-          {/* Akun Pengguna - hanya saat tambah baru */}
+        <form onSubmit={handleSubmit} className="px-6 py-4 space-y-4 max-h-[70vh] overflow-y-auto">
           {mode === 'create' && (
             <>
               <div>
@@ -157,17 +141,13 @@ export default function PengepulFormModal({
                   type="text"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
+                  className={inputClass}
                   placeholder="Contoh: pengepul2"
-                  className={`w-full h-10 px-3.5 text-sm bg-white border rounded-xl text-gray-800 focus:outline-none focus:ring-2 transition-all ${errors.username
-                      ? 'border-red-400 focus:ring-red-200'
-                      : 'border-gray-200 focus:ring-[#16a34a]/20 focus:border-[#16a34a]'
-                    }`}
                 />
                 {errors.username && (
                   <p className="text-[11px] text-red-500 mt-1">{errors.username}</p>
                 )}
               </div>
-
               <div>
                 <label className="block text-xs font-semibold text-gray-700 mb-1">
                   Email <span className="text-red-500">*</span>
@@ -176,17 +156,13 @@ export default function PengepulFormModal({
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  className={inputClass}
                   placeholder="contoh@trashure.test"
-                  className={`w-full h-10 px-3.5 text-sm bg-white border rounded-xl text-gray-800 focus:outline-none focus:ring-2 transition-all ${errors.email
-                      ? 'border-red-400 focus:ring-red-200'
-                      : 'border-gray-200 focus:ring-[#16a34a]/20 focus:border-[#16a34a]'
-                    }`}
                 />
                 {errors.email && (
                   <p className="text-[11px] text-red-500 mt-1">{errors.email}</p>
                 )}
               </div>
-
               <div>
                 <label className="block text-xs font-semibold text-gray-700 mb-1">
                   Password <span className="text-red-500">*</span>
@@ -195,11 +171,8 @@ export default function PengepulFormModal({
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  className={inputClass}
                   placeholder="Minimal 6 karakter"
-                  className={`w-full h-10 px-3.5 text-sm bg-white border rounded-xl text-gray-800 focus:outline-none focus:ring-2 transition-all ${errors.password
-                      ? 'border-red-400 focus:ring-red-200'
-                      : 'border-gray-200 focus:ring-[#16a34a]/20 focus:border-[#16a34a]'
-                    }`}
                 />
                 {errors.password && (
                   <p className="text-[11px] text-red-500 mt-1">{errors.password}</p>
@@ -208,10 +181,9 @@ export default function PengepulFormModal({
             </>
           )}
 
-          {/* Ubah Password - hanya saat edit */}
           {mode === 'edit' && (
             <>
-              <div className="grid grid-cols-2 gap-3.5">
+              <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-semibold text-gray-700 mb-1">
                     Username
@@ -220,7 +192,7 @@ export default function PengepulFormModal({
                     type="text"
                     value={username}
                     disabled
-                    className="w-full h-10 px-3.5 text-sm bg-gray-50 border border-gray-200 rounded-xl text-gray-500 cursor-not-allowed"
+                    className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg bg-gray-50 text-gray-500 cursor-not-allowed"
                   />
                 </div>
                 <div>
@@ -231,7 +203,7 @@ export default function PengepulFormModal({
                     type="text"
                     value={email}
                     disabled
-                    className="w-full h-10 px-3.5 text-sm bg-gray-50 border border-gray-200 rounded-xl text-gray-500 cursor-not-allowed"
+                    className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg bg-gray-50 text-gray-500 cursor-not-allowed"
                   />
                 </div>
               </div>
@@ -243,11 +215,8 @@ export default function PengepulFormModal({
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  className={inputClass}
                   placeholder="Kosongkan jika tidak diubah"
-                  className={`w-full h-10 px-3.5 text-sm bg-white border rounded-xl text-gray-800 focus:outline-none focus:ring-2 transition-all ${errors.password
-                      ? 'border-red-400 focus:ring-red-200'
-                      : 'border-gray-200 focus:ring-[#16a34a]/20 focus:border-[#16a34a]'
-                    }`}
                 />
                 {errors.password && (
                   <p className="text-[11px] text-red-500 mt-1">{errors.password}</p>
@@ -260,7 +229,7 @@ export default function PengepulFormModal({
                 <select
                   value={status}
                   onChange={(e) => setStatus(e.target.value as StatusUser)}
-                  className="w-full h-10 px-3 text-sm bg-white border border-gray-200 rounded-xl text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#16a34a]/20 focus:border-[#16a34a]"
+                  className={inputClass}
                 >
                   {STATUS_OPTIONS.map((opt) => (
                     <option key={opt.value} value={opt.value}>
@@ -272,7 +241,6 @@ export default function PengepulFormModal({
             </>
           )}
 
-          {/* Nama Pengepul */}
           <div>
             <label className="block text-xs font-semibold text-gray-700 mb-1">
               Nama Pengepul <span className="text-red-500">*</span>
@@ -281,18 +249,14 @@ export default function PengepulFormModal({
               type="text"
               value={namaPengepul}
               onChange={(e) => setNamaPengepul(e.target.value)}
+              className={inputClass}
               placeholder="Contoh: Pengepul Trashure"
-              className={`w-full h-10 px-3.5 text-sm bg-white border rounded-xl text-gray-800 focus:outline-none focus:ring-2 transition-all ${errors.namaPengepul
-                  ? 'border-red-400 focus:ring-red-200'
-                  : 'border-gray-200 focus:ring-[#16a34a]/20 focus:border-[#16a34a]'
-                }`}
             />
             {errors.namaPengepul && (
               <p className="text-[11px] text-red-500 mt-1">{errors.namaPengepul}</p>
             )}
           </div>
 
-          {/* No. Telepon & Alamat */}
           <div>
             <label className="block text-xs font-semibold text-gray-700 mb-1">
               No. Telepon
@@ -302,8 +266,8 @@ export default function PengepulFormModal({
               maxLength={20}
               value={noTelepon}
               onChange={(e) => setNoTelepon(e.target.value)}
+              className={inputClass}
               placeholder="Contoh: 081234567892"
-              className="w-full h-10 px-3.5 text-sm bg-white border border-gray-200 rounded-xl text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#16a34a]/20 focus:border-[#16a34a] transition-all"
             />
           </div>
 
@@ -315,31 +279,31 @@ export default function PengepulFormModal({
               rows={3}
               value={alamat}
               onChange={(e) => setAlamat(e.target.value)}
+              className={`${inputClass} resize-none`}
               placeholder="Alamat lokasi pengepul (opsional)..."
-              className="w-full p-3 text-sm bg-white border border-gray-200 rounded-xl text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#16a34a]/20 focus:border-[#16a34a] resize-none"
             />
           </div>
-
-          {/* Actions */}
-          <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-gray-100">
-            <button
-              type="button"
-              onClick={onClose}
-              disabled={isSubmitting}
-              className="h-10 px-4 rounded-xl border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-colors disabled:opacity-50"
-            >
-              Batal
-            </button>
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="h-10 px-5 rounded-xl bg-[#057a44] hover:bg-[#04683a] active:scale-[0.98] text-white text-sm font-semibold shadow-sm transition-all flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <Sparkles className="h-4 w-4" />
-              <span>{isSubmitting ? 'Menyimpan...' : 'Simpan Pengepul'}</span>
-            </button>
-          </div>
         </form>
+
+        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100">
+          <button
+            type="button"
+            onClick={onClose}
+            disabled={isSubmitting}
+            className="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-60"
+          >
+            Batal
+          </button>
+          <button
+            type="button"
+            onClick={handleSubmit}
+            disabled={isSubmitting}
+            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-[#16a34a] hover:bg-[#15803d] rounded-lg disabled:opacity-60 transition-colors"
+          >
+            {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
+            {mode === 'create' ? 'Tambah' : 'Simpan Perubahan'}
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -15,7 +15,7 @@ import {
   deleteVoucherFromDB,
   labelStatus,
 } from '@/services/voucherService';
-import { CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
+import { CheckCircle2, AlertCircle, X } from 'lucide-react';
 
 export default function VoucherPage() {
   // Pure dynamic data state from Database (no dummy data)
@@ -37,15 +37,8 @@ export default function VoucherPage() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<VoucherItem | null>(null);
 
-  // Toast state
-  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
-
-  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
-    setToast({ message, type });
-    setTimeout(() => {
-      setToast(null);
-    }, 3500);
-  };
+  // Flash message state
+  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   // Load data dynamically from Database via API
   const loadDatabaseData = useCallback(async () => {
@@ -55,7 +48,7 @@ export default function VoucherPage() {
       setItems(res.items);
     } catch (err: any) {
       console.error('Error fetching database data:', err);
-      showToast(err.message || 'Gagal terhubung ke database backend.', 'error');
+      setMessage({ type: 'error', text: err.message || 'Gagal terhubung ke database backend.' });
     } finally {
       setIsLoading(false);
     }
@@ -116,12 +109,14 @@ export default function VoucherPage() {
     setSelectedItem(null);
     setFormMode('create');
     setIsFormModalOpen(true);
+    setMessage(null);
   };
 
   const handleOpenEdit = (item: VoucherItem) => {
     setSelectedItem(item);
     setFormMode('edit');
     setIsFormModalOpen(true);
+    setMessage(null);
   };
 
   const handleOpenView = (item: VoucherItem) => {
@@ -137,6 +132,7 @@ export default function VoucherPage() {
   // Save Item to Database (Create or Update)
   const handleSaveItem = async (formData: Partial<VoucherItem>) => {
     setIsSubmitting(true);
+    setMessage(null);
     try {
       const payload = {
         namaVoucher: formData.namaVoucher || '',
@@ -148,10 +144,10 @@ export default function VoucherPage() {
 
       if (formMode === 'create') {
         await createVoucherInDB(payload);
-        showToast(`Voucher "${payload.namaVoucher}" berhasil disimpan ke database.`);
+        setMessage({ type: 'success', text: `Voucher "${payload.namaVoucher}" berhasil disimpan ke database.` });
       } else if (formMode === 'edit' && selectedItem) {
         await updateVoucherInDB(selectedItem.id, payload);
-        showToast(`Perubahan voucher "${payload.namaVoucher}" berhasil diperbarui.`);
+        setMessage({ type: 'success', text: `Perubahan voucher "${payload.namaVoucher}" berhasil diperbarui.` });
       }
 
       // Refresh live data directly from Database
@@ -159,7 +155,7 @@ export default function VoucherPage() {
       setIsFormModalOpen(false);
     } catch (err: any) {
       console.error('Save error:', err);
-      showToast(err.message || 'Gagal menyimpan data ke database.', 'error');
+      setMessage({ type: 'error', text: err.message || 'Gagal menyimpan data ke database.' });
     } finally {
       setIsSubmitting(false);
     }
@@ -169,35 +165,17 @@ export default function VoucherPage() {
   const handleConfirmDelete = async (item: VoucherItem) => {
     try {
       await deleteVoucherFromDB(item.id);
-      showToast(`Data voucher "${item.namaVoucher}" berhasil dihapus dari database.`);
+      setMessage({ type: 'success', text: `Data voucher "${item.namaVoucher}" berhasil dihapus dari database.` });
       setIsDeleteModalOpen(false);
       await loadDatabaseData();
     } catch (err: any) {
       console.error('Delete error:', err);
-      showToast(err.message || 'Gagal menghapus data dari database.', 'error');
+      setMessage({ type: 'error', text: err.message || 'Gagal menghapus data dari database.' });
     }
   };
 
   return (
     <div className="max-w-[1440px] mx-auto pb-12">
-      {/* Toast Notification */}
-      {toast && (
-        <div
-          className={`fixed bottom-6 right-6 z-50 flex items-center gap-2.5 px-4 py-3 rounded-xl shadow-lg text-sm font-medium animate-in slide-in-from-bottom-5 text-white ${
-            toast.type === 'error'
-              ? 'bg-red-600 shadow-red-900/20'
-              : 'bg-[#057a44] shadow-emerald-900/20'
-          }`}
-        >
-          {toast.type === 'error' ? (
-            <AlertCircle className="h-4 w-4 text-red-200" />
-          ) : (
-            <CheckCircle2 className="h-4 w-4 text-emerald-200" />
-          )}
-          <span>{toast.message}</span>
-        </div>
-      )}
-
       {/* Header with Breadcrumbs */}
       <AdminHeader
         title="Voucher"
@@ -217,26 +195,34 @@ export default function VoucherPage() {
         onOpenCreateModal={handleOpenCreate}
       />
 
-      {/* Table Section with Live Database State */}
-      {isLoading ? (
-        <div className="bg-white rounded-2xl border border-gray-200/80 p-12 flex flex-col items-center justify-center gap-3 shadow-sm">
-          <Loader2 className="h-8 w-8 text-[#16a34a] animate-spin" />
-          <p className="text-sm font-semibold text-gray-600">
-            Memuat data voucher dari database...
-          </p>
+      {/* Flash Message (diatas tabel) */}
+      {message && (
+        <div className={`mb-4 p-3.5 rounded-xl flex items-start gap-2.5 ${message.type === 'success' ? 'bg-green-50 border border-green-200 text-green-700' : 'bg-red-50 border border-red-200 text-red-700'}`}>
+          {message.type === 'success' ? <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0" /> : <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />}
+          <span className="text-sm">{message.text}</span>
+          <button onClick={() => setMessage(null)} className="ml-auto"><X className="w-4 h-4" /></button>
         </div>
-      ) : (
-        <VoucherTable
-          items={paginatedItems}
-          totalData={filteredItems.length}
-          currentPage={currentPage}
-          itemsPerPage={itemsPerPage}
-          onPageChange={setCurrentPage}
-          onView={handleOpenView}
-          onEdit={handleOpenEdit}
-          onDelete={handleOpenDelete}
-        />
       )}
+
+      {/* Summary Total Count */}
+      <div className="flex items-center justify-between mb-3 px-1">
+        <p className="text-xs font-semibold text-gray-600">
+          Total {filteredItems.length} voucher
+        </p>
+      </div>
+
+      {/* Table Section with Live Database State */}
+      <VoucherTable
+        items={paginatedItems}
+        totalData={filteredItems.length}
+        currentPage={currentPage}
+        itemsPerPage={itemsPerPage}
+        isLoading={isLoading}
+        onPageChange={setCurrentPage}
+        onView={handleOpenView}
+        onEdit={handleOpenEdit}
+        onDelete={handleOpenDelete}
+      />
 
       {/* Modals */}
       <VoucherFormModal
@@ -258,6 +244,7 @@ export default function VoucherPage() {
       <VoucherDeleteModal
         isOpen={isDeleteModalOpen}
         item={selectedItem}
+        isSubmitting={isSubmitting}
         onClose={() => setIsDeleteModalOpen(false)}
         onConfirm={handleConfirmDelete}
       />

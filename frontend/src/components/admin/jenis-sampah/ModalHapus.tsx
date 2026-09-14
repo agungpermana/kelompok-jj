@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Trash2, AlertTriangle, X } from 'lucide-react';
+import { AlertCircle, Loader2 } from 'lucide-react';
 import { JenisSampahItem } from './ModalTambahEdit';
 
 interface ModalHapusProps {
@@ -36,57 +36,42 @@ export default function ModalHapus({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4 animate-in fade-in duration-200">
-      <div className="relative w-full max-w-sm rounded-2xl bg-white shadow-2xl border border-gray-100 overflow-hidden p-6 text-center">
-        {/* Close Button */}
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition"
-        >
-          <X className="w-4 h-4" />
-        </button>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+      <div className="bg-white rounded-2xl w-full max-w-sm shadow-xl mx-4">
+        <div className="px-6 pt-6 pb-4">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-100 mx-auto mb-4">
+            <AlertCircle className="h-6 w-6 text-red-500" />
+          </div>
+          <h3 className="text-lg font-bold text-gray-900 text-center">
+            Hapus Jenis Sampah?
+          </h3>
+          <p className="text-sm text-gray-600 mt-1 text-center leading-relaxed">
+            Apakah Anda yakin ingin menghapus data{' '}
+            <strong className="text-gray-800">&ldquo;{item.nama_jenis_sampah}&rdquo;</strong>{' '}
+            ? Tindakan ini tidak dapat dibatalkan.
+          </p>
 
-        {/* Warning Icon Badge */}
-        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-red-50 text-red-600 border border-red-100 mb-4 shadow-sm">
-          <AlertTriangle className="h-7 w-7" />
+          {error && (
+            <div className="mt-4 p-2.5 rounded-lg bg-red-50 border border-red-200 text-xs text-red-600">
+              {error}
+            </div>
+          )}
         </div>
 
-        {/* Title & Desc */}
-        <h3 className="text-base font-bold text-gray-900 mb-1">
-          Hapus Jenis Sampah?
-        </h3>
-        <p className="text-xs text-gray-500 mb-4 leading-relaxed">
-          Apakah Anda yakin ingin menghapus data{' '}
-          <span className="font-semibold text-gray-800">
-            &ldquo;{item.nama_jenis_sampah}&rdquo;
-          </span>
-          ? Tindakan ini tidak dapat dibatalkan.
-        </p>
-
-        {error && (
-          <div className="mb-4 text-left p-2.5 rounded-xl bg-red-50 border border-red-200 text-xs text-red-600">
-            {error}
-          </div>
-        )}
-
-        {/* Action Buttons */}
-        <div className="grid grid-cols-2 gap-3 pt-2">
+        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100">
           <button
-            type="button"
             onClick={onClose}
             disabled={loading}
-            className="rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-xs font-semibold text-gray-700 hover:bg-gray-50 transition"
+            className="flex-1 px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-60"
           >
             Batal
           </button>
           <button
-            type="button"
             onClick={handleDelete}
             disabled={loading}
-            className="flex items-center justify-center gap-1.5 rounded-xl bg-red-600 hover:bg-red-700 px-4 py-2.5 text-xs font-semibold text-white shadow-sm transition disabled:opacity-50"
+            className="flex-1 flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-lg transition-colors disabled:opacity-60"
           >
-            <Trash2 className="w-3.5 h-3.5" />
-            {loading ? 'Menghapus...' : 'Ya, Hapus'}
+            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Ya, Hapus'}
           </button>
         </div>
       </div>
