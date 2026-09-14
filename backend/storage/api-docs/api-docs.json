@@ -1,0 +1,2223 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Trashure API Documentation",
+        "description": "Dokumentasi RESTful API untuk Sistem Pengelolaan Sampah dan Penjemputan Trashure.",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "/api",
+            "description": "Trashure API Base URL"
+        }
+    ],
+    "paths": {
+        "/admin/jadwal": {
+            "get": {
+                "tags": [
+                    "Admin - Jadwal"
+                ],
+                "summary": "Daftar jadwal penjemputan (Admin)",
+                "description": "Mengambil semua daftar jadwal penjemputan yang telah dijadwalkan oleh admin.",
+                "operationId": "bfe96c1767252cd062f51fbf7590c03d",
+                "responses": {
+                    "200": {
+                        "description": "Daftar jadwal penjemputan berhasil diambil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Daftar jadwal penjemputan berhasil diambil."
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Profil admin tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Profil admin tidak ditemukan."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/admin/pengajuan": {
+            "get": {
+                "tags": [
+                    "Admin - Pengajuan"
+                ],
+                "summary": "Daftar pengajuan penjemputan baru (Admin)",
+                "description": "Mengambil semua daftar pengajuan penjemputan sampah dari warga dengan status 'diajukan'.",
+                "operationId": "5fdafb340f8773572069b2e6bdf5a14d",
+                "responses": {
+                    "200": {
+                        "description": "Daftar pengajuan penjemputan berhasil diambil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Daftar pengajuan penjemputan berhasil diambil."
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Profil admin tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Profil admin tidak ditemukan."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/admin/pengajuan/{id}": {
+            "get": {
+                "tags": [
+                    "Admin - Pengajuan"
+                ],
+                "summary": "Detail pengajuan penjemputan (Admin)",
+                "description": "Mengambil rincian pengajuan penjemputan sampah berdasarkan ID pengajuan beserta data warga, detail sampah, dan jadwal jika ada.",
+                "operationId": "32bba63ccc34945177a970f0ab218706",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID Pengajuan Penjemputan",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detail pengajuan berhasil diambil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Detail pengajuan penjemputan berhasil diambil."
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Pengajuan atau Profil Admin tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Pengajuan penjemputan tidak ditemukan."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/admin/pengajuan/{id}/jadwal": {
+            "post": {
+                "tags": [
+                    "Admin - Pengajuan"
+                ],
+                "summary": "Jadwalkan penjemputan sampah (Admin)",
+                "description": "Menetapkan petugas, tanggal, dan waktu penjemputan untuk pengajuan berstatus 'diajukan'.",
+                "operationId": "b98e5a832c0bb175fbbcdfbacb466b08",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID Pengajuan Penjemputan",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "petugas_id",
+                                    "tanggal_penjemputan",
+                                    "waktu_penjemputan"
+                                ],
+                                "properties": {
+                                    "petugas_id": {
+                                        "description": "ID Petugas yang ditugaskan",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "tanggal_penjemputan": {
+                                        "description": "Tanggal penjemputan (YYYY-MM-DD)",
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2026-09-15"
+                                    },
+                                    "waktu_penjemputan": {
+                                        "description": "Waktu penjemputan format H:i",
+                                        "type": "string",
+                                        "example": "09:00"
+                                    },
+                                    "catatan": {
+                                        "description": "Catatan penjemputan",
+                                        "type": "string",
+                                        "example": "Harap bawa karung tambahan",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Penjemputan berhasil dijadwalkan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Penjemputan berhasil dijadwalkan."
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Pengajuan atau Profil Admin tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Pengajuan penjemputan tidak ditemukan."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validasi gagal atau pengajuan tidak dapat dijadwalkan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Pengajuan tidak dapat dijadwalkan."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/login": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Login pengguna",
+                "description": "Melakukan autentikasi menggunakan email/username dan password, mengembalikan token Bearer Sanctum.",
+                "operationId": "67d6d0fdd54fba132e1b6f55ca254183",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "login",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "login": {
+                                        "description": "Email atau Username pengguna",
+                                        "type": "string",
+                                        "example": "admin@trashure.com"
+                                    },
+                                    "password": {
+                                        "description": "Password akun pengguna",
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login berhasil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Login berhasil."
+                                        },
+                                        "token": {
+                                            "type": "string",
+                                            "example": "1|laravel_sanctum_token..."
+                                        },
+                                        "token_type": {
+                                            "type": "string",
+                                            "example": "Bearer"
+                                        },
+                                        "expires_in": {
+                                            "type": "integer",
+                                            "example": 3600,
+                                            "nullable": true
+                                        },
+                                        "expires_at": {
+                                            "type": "string",
+                                            "format": "date-time",
+                                            "example": "2026-09-14T13:15:00+07:00",
+                                            "nullable": true
+                                        },
+                                        "user": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "username": {
+                                                    "type": "string",
+                                                    "example": "admin_utama"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "format": "email",
+                                                    "example": "admin@trashure.com"
+                                                },
+                                                "role": {
+                                                    "type": "string",
+                                                    "example": "admin"
+                                                },
+                                                "status": {
+                                                    "type": "string",
+                                                    "example": "aktif"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Kredensial tidak valid",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Email/username atau password salah."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Akun nonaktif",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Akun tidak aktif."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validasi form gagal",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The login field is required."
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/logout": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Logout pengguna",
+                "description": "Menghapus token akses pengguna yang sedang aktif.",
+                "operationId": "28d48c13fca984400ac8de99f54ee13a",
+                "responses": {
+                    "200": {
+                        "description": "Logout berhasil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Logout berhasil."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/me": {
+            "get": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Profil pengguna login",
+                "description": "Mendapatkan data informasi akun pengguna yang sedang login beserta relasinya.",
+                "operationId": "bc2032a379aa97707ccc61511897c120",
+                "responses": {
+                    "200": {
+                        "description": "Data profil user",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "user": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "username": {
+                                                    "type": "string",
+                                                    "example": "warga_budi"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "example": "budi@gmail.com"
+                                                },
+                                                "role": {
+                                                    "type": "string",
+                                                    "example": "warga"
+                                                },
+                                                "status": {
+                                                    "type": "string",
+                                                    "example": "aktif"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/pengepul/stok": {
+            "get": {
+                "tags": [
+                    "Pengepul - Stok Sampah"
+                ],
+                "summary": "Daftar stok sampah tersedia (Pengepul)",
+                "description": "Mengambil seluruh daftar stok sampah yang memiliki kuantitas tersedia (> 0) beserta relasi jenis sampah.",
+                "operationId": "5d70646802ced875da55e00475018ef1",
+                "responses": {
+                    "200": {
+                        "description": "Daftar stok sampah berhasil diambil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Daftar stok sampah berhasil diambil."
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Profil pengepul tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Profil pengepul tidak ditemukan."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/pengepul/stok/{id}": {
+            "get": {
+                "tags": [
+                    "Pengepul - Stok Sampah"
+                ],
+                "summary": "Detail stok sampah (Pengepul)",
+                "description": "Mengambil informasi detail stok sampah spesifik berdasarkan ID stok.",
+                "operationId": "930606283998d87ba9a70cd861e1a973",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID Stok Sampah",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detail stok sampah berhasil diambil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Detail stok sampah berhasil diambil."
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Stok sampah atau Profil Pengepul tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Stok sampah tidak ditemukan."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/petugas/jadwal": {
+            "get": {
+                "tags": [
+                    "Petugas - Jadwal"
+                ],
+                "summary": "Daftar jadwal penjemputan petugas",
+                "description": "Mengambil semua daftar tugas jadwal penjemputan sampah untuk petugas yang sedang login.",
+                "operationId": "756d60db574cd74fb821dc3a192e8913",
+                "responses": {
+                    "200": {
+                        "description": "Daftar jadwal penjemputan berhasil diambil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Daftar jadwal penjemputan berhasil diambil."
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Profil petugas tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Profil petugas tidak ditemukan."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/petugas/jadwal/{id}": {
+            "get": {
+                "tags": [
+                    "Petugas - Jadwal"
+                ],
+                "summary": "Detail jadwal penjemputan petugas",
+                "description": "Mengambil detail penjemputan spesifik berdasarkan ID jadwal yang ditugaskan kepada petugas login.",
+                "operationId": "3bf4f29e1bff773290332aec9ad509b0",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID Jadwal Penjemputan",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detail jadwal penjemputan berhasil diambil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Detail jadwal penjemputan berhasil diambil."
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Jadwal atau Profil Petugas tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Jadwal penjemputan tidak ditemukan."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/petugas/jadwal/{id}/proses": {
+            "patch": {
+                "tags": [
+                    "Petugas - Jadwal"
+                ],
+                "summary": "Mulai proses penjemputan",
+                "description": "Mengubah status jadwal penjemputan dan pengajuan menjadi 'diproses'.",
+                "operationId": "95d8744955d194823f2b42df2c6e45cb",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID Jadwal Penjemputan",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Penjemputan berhasil diproses",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Penjemputan berhasil diproses."
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Jadwal atau Profil Petugas tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Jadwal penjemputan tidak ditemukan."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Jadwal tidak dapat diproses karena status bukan 'terjadwal'",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Jadwal tidak dapat diproses."
+                                        },
+                                        "status_jadwal": {
+                                            "type": "string",
+                                            "example": "selesai"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/petugas/jadwal/{jadwalId}/setoran/jenis": {
+            "post": {
+                "tags": [
+                    "Petugas - Setoran"
+                ],
+                "summary": "Catat jenis sampah aktual (Petugas)",
+                "description": "Mencatat jenis-jenis sampah yang ditemukan secara aktual di lokasi penjemputan.",
+                "operationId": "ce4a6e81a8c855ffb35012ab280eb850",
+                "parameters": [
+                    {
+                        "name": "jadwalId",
+                        "in": "path",
+                        "description": "ID Jadwal Penjemputan",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "jenis_sampah"
+                                ],
+                                "properties": {
+                                    "jenis_sampah": {
+                                        "description": "Daftar ID jenis sampah aktual yang ada di lokasi",
+                                        "type": "array",
+                                        "items": {
+                                            "required": [
+                                                "jenis_sampah_id"
+                                            ],
+                                            "properties": {
+                                                "jenis_sampah_id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Jenis sampah aktual berhasil dicatat",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Jenis sampah aktual berhasil dicatat."
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Jadwal atau Profil Petugas tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Jadwal penjemputan tidak ditemukan."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validasi gagal",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The jenis sampah field is required."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/petugas/jadwal/{jadwalId}/setoran/berat": {
+            "post": {
+                "tags": [
+                    "Petugas - Setoran"
+                ],
+                "summary": "Catat berat aktual sampah (Petugas)",
+                "description": "Mencatat berat aktual dari masing-masing jenis sampah yang telah ditimbang di lokasi.",
+                "operationId": "c44000455f68abf6d3d17a2238d7bd90",
+                "parameters": [
+                    {
+                        "name": "jadwalId",
+                        "in": "path",
+                        "description": "ID Jadwal Penjemputan",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "detail_sampah"
+                                ],
+                                "properties": {
+                                    "detail_sampah": {
+                                        "description": "Daftar rincian berat untuk masing-masing jenis sampah",
+                                        "type": "array",
+                                        "items": {
+                                            "required": [
+                                                "jenis_sampah_id",
+                                                "berat_aktual"
+                                            ],
+                                            "properties": {
+                                                "jenis_sampah_id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "berat_aktual": {
+                                                    "description": "Berat aktual dalam kilogram",
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 5.5
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Berat aktual berhasil dicatat",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Berat aktual berhasil dicatat."
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Jadwal atau Profil Petugas tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Jadwal penjemputan tidak ditemukan."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validasi gagal",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The detail sampah field is required."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/petugas/jadwal/{jadwalId}/setoran": {
+            "post": {
+                "tags": [
+                    "Petugas - Setoran"
+                ],
+                "summary": "Simpan transaksi setoran sampah (Petugas)",
+                "description": "Menyimpan seluruh transaksi setoran penjemputan sampah, menghitung akumulasi berat dan poin sementara berdasarkan harga aktif.",
+                "operationId": "499cb2173f1fc99155862ffb1a53127e",
+                "parameters": [
+                    {
+                        "name": "jadwalId",
+                        "in": "path",
+                        "description": "ID Jadwal Penjemputan",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "konfirmasi_pengambilan",
+                                    "detail_sampah"
+                                ],
+                                "properties": {
+                                    "konfirmasi_pengambilan": {
+                                        "description": "Konfirmasi apakah sampah berhasil diambil",
+                                        "type": "string",
+                                        "example": "ya",
+                                        "enum": [
+                                            "ya",
+                                            "tidak"
+                                        ]
+                                    },
+                                    "detail_sampah": {
+                                        "description": "Daftar jenis dan berat aktual sampah",
+                                        "type": "array",
+                                        "items": {
+                                            "required": [
+                                                "jenis_sampah_id",
+                                                "berat_aktual"
+                                            ],
+                                            "properties": {
+                                                "jenis_sampah_id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "berat_aktual": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 5.5
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Transaksi setoran berhasil dibuat",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Transaksi setoran berhasil dibuat."
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Jadwal, Pengajuan, atau Profil Petugas tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Jadwal penjemputan tidak ditemukan."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validasi form gagal",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The detail sampah field is required."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/petugas/setoran/{setoranId}/validasi": {
+            "patch": {
+                "tags": [
+                    "Petugas - Setoran"
+                ],
+                "summary": "Validasi transaksi setoran (Petugas)",
+                "description": "Melakukan verifikasi/validasi terhadap transaksi setoran sampah dengan status 'disetujui' atau 'ditolak'.",
+                "operationId": "7255a8eb6c688d4b175e786a9be70a34",
+                "parameters": [
+                    {
+                        "name": "setoranId",
+                        "in": "path",
+                        "description": "ID Transaksi Setoran",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "status_validasi"
+                                ],
+                                "properties": {
+                                    "status_validasi": {
+                                        "description": "Keputusan validasi setoran",
+                                        "type": "string",
+                                        "example": "disetujui",
+                                        "enum": [
+                                            "disetujui",
+                                            "ditolak"
+                                        ]
+                                    },
+                                    "catatan_validasi": {
+                                        "description": "Catatan hasil validasi",
+                                        "type": "string",
+                                        "example": "Data dan berat sampah telah sesuai",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Setoran berhasil divalidasi",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Setoran berhasil divalidasi."
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Transaksi Setoran atau Profil Petugas tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Transaksi setoran tidak ditemukan."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Transaksi sudah divalidasi sebelumnya atau validasi gagal",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Transaksi setoran sudah divalidasi sebelumnya."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/warga/jenis-sampah": {
+            "get": {
+                "tags": [
+                    "Warga - Jenis Sampah"
+                ],
+                "summary": "Daftar jenis sampah (Warga)",
+                "description": "Mengambil semua daftar jenis sampah yang berstatus aktif.",
+                "operationId": "18cb9d2c83787243209f5229051e25ca",
+                "responses": {
+                    "200": {
+                        "description": "Data jenis sampah berhasil diambil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Data jenis sampah berhasil diambil."
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/warga/jenis-sampah/{id}": {
+            "get": {
+                "tags": [
+                    "Warga - Jenis Sampah"
+                ],
+                "summary": "Detail jenis sampah (Warga)",
+                "description": "Mengambil detail informasi jenis sampah tertentu berdasarkan ID.",
+                "operationId": "044ad38510b76536fd24bef986c4be3a",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID Jenis Sampah",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detail jenis sampah berhasil diambil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Detail jenis sampah berhasil diambil."
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Jenis sampah tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Jenis sampah tidak ditemukan."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/warga/pengajuan": {
+            "get": {
+                "tags": [
+                    "Warga - Pengajuan"
+                ],
+                "summary": "Daftar riwayat pengajuan penjemputan (Warga)",
+                "description": "Mengambil seluruh riwayat daftar pengajuan penjemputan sampah milik warga yang sedang login.",
+                "operationId": "b5fa3593e429fd9e72cb78b98d317f5d",
+                "responses": {
+                    "200": {
+                        "description": "Daftar pengajuan berhasil diambil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Daftar pengajuan berhasil diambil."
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Profil warga tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Profil warga tidak ditemukan."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Warga - Pengajuan"
+                ],
+                "summary": "Buat pengajuan penjemputan baru (Warga)",
+                "description": "Membuat permohonan pengajuan penjemputan sampah baru ke sistem.",
+                "operationId": "c4ab6e9cbcfdb8ee074755d60d166c2d",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "alamat_penjemputan",
+                                    "perkiraan_total_berat",
+                                    "detail_sampah"
+                                ],
+                                "properties": {
+                                    "alamat_penjemputan": {
+                                        "description": "Alamat lengkap penjemputan",
+                                        "type": "string",
+                                        "example": "Jl. Merdeka No. 45 RT 02/RW 03, Kelurahan Damai"
+                                    },
+                                    "perkiraan_total_berat": {
+                                        "description": "Total perkiraan berat (harus sesuai dengan jumlah detail perkiraan berat)",
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 10.5
+                                    },
+                                    "catatan": {
+                                        "description": "Catatan tambahan untuk petugas",
+                                        "type": "string",
+                                        "example": "Sampah diletakkan di depan pagar rumah",
+                                        "nullable": true
+                                    },
+                                    "detail_sampah": {
+                                        "description": "Daftar estimasi jenis dan berat sampah yang akan disetor",
+                                        "type": "array",
+                                        "items": {
+                                            "required": [
+                                                "jenis_sampah_id",
+                                                "perkiraan_berat"
+                                            ],
+                                            "properties": {
+                                                "jenis_sampah_id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "perkiraan_berat": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 10.5
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Pengajuan penjemputan berhasil dibuat",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Pengajuan penjemputan berhasil dibuat."
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Profil warga tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Profil warga tidak ditemukan."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validasi gagal atau total berat tidak sesuai",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Total perkiraan berat tidak sesuai dengan detail sampah."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/warga/pengajuan/{id}": {
+            "get": {
+                "tags": [
+                    "Warga - Pengajuan"
+                ],
+                "summary": "Detail pengajuan penjemputan (Warga)",
+                "description": "Mengambil informasi detail pengajuan penjemputan sampah milik warga berdasarkan ID.",
+                "operationId": "d8118bddaf4c8440c93d7aa0854d852e",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID Pengajuan Penjemputan",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detail pengajuan berhasil diambil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Detail pengajuan berhasil diambil."
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Pengajuan atau Profil Warga tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Pengajuan tidak ditemukan."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/warga/pengajuan/{id}/cancel": {
+            "patch": {
+                "tags": [
+                    "Warga - Pengajuan"
+                ],
+                "summary": "Batalkan pengajuan penjemputan (Warga)",
+                "description": "Membatalkan pengajuan penjemputan sampah yang masih dalam status 'diajukan'.",
+                "operationId": "1ab03b7de8acab1200727b17251e98ab",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID Pengajuan Penjemputan",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Pengajuan berhasil dibatalkan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Pengajuan berhasil dibatalkan."
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Pengajuan atau Profil Warga tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Pengajuan tidak ditemukan."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Pengajuan sudah diproses sehingga tidak dapat dibatalkan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Pengajuan tidak dapat dibatalkan karena sudah diproses."
+                                        },
+                                        "status_pengajuan": {
+                                            "type": "string",
+                                            "example": "dijadwalkan"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/warga/pengajuan/{id}/status": {
+            "get": {
+                "tags": [
+                    "Warga - Pengajuan"
+                ],
+                "summary": "Tracking status pengajuan & poin (Warga)",
+                "description": "Melakukan pelacakan status pengajuan dari proses jadwal penjemputan hingga penambahan poin hasil setoran.",
+                "operationId": "2587b2b7210ccc804bd4d606e7534b92",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID Pengajuan Penjemputan",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Status pengajuan berhasil diambil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Status pengajuan berhasil diambil."
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Pengajuan atau Profil Warga tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Pengajuan tidak ditemukan."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "description": "Gunakan token Bearer dari endpoint /api/login untuk mengakses endpoint yang dilindungi.",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Auth",
+            "description": "Otentikasi & Profil Pengguna"
+        },
+        {
+            "name": "Admin - Pengajuan",
+            "description": "Pengelolaan Pengajuan Penjemputan oleh Admin"
+        },
+        {
+            "name": "Admin - Jadwal",
+            "description": "Monitoring Jadwal Penjemputan oleh Admin"
+        },
+        {
+            "name": "Petugas - Jadwal",
+            "description": "Operasional Jadwal Penjemputan oleh Petugas"
+        },
+        {
+            "name": "Petugas - Setoran",
+            "description": "Pencatatan & Validasi Setoran Sampah oleh Petugas"
+        },
+        {
+            "name": "Warga - Jenis Sampah",
+            "description": "Informasi Katalog Jenis Sampah untuk Warga"
+        },
+        {
+            "name": "Warga - Pengajuan",
+            "description": "Pengajuan Penjemputan Sampah oleh Warga"
+        },
+        {
+            "name": "Pengepul - Stok Sampah",
+            "description": "Katalog & Detail Stok Sampah Tersedia untuk Pengepul"
+        }
+    ]
+}

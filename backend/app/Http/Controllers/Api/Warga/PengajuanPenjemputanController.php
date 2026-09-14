@@ -6,9 +6,47 @@ use App\Http\Controllers\Controller;
 use App\Models\PengajuanPenjemputan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use OpenApi\Attributes as OA;
 
 class PengajuanPenjemputanController extends Controller
 {
+    #[OA\Get(
+        path: "/warga/pengajuan",
+        summary: "Daftar riwayat pengajuan penjemputan (Warga)",
+        description: "Mengambil seluruh riwayat daftar pengajuan penjemputan sampah milik warga yang sedang login.",
+        tags: ["Warga - Pengajuan"],
+        security: [["bearerAuth" => []]],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Daftar pengajuan berhasil diambil",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "message", type: "string", example: "Daftar pengajuan berhasil diambil."),
+                        new OA\Property(property: "data", type: "array", items: new OA\Items(type: "object"))
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 401,
+                description: "Unauthenticated",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "message", type: "string", example: "Unauthenticated.")
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 404,
+                description: "Profil warga tidak ditemukan",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "message", type: "string", example: "Profil warga tidak ditemukan.")
+                    ]
+                )
+            )
+        ]
+    )]
     public function index(Request $request)
     {
         $warga = $request->user()->warga;
@@ -34,6 +72,77 @@ class PengajuanPenjemputanController extends Controller
             'data' => $pengajuan,
         ]);
     }
+
+    #[OA\Post(
+        path: "/warga/pengajuan",
+        summary: "Buat pengajuan penjemputan baru (Warga)",
+        description: "Membuat permohonan pengajuan penjemputan sampah baru ke sistem.",
+        tags: ["Warga - Pengajuan"],
+        security: [["bearerAuth" => []]],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ["alamat_penjemputan", "perkiraan_total_berat", "detail_sampah"],
+                properties: [
+                    new OA\Property(property: "alamat_penjemputan", type: "string", example: "Jl. Merdeka No. 45 RT 02/RW 03, Kelurahan Damai", description: "Alamat lengkap penjemputan"),
+                    new OA\Property(property: "perkiraan_total_berat", type: "number", format: "float", example: 10.5, description: "Total perkiraan berat (harus sesuai dengan jumlah detail perkiraan berat)"),
+                    new OA\Property(property: "catatan", type: "string", nullable: true, example: "Sampah diletakkan di depan pagar rumah", description: "Catatan tambahan untuk petugas"),
+                    new OA\Property(
+                        property: "detail_sampah",
+                        type: "array",
+                        description: "Daftar estimasi jenis dan berat sampah yang akan disetor",
+                        items: new OA\Items(
+                            type: "object",
+                            required: ["jenis_sampah_id", "perkiraan_berat"],
+                            properties: [
+                                new OA\Property(property: "jenis_sampah_id", type: "integer", example: 1),
+                                new OA\Property(property: "perkiraan_berat", type: "number", format: "float", example: 10.5),
+                            ]
+                        )
+                    )
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 201,
+                description: "Pengajuan penjemputan berhasil dibuat",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "message", type: "string", example: "Pengajuan penjemputan berhasil dibuat."),
+                        new OA\Property(property: "data", type: "object")
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 401,
+                description: "Unauthenticated",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "message", type: "string", example: "Unauthenticated.")
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 404,
+                description: "Profil warga tidak ditemukan",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "message", type: "string", example: "Profil warga tidak ditemukan.")
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 422,
+                description: "Validasi gagal atau total berat tidak sesuai",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "message", type: "string", example: "Total perkiraan berat tidak sesuai dengan detail sampah.")
+                    ]
+                )
+            )
+        ]
+    )]
     public function store(Request $request)
     {
         $request->validate([
@@ -98,6 +207,52 @@ class PengajuanPenjemputanController extends Controller
         ], 201);
     }
 
+    #[OA\Get(
+        path: "/warga/pengajuan/{id}",
+        summary: "Detail pengajuan penjemputan (Warga)",
+        description: "Mengambil informasi detail pengajuan penjemputan sampah milik warga berdasarkan ID.",
+        tags: ["Warga - Pengajuan"],
+        security: [["bearerAuth" => []]],
+        parameters: [
+            new OA\Parameter(
+                name: "id",
+                in: "path",
+                required: true,
+                description: "ID Pengajuan Penjemputan",
+                schema: new OA\Schema(type: "integer", example: 1)
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Detail pengajuan berhasil diambil",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "message", type: "string", example: "Detail pengajuan berhasil diambil."),
+                        new OA\Property(property: "data", type: "object")
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 401,
+                description: "Unauthenticated",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "message", type: "string", example: "Unauthenticated.")
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 404,
+                description: "Pengajuan atau Profil Warga tidak ditemukan",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "message", type: "string", example: "Pengajuan tidak ditemukan.")
+                    ]
+                )
+            )
+        ]
+    )]
     public function show(Request $request, $id)
     {
         $warga = $request->user()->warga;
@@ -135,6 +290,62 @@ class PengajuanPenjemputanController extends Controller
         ]);
     }
 
+    #[OA\Patch(
+        path: "/warga/pengajuan/{id}/cancel",
+        summary: "Batalkan pengajuan penjemputan (Warga)",
+        description: "Membatalkan pengajuan penjemputan sampah yang masih dalam status 'diajukan'.",
+        tags: ["Warga - Pengajuan"],
+        security: [["bearerAuth" => []]],
+        parameters: [
+            new OA\Parameter(
+                name: "id",
+                in: "path",
+                required: true,
+                description: "ID Pengajuan Penjemputan",
+                schema: new OA\Schema(type: "integer", example: 1)
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Pengajuan berhasil dibatalkan",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "message", type: "string", example: "Pengajuan berhasil dibatalkan."),
+                        new OA\Property(property: "data", type: "object")
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 401,
+                description: "Unauthenticated",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "message", type: "string", example: "Unauthenticated.")
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 404,
+                description: "Pengajuan atau Profil Warga tidak ditemukan",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "message", type: "string", example: "Pengajuan tidak ditemukan.")
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 422,
+                description: "Pengajuan sudah diproses sehingga tidak dapat dibatalkan",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "message", type: "string", example: "Pengajuan tidak dapat dibatalkan karena sudah diproses."),
+                        new OA\Property(property: "status_pengajuan", type: "string", example: "dijadwalkan")
+                    ]
+                )
+            )
+        ]
+    )]
     public function cancel(Request $request, $id)
     {
         $warga = $request->user()->warga;
@@ -178,6 +389,52 @@ class PengajuanPenjemputanController extends Controller
         ]);
     }
 
+    #[OA\Get(
+        path: "/warga/pengajuan/{id}/status",
+        summary: "Tracking status pengajuan & poin (Warga)",
+        description: "Melakukan pelacakan status pengajuan dari proses jadwal penjemputan hingga penambahan poin hasil setoran.",
+        tags: ["Warga - Pengajuan"],
+        security: [["bearerAuth" => []]],
+        parameters: [
+            new OA\Parameter(
+                name: "id",
+                in: "path",
+                required: true,
+                description: "ID Pengajuan Penjemputan",
+                schema: new OA\Schema(type: "integer", example: 1)
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Status pengajuan berhasil diambil",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "message", type: "string", example: "Status pengajuan berhasil diambil."),
+                        new OA\Property(property: "data", type: "object")
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 401,
+                description: "Unauthenticated",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "message", type: "string", example: "Unauthenticated.")
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 404,
+                description: "Pengajuan atau Profil Warga tidak ditemukan",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "message", type: "string", example: "Pengajuan tidak ditemukan.")
+                    ]
+                )
+            )
+        ]
+    )]
     public function status(Request $request, $id)
     {
         $warga = $request->user()->warga;

@@ -8,9 +8,85 @@ use App\Models\JenisSampah;
 use App\Models\TransaksiSetoran;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use OpenApi\Attributes as OA;
 
 class SetoranController extends Controller
 {
+    #[OA\Post(
+        path: "/petugas/jadwal/{jadwalId}/setoran/jenis",
+        summary: "Catat jenis sampah aktual (Petugas)",
+        description: "Mencatat jenis-jenis sampah yang ditemukan secara aktual di lokasi penjemputan.",
+        tags: ["Petugas - Setoran"],
+        security: [["bearerAuth" => []]],
+        parameters: [
+            new OA\Parameter(
+                name: "jadwalId",
+                in: "path",
+                required: true,
+                description: "ID Jadwal Penjemputan",
+                schema: new OA\Schema(type: "integer", example: 1)
+            )
+        ],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ["jenis_sampah"],
+                properties: [
+                    new OA\Property(
+                        property: "jenis_sampah",
+                        type: "array",
+                        description: "Daftar ID jenis sampah aktual yang ada di lokasi",
+                        items: new OA\Items(
+                            type: "object",
+                            required: ["jenis_sampah_id"],
+                            properties: [
+                                new OA\Property(property: "jenis_sampah_id", type: "integer", example: 1)
+                            ]
+                        )
+                    )
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Jenis sampah aktual berhasil dicatat",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "message", type: "string", example: "Jenis sampah aktual berhasil dicatat."),
+                        new OA\Property(property: "data", type: "object")
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 401,
+                description: "Unauthenticated",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "message", type: "string", example: "Unauthenticated.")
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 404,
+                description: "Jadwal atau Profil Petugas tidak ditemukan",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "message", type: "string", example: "Jadwal penjemputan tidak ditemukan.")
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 422,
+                description: "Validasi gagal",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "message", type: "string", example: "The jenis sampah field is required.")
+                    ]
+                )
+            )
+        ]
+    )]
     public function catatJenisAktual(Request $request, $jadwalId)
     {
         $petugas = $request->user()->petugas;
@@ -53,6 +129,83 @@ class SetoranController extends Controller
             ],
         ]);
     }
+
+    #[OA\Post(
+        path: "/petugas/jadwal/{jadwalId}/setoran/berat",
+        summary: "Catat berat aktual sampah (Petugas)",
+        description: "Mencatat berat aktual dari masing-masing jenis sampah yang telah ditimbang di lokasi.",
+        tags: ["Petugas - Setoran"],
+        security: [["bearerAuth" => []]],
+        parameters: [
+            new OA\Parameter(
+                name: "jadwalId",
+                in: "path",
+                required: true,
+                description: "ID Jadwal Penjemputan",
+                schema: new OA\Schema(type: "integer", example: 1)
+            )
+        ],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ["detail_sampah"],
+                properties: [
+                    new OA\Property(
+                        property: "detail_sampah",
+                        type: "array",
+                        description: "Daftar rincian berat untuk masing-masing jenis sampah",
+                        items: new OA\Items(
+                            type: "object",
+                            required: ["jenis_sampah_id", "berat_aktual"],
+                            properties: [
+                                new OA\Property(property: "jenis_sampah_id", type: "integer", example: 1),
+                                new OA\Property(property: "berat_aktual", type: "number", format: "float", example: 5.5, description: "Berat aktual dalam kilogram"),
+                            ]
+                        )
+                    )
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Berat aktual berhasil dicatat",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "message", type: "string", example: "Berat aktual berhasil dicatat."),
+                        new OA\Property(property: "data", type: "object")
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 401,
+                description: "Unauthenticated",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "message", type: "string", example: "Unauthenticated.")
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 404,
+                description: "Jadwal atau Profil Petugas tidak ditemukan",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "message", type: "string", example: "Jadwal penjemputan tidak ditemukan.")
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 422,
+                description: "Validasi gagal",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "message", type: "string", example: "The detail sampah field is required.")
+                    ]
+                )
+            )
+        ]
+    )]
     public function catatBeratAktual(Request $request, $jadwalId)
     {
         $petugas = $request->user()->petugas;
@@ -109,6 +262,83 @@ class SetoranController extends Controller
         ]);
     }
 
+    #[OA\Post(
+        path: "/petugas/jadwal/{jadwalId}/setoran",
+        summary: "Simpan transaksi setoran sampah (Petugas)",
+        description: "Menyimpan seluruh transaksi setoran penjemputan sampah, menghitung akumulasi berat dan poin sementara berdasarkan harga aktif.",
+        tags: ["Petugas - Setoran"],
+        security: [["bearerAuth" => []]],
+        parameters: [
+            new OA\Parameter(
+                name: "jadwalId",
+                in: "path",
+                required: true,
+                description: "ID Jadwal Penjemputan",
+                schema: new OA\Schema(type: "integer", example: 1)
+            )
+        ],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ["konfirmasi_pengambilan", "detail_sampah"],
+                properties: [
+                    new OA\Property(property: "konfirmasi_pengambilan", type: "string", enum: ["ya", "tidak"], example: "ya", description: "Konfirmasi apakah sampah berhasil diambil"),
+                    new OA\Property(
+                        property: "detail_sampah",
+                        type: "array",
+                        description: "Daftar jenis dan berat aktual sampah",
+                        items: new OA\Items(
+                            type: "object",
+                            required: ["jenis_sampah_id", "berat_aktual"],
+                            properties: [
+                                new OA\Property(property: "jenis_sampah_id", type: "integer", example: 1),
+                                new OA\Property(property: "berat_aktual", type: "number", format: "float", example: 5.5),
+                            ]
+                        )
+                    )
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 201,
+                description: "Transaksi setoran berhasil dibuat",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "message", type: "string", example: "Transaksi setoran berhasil dibuat."),
+                        new OA\Property(property: "data", type: "object")
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 401,
+                description: "Unauthenticated",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "message", type: "string", example: "Unauthenticated.")
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 404,
+                description: "Jadwal, Pengajuan, atau Profil Petugas tidak ditemukan",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "message", type: "string", example: "Jadwal penjemputan tidak ditemukan.")
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 422,
+                description: "Validasi form gagal",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "message", type: "string", example: "The detail sampah field is required.")
+                    ]
+                )
+            )
+        ]
+    )]
     public function store(Request $request, $jadwalId)
     {
         $petugas = $request->user()->petugas;
@@ -241,6 +471,71 @@ class SetoranController extends Controller
         ], 201);
     }
 
+    #[OA\Patch(
+        path: "/petugas/setoran/{setoranId}/validasi",
+        summary: "Validasi transaksi setoran (Petugas)",
+        description: "Melakukan verifikasi/validasi terhadap transaksi setoran sampah dengan status 'disetujui' atau 'ditolak'.",
+        tags: ["Petugas - Setoran"],
+        security: [["bearerAuth" => []]],
+        parameters: [
+            new OA\Parameter(
+                name: "setoranId",
+                in: "path",
+                required: true,
+                description: "ID Transaksi Setoran",
+                schema: new OA\Schema(type: "integer", example: 1)
+            )
+        ],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ["status_validasi"],
+                properties: [
+                    new OA\Property(property: "status_validasi", type: "string", enum: ["disetujui", "ditolak"], example: "disetujui", description: "Keputusan validasi setoran"),
+                    new OA\Property(property: "catatan_validasi", type: "string", nullable: true, example: "Data dan berat sampah telah sesuai", description: "Catatan hasil validasi"),
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Setoran berhasil divalidasi",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "message", type: "string", example: "Setoran berhasil divalidasi."),
+                        new OA\Property(property: "data", type: "object")
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 401,
+                description: "Unauthenticated",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "message", type: "string", example: "Unauthenticated.")
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 404,
+                description: "Transaksi Setoran atau Profil Petugas tidak ditemukan",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "message", type: "string", example: "Transaksi setoran tidak ditemukan.")
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 422,
+                description: "Transaksi sudah divalidasi sebelumnya atau validasi gagal",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "message", type: "string", example: "Transaksi setoran sudah divalidasi sebelumnya.")
+                    ]
+                )
+            )
+        ]
+    )]
     public function validasi(Request $request, $setoranId)
     {
         $petugas = $request->user()->petugas;
