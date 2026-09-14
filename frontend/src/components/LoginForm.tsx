@@ -45,9 +45,9 @@ export default function LoginForm() {
       if (!response.ok) {
         throw new Error(
           data.message ||
-            (data.errors
-              ? Object.values(data.errors).flat().join(" ")
-              : "Login gagal. Silakan periksa kembali akun Anda.")
+          (data.errors
+            ? Object.values(data.errors).flat().join(" ")
+            : "Login gagal. Silakan periksa kembali akun Anda.")
         );
       }
 
@@ -55,9 +55,8 @@ export default function LoginForm() {
       if (data.token) {
         localStorage.setItem("trashure_token", data.token);
         localStorage.setItem("trashure_user", JSON.stringify(data.user));
-        document.cookie = `trashure_token=${data.token}; path=/; max-age=${
-          data.expires_in || 86400
-        }; SameSite=Lax`;
+        document.cookie = `trashure_token=${data.token}; path=/; max-age=${data.expires_in || 86400
+          }; SameSite=Lax`;
       }
 
       setSuccessMessage("Login berhasil! Mengalihkan...");
@@ -69,11 +68,11 @@ export default function LoginForm() {
         if (role === "admin") {
           router.push("/admin/dashboard");
         } else if (role === "petugas") {
-          router.push("/petugas");
+          router.push("/petugas/dashboard");
         } else if (role === "pengepul") {
-          router.push("/pengepul");
+          router.push("/pengepul/dashboard");
         } else {
-          router.push("/warga");
+          router.push("/warga/dashboard");
         }
       }, 900);
     } catch (err: any) {
