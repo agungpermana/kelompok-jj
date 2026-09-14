@@ -1,0 +1,83 @@
+import {
+  LayoutDashboard,
+  Users,
+  UserCheck,
+  Truck,
+  Recycle,
+  Scale,
+  Coins,
+  ShoppingCart,
+  ArrowLeftRight,
+  ShieldCheck,
+  FileCheck,
+  FileText,
+  FileBarChart,
+  FileSpreadsheet,
+  FilePieChart,
+  Settings,
+  PackageSearch,
+  BadgeDollarSign,
+  Ticket,
+} from 'lucide-react';
+import type { MenuSection } from '@/components/layout/sidebar';
+
+export const adminMenus: MenuSection[] = [
+  {
+    title: '',
+    items: [
+      { label: 'Dashboard', icon: LayoutDashboard, href: '/admin/dashboard' },
+    ],
+  },
+  {
+    title: 'MASTER DATA',
+    items: [
+      {
+        label: 'Pengguna',
+        icon: Users,
+        children: [
+          { label: 'Warga', icon: Users, href: '/admin/pengguna/warga' },
+          { label: 'Petugas', icon: UserCheck, href: '/admin/pengguna/petugas' },
+          { label: 'Pengepul', icon: Truck, href: '/admin/pengguna/pengepul' },
+        ],
+      },
+      { label: 'Jenis Sampah', icon: PackageSearch, href: '/admin/jenis-sampah' },
+      { label: 'Harga & Poin', icon: BadgeDollarSign, href: '/admin/harga-poin' },
+      { label: 'Voucher', icon: Ticket, href: '/admin/voucher' },
+    ],
+  },
+  {
+    title: 'TRANSAKSI',
+    items: [
+      { label: 'Pengajuan Penjemputan', icon: FileText, href: '/admin/pengajuan-penjemputan' },
+      { label: 'Penjemputan', icon: Truck, href: '/admin/penjemputan' },
+      { label: 'Setoran Sampah', icon: Recycle, href: '/admin/setoran-sampah' },
+      { label: 'Timbangan', icon: Scale, href: '/admin/timbangan' },
+      { label: 'Poin & Saldo', icon: Coins, href: '/admin/poin-saldo' },
+      { label: 'Penjualan Sampah', icon: ShoppingCart, href: '/admin/penjualan-sampah' },
+      { label: 'Penukaran Poin', icon: ArrowLeftRight, href: '/admin/penukaran-poin' },
+    ],
+  },
+  {
+    title: 'VALIDASI',
+    items: [
+      { label: 'Validasi Poin & Stok', icon: ShieldCheck, href: '/admin/validasi-poin-stok', badge: 12 },
+      { label: 'Validasi Transaksi', icon: FileCheck, href: '/admin/validasi-transaksi' },
+    ],
+  },
+  {
+    title: 'LAPORAN',
+    items: [
+      { label: 'Laporan Setoran', icon: FileBarChart, href: '/admin/laporan-setoran' },
+      { label: 'Laporan Penjemputan', icon: FileText, href: '/admin/laporan-penjemputan' },
+      { label: 'Laporan Keuangan', icon: FileSpreadsheet, href: '/admin/laporan-keuangan' },
+      { label: 'Laporan Stok', icon: FilePieChart, href: '/admin/laporan-stok' },
+      { label: 'Laporan Poin', icon: FileBarChart, href: '/admin/laporan-poin' },
+    ],
+  },
+  {
+    title: 'PENGATURAN',
+    items: [
+      { label: 'Pengaturan Sistem', icon: Settings, href: '/admin/pengaturan' },
+    ],
+  },
+];

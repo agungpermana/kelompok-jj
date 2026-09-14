@@ -67,7 +67,7 @@ export default function LoginForm() {
         const role = data.user?.role || "warga";
         // Default role routing (can be adjusted as needed)
         if (role === "admin") {
-          router.push("/admin");
+          router.push("/admin/dashboard");
         } else if (role === "petugas") {
           router.push("/petugas");
         } else if (role === "pengepul") {

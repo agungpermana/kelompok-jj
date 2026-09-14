@@ -51,3 +51,6 @@ out/
 # Misc
 coverage/
 *.pem
+
+# Mockup
+docs/mockup/
