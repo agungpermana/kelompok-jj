@@ -12,24 +12,64 @@ class HargaSampahSeeder extends Seeder
     {
         $data = [
             [
-                'nama_jenis_sampah' => 'Plastik',
-                'harga_per_satuan' => 5000,
-                'nilai_poin_per_satuan' => 50,
+                'nama_jenis_sampah' => 'Botol Plastik',
+                'harga_per_satuan' => 2000,
+                'nilai_poin_per_satuan' => 2,
             ],
             [
-                'nama_jenis_sampah' => 'Kertas',
-                'harga_per_satuan' => 3000,
-                'nilai_poin_per_satuan' => 30,
+                'nama_jenis_sampah' => 'Gelas Plastik',
+                'harga_per_satuan' => 1500,
+                'nilai_poin_per_satuan' => 1.5,
             ],
             [
-                'nama_jenis_sampah' => 'Logam',
+                'nama_jenis_sampah' => 'Kresek / Plastik PE',
+                'harga_per_satuan' => 1000,
+                'nilai_poin_per_satuan' => 1,
+            ],
+            [
+                'nama_jenis_sampah' => 'Kardus',
+                'harga_per_satuan' => 2000,
+                'nilai_poin_per_satuan' => 2,
+            ],
+            [
+                'nama_jenis_sampah' => 'Kertas HVS',
+                'harga_per_satuan' => 1500,
+                'nilai_poin_per_satuan' => 1.5,
+            ],
+            [
+                'nama_jenis_sampah' => 'Koran',
+                'harga_per_satuan' => 1200,
+                'nilai_poin_per_satuan' => 1.2,
+            ],
+            [
+                'nama_jenis_sampah' => 'Aluminium',
+                'harga_per_satuan' => 10000,
+                'nilai_poin_per_satuan' => 10,
+            ],
+            [
+                'nama_jenis_sampah' => 'Kaleng Bekas',
                 'harga_per_satuan' => 8000,
-                'nilai_poin_per_satuan' => 80,
+                'nilai_poin_per_satuan' => 8,
             ],
             [
-                'nama_jenis_sampah' => 'Kaca',
+                'nama_jenis_sampah' => 'Besi',
+                'harga_per_satuan' => 5000,
+                'nilai_poin_per_satuan' => 5,
+            ],
+            [
+                'nama_jenis_sampah' => 'Kaca Bening',
+                'harga_per_satuan' => 1000,
+                'nilai_poin_per_satuan' => 1,
+            ],
+            [
+                'nama_jenis_sampah' => 'Kaca Berwarna',
+                'harga_per_satuan' => 1200,
+                'nilai_poin_per_satuan' => 1.2,
+            ],
+            [
+                'nama_jenis_sampah' => 'Tutup Botol Plastik',
                 'harga_per_satuan' => 2500,
-                'nilai_poin_per_satuan' => 25,
+                'nilai_poin_per_satuan' => 2.5,
             ],
         ];
 

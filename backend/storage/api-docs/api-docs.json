@@ -83,6 +83,598 @@
                 ]
             }
         },
+        "/admin/jenis-sampah": {
+            "get": {
+                "tags": [
+                    "Admin - Jenis Sampah"
+                ],
+                "summary": "Daftar jenis sampah (Admin)",
+                "description": "Mengambil daftar master jenis sampah beserta harga aktif, dengan pencarian dan filter kategori/satuan/status. Mendukung pengurutan serta paginasi.",
+                "operationId": "a47a6825860301a52eea8a43c77bc7f2",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Cari berdasarkan nama jenis sampah.",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "kategori",
+                        "in": "query",
+                        "description": "Filter berdasarkan kategori sampah. Gunakan 'Semua Kategori' atau 'semua' untuk menampilkan semua.",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "satuan",
+                        "in": "query",
+                        "description": "Filter berdasarkan satuan. Gunakan 'Semua Satuan' atau 'semua' untuk menampilkan semua.",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "Filter berdasarkan status. Gunakan 'Semua Status' atau 'semua' untuk menampilkan semua.",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "aktif",
+                                "nonaktif",
+                                "Semua Status",
+                                "semua"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "sort_by",
+                        "in": "query",
+                        "description": "Kolom pengurutan data.",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "jenis_sampah_id"
+                        }
+                    },
+                    {
+                        "name": "sort_dir",
+                        "in": "query",
+                        "description": "Arah pengurutan data.",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "asc",
+                            "enum": [
+                                "asc",
+                                "desc"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Jumlah data per halaman. Jika diisi, respons akan memuat objek 'meta' paginasi.",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Daftar jenis sampah berhasil diambil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Daftar jenis sampah berhasil diambil."
+                                        },
+                                        "data": {
+                                            "description": "Daftar jenis sampah.",
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/JenisSampahListItem"
+                                            }
+                                        },
+                                        "meta": {
+                                            "$ref": "#/components/schemas/PaginationMeta"
+                                        },
+                                        "total": {
+                                            "description": "Total data (muncul jika tanpa paginasi).",
+                                            "type": "integer",
+                                            "example": 15,
+                                            "nullable": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Admin - Jenis Sampah"
+                ],
+                "summary": "Tambah jenis sampah baru (Admin)",
+                "description": "Menambahkan data master jenis sampah baru (nama, kategori, satuan, status, keterangan, icon).",
+                "operationId": "55306efb61da58b7470227d2fa1177f5",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "nama_jenis_sampah",
+                                    "satuan",
+                                    "status"
+                                ],
+                                "properties": {
+                                    "nama_jenis_sampah": {
+                                        "description": "Nama jenis sampah (unik).",
+                                        "type": "string",
+                                        "example": "Botol Plastik PET"
+                                    },
+                                    "kategori": {
+                                        "description": "Kategori sampah.",
+                                        "type": "string",
+                                        "example": "Plastik",
+                                        "nullable": true
+                                    },
+                                    "satuan": {
+                                        "description": "Satuan penimbangan.",
+                                        "type": "string",
+                                        "example": "Kg"
+                                    },
+                                    "status": {
+                                        "description": "Status jenis sampah ('tidak_aktif' otomatis disimpan sebagai 'nonaktif').",
+                                        "type": "string",
+                                        "example": "aktif",
+                                        "enum": [
+                                            "aktif",
+                                            "nonaktif",
+                                            "tidak_aktif"
+                                        ]
+                                    },
+                                    "keterangan": {
+                                        "description": "Deskripsi tambahan.",
+                                        "type": "string",
+                                        "example": "Botol plastik minuman kemasan bersih.",
+                                        "nullable": true
+                                    },
+                                    "icon": {
+                                        "description": "Nama ikon yang ditampilkan di aplikasi.",
+                                        "type": "string",
+                                        "example": "bottle",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Jenis sampah berhasil ditambahkan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Jenis sampah berhasil ditambahkan."
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/JenisSampahListItem"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validasi gagal",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Validasi gagal."
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/admin/jenis-sampah/{id}": {
+            "get": {
+                "tags": [
+                    "Admin - Jenis Sampah"
+                ],
+                "summary": "Detail jenis sampah (Admin)",
+                "description": "Mengambil detail informasi jenis sampah beserta harga aktif dan riwayat harga berdasarkan ID.",
+                "operationId": "40fe1e5e5a704b6a62ea5fb3c71417f2",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID Jenis Sampah.",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detail jenis sampah berhasil diambil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Detail jenis sampah berhasil diambil."
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/AdminJenisSampah"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Jenis sampah tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Jenis sampah tidak ditemukan."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Admin - Jenis Sampah"
+                ],
+                "summary": "Ubah jenis sampah (Admin)",
+                "description": "Memperbarui master data jenis sampah (nama, kategori, satuan, status, keterangan, icon). Seluruh field bersifat opsional (parsial).",
+                "operationId": "0d7e5cebf24ede20fcb3846a78ccc08d",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID Jenis Sampah.",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "nama_jenis_sampah": {
+                                        "description": "Nama jenis sampah (unik).",
+                                        "type": "string",
+                                        "example": "Botol Plastik PET"
+                                    },
+                                    "kategori": {
+                                        "description": "Kategori sampah.",
+                                        "type": "string",
+                                        "example": "Plastik",
+                                        "nullable": true
+                                    },
+                                    "satuan": {
+                                        "description": "Satuan penimbangan.",
+                                        "type": "string",
+                                        "example": "Kg"
+                                    },
+                                    "status": {
+                                        "description": "Status jenis sampah ('tidak_aktif' otomatis disimpan sebagai 'nonaktif').",
+                                        "type": "string",
+                                        "example": "aktif",
+                                        "enum": [
+                                            "aktif",
+                                            "nonaktif",
+                                            "tidak_aktif"
+                                        ]
+                                    },
+                                    "keterangan": {
+                                        "description": "Deskripsi tambahan.",
+                                        "type": "string",
+                                        "example": "Botol plastik minuman kemasan bersih.",
+                                        "nullable": true
+                                    },
+                                    "icon": {
+                                        "description": "Nama ikon yang ditampilkan di aplikasi.",
+                                        "type": "string",
+                                        "example": "bottle",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Jenis sampah berhasil diperbarui",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Jenis sampah berhasil diperbarui."
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/JenisSampahListItem"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Jenis sampah tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Jenis sampah tidak ditemukan."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validasi gagal",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Validasi gagal."
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Admin - Jenis Sampah"
+                ],
+                "summary": "Hapus jenis sampah (Admin)",
+                "description": "Menghapus jenis sampah beserta riwayat harganya, hanya jika belum memiliki riwayat transaksi (pengajuan/setoran/penjualan).",
+                "operationId": "3255aafb3f28ae1f7e615bccfc65959d",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID Jenis Sampah.",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Jenis sampah berhasil dihapus",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Jenis sampah berhasil dihapus."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Jenis sampah tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Jenis sampah tidak ditemukan."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Tidak dapat dihapus karena memiliki transaksi terkait",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Jenis sampah tidak dapat dihapus karena sudah memiliki riwayat transaksi. Anda dapat menonaktifkan statusnya."
+                                        },
+                                        "has_transactions": {
+                                            "type": "boolean",
+                                            "example": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/admin/pengajuan": {
             "get": {
                 "tags": [
@@ -2070,7 +2662,7 @@
                     "Warga - Jenis Sampah"
                 ],
                 "summary": "Daftar jenis sampah (Warga)",
-                "description": "Mengambil semua daftar jenis sampah yang berstatus aktif.",
+                "description": "Mengambil semua daftar jenis sampah yang berstatus aktif, diurutkan berdasarkan nama.",
                 "operationId": "18cb9d2c83787243209f5229051e25ca",
                 "responses": {
                     "200": {
@@ -2084,9 +2676,10 @@
                                             "example": "Data jenis sampah berhasil diambil."
                                         },
                                         "data": {
+                                            "description": "Daftar jenis sampah aktif.",
                                             "type": "array",
                                             "items": {
-                                                "type": "object"
+                                                "$ref": "#/components/schemas/JenisSampah"
                                             }
                                         }
                                     },
@@ -2131,10 +2724,11 @@
                     {
                         "name": "id",
                         "in": "path",
-                        "description": "ID Jenis Sampah",
+                        "description": "ID Jenis Sampah.",
                         "required": true,
                         "schema": {
                             "type": "integer",
+                            "format": "int64",
                             "example": 1
                         }
                     }
@@ -2151,7 +2745,7 @@
                                             "example": "Detail jenis sampah berhasil diambil."
                                         },
                                         "data": {
-                                            "type": "object"
+                                            "$ref": "#/components/schemas/JenisSampah"
                                         }
                                     },
                                     "type": "object"
@@ -2670,6 +3264,209 @@
         }
     },
     "components": {
+        "schemas": {
+            "HargaSampah": {
+                "title": "Harga Sampah",
+                "description": "Aturan harga per satuan untuk suatu jenis sampah.",
+                "required": [
+                    "harga_id",
+                    "jenis_sampah_id",
+                    "harga_per_satuan",
+                    "nilai_poin_per_satuan",
+                    "berlaku_mulai",
+                    "status"
+                ],
+                "properties": {
+                    "harga_id": {
+                        "description": "ID unik harga.",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "jenis_sampah_id": {
+                        "description": "ID jenis sampah terkait.",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "harga_per_satuan": {
+                        "description": "Harga pembelian per satuan dalam rupiah.",
+                        "type": "number",
+                        "format": "double",
+                        "example": 5000
+                    },
+                    "nilai_poin_per_satuan": {
+                        "description": "Nilai poin yang diberikan per satuan.",
+                        "type": "number",
+                        "example": 10
+                    },
+                    "berlaku_mulai": {
+                        "description": "Tanggal harga mulai berlaku.",
+                        "type": "string",
+                        "format": "date",
+                        "example": "2026-09-01"
+                    },
+                    "berlaku_selesai": {
+                        "description": "Tanggal harga berakhir (null jika masih berlaku).",
+                        "type": "string",
+                        "format": "date",
+                        "nullable": true
+                    },
+                    "status": {
+                        "description": "Status harga.",
+                        "type": "string",
+                        "example": "aktif",
+                        "enum": [
+                            "aktif",
+                            "nonaktif"
+                        ]
+                    }
+                },
+                "type": "object"
+            },
+            "JenisSampahListItem": {
+                "title": "Jenis Sampah (Item Admin)",
+                "description": "Jenis sampah beserta harga aktif yang sedang berlaku.",
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/JenisSampah"
+                    },
+                    {
+                        "properties": {
+                            "harga_aktif": {
+                                "description": "Harga aktif yang sedang berlaku.",
+                                "nullable": true,
+                                "allOf": [
+                                    {
+                                        "$ref": "#/components/schemas/HargaSampah"
+                                    }
+                                ]
+                            }
+                        },
+                        "type": "object"
+                    }
+                ]
+            },
+            "AdminJenisSampah": {
+                "title": "Jenis Sampah (Detail Admin)",
+                "description": "Detail lengkap jenis sampah beserta harga aktif dan riwayat harga.",
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/JenisSampah"
+                    },
+                    {
+                        "properties": {
+                            "harga_aktif": {
+                                "description": "Harga aktif yang sedang berlaku.",
+                                "nullable": true,
+                                "allOf": [
+                                    {
+                                        "$ref": "#/components/schemas/HargaSampah"
+                                    }
+                                ]
+                            },
+                            "harga_sampah": {
+                                "description": "Riwayat seluruh harga, terurut berdasarkan tanggal berlaku terbaru.",
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/components/schemas/HargaSampah"
+                                }
+                            }
+                        },
+                        "type": "object"
+                    }
+                ]
+            },
+            "PaginationMeta": {
+                "title": "Metadata Paginasi",
+                "description": "Metadata paginasi Laravel.",
+                "properties": {
+                    "current_page": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "last_page": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "per_page": {
+                        "type": "integer",
+                        "example": 10
+                    },
+                    "total": {
+                        "type": "integer",
+                        "example": 25
+                    },
+                    "from": {
+                        "type": "integer",
+                        "example": 1,
+                        "nullable": true
+                    },
+                    "to": {
+                        "type": "integer",
+                        "example": 10,
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "JenisSampah": {
+                "title": "Jenis Sampah",
+                "description": "Entitas katalog jenis sampah.",
+                "required": [
+                    "jenis_sampah_id",
+                    "nama_jenis_sampah",
+                    "kategori",
+                    "satuan",
+                    "status"
+                ],
+                "properties": {
+                    "jenis_sampah_id": {
+                        "description": "ID unik jenis sampah.",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "nama_jenis_sampah": {
+                        "description": "Nama jenis sampah.",
+                        "type": "string",
+                        "example": "Botol Plastik PET"
+                    },
+                    "kategori": {
+                        "description": "Kategori sampah.",
+                        "type": "string",
+                        "example": "Plastik"
+                    },
+                    "satuan": {
+                        "description": "Satuan penimbangan.",
+                        "type": "string",
+                        "example": "kg"
+                    },
+                    "keterangan": {
+                        "description": "Deskripsi tambahan jenis sampah.",
+                        "type": "string",
+                        "example": "Botol plastik bekas minuman kemasan.",
+                        "nullable": true
+                    },
+                    "icon": {
+                        "description": "Nama ikon yang ditampilkan di aplikasi.",
+                        "type": "string",
+                        "example": "recycle",
+                        "nullable": true
+                    },
+                    "status": {
+                        "description": "Status ketersediaan jenis sampah.",
+                        "type": "string",
+                        "example": "aktif",
+                        "enum": [
+                            "aktif",
+                            "nonaktif"
+                        ]
+                    }
+                },
+                "type": "object"
+            }
+        },
         "securitySchemes": {
             "bearerAuth": {
                 "type": "http",
@@ -2683,6 +3480,10 @@
         {
             "name": "Admin - Warga",
             "description": "CRUD Data Warga oleh Admin"
+        },
+        {
+            "name": "Admin - Jenis Sampah",
+            "description": "API Master Data Jenis Sampah untuk Admin (Kelola data jenis sampah, kategori, satuan, keterangan, dan status)."
         },
         {
             "name": "Auth",
