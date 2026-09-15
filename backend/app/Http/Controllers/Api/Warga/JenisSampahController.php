@@ -11,7 +11,7 @@ use OpenApi\Attributes as OA;
     schema: "JenisSampah",
     title: "Jenis Sampah",
     description: "Entitas katalog jenis sampah.",
-    required: ["jenis_sampah_id", "nama_jenis_sampah", "kategori", "satuan", "status"],
+    required: ["jenis_sampah_id", "nama_jenis_sampah", "satuan", "status"],
     properties: [
         new OA\Property(
             property: "jenis_sampah_id",
@@ -27,12 +27,6 @@ use OpenApi\Attributes as OA;
             example: "Botol Plastik PET",
         ),
         new OA\Property(
-            property: "kategori",
-            type: "string",
-            description: "Kategori sampah.",
-            example: "Plastik",
-        ),
-        new OA\Property(
             property: "satuan",
             type: "string",
             description: "Satuan penimbangan.",
@@ -44,13 +38,6 @@ use OpenApi\Attributes as OA;
             nullable: true,
             description: "Deskripsi tambahan jenis sampah.",
             example: "Botol plastik bekas minuman kemasan.",
-        ),
-        new OA\Property(
-            property: "icon",
-            type: "string",
-            nullable: true,
-            description: "Nama ikon yang ditampilkan di aplikasi.",
-            example: "recycle",
         ),
         new OA\Property(
             property: "status",
