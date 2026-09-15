@@ -46,7 +46,7 @@ export const adminMenus: MenuSection[] = [
     title: 'TRANSAKSI',
     items: [
       { label: 'Pengajuan Penjemputan', icon: FileText, href: '/admin/pengajuan-penjemputan' },
-      { label: 'Penjemputan', icon: Truck, href: '/admin/penjemputan' },
+      // { label: 'Penjemputan', icon: Truck, href: '/admin/penjemputan' },
       { label: 'Setoran Sampah', icon: Recycle, href: '/admin/setoran-sampah' },
       { label: 'Poin & Saldo', icon: Coins, href: '/admin/poin-saldo' },
       { label: 'Penukaran Poin', icon: ArrowLeftRight, href: '/admin/penukaran-poin' },

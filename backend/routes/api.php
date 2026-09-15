@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\Warga\JenisSampahController as WargaJenisSampahController;
 use App\Http\Controllers\Api\Warga\PengajuanPenjemputanController;
 use App\Http\Controllers\Api\Warga\SetoranController as WargaSetoranController;
+use App\Http\Controllers\Api\Warga\DashboardController as WargaDashboardController;
 use App\Http\Controllers\Api\Petugas\JadwalPenjemputanController;
 use App\Http\Controllers\Api\Petugas\SetoranController;
 use App\Http\Controllers\Api\Admin\PengajuanPenjemputanController as AdminPengajuanPenjemputanController;
@@ -212,6 +213,11 @@ Route::middleware('auth:sanctum')->group(function () {
                 'user' => $request->user(),
             ]);
         });
+
+        Route::get(
+            '/warga/dashboard',
+            [WargaDashboardController::class, 'index']
+        );
 
         Route::get(
             '/warga/jenis-sampah',

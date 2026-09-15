@@ -255,41 +255,37 @@ export default function RiwayatSetoranPage() {
             <div className="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-1 md:pb-0">
               <button
                 onClick={() => setActiveTab('semua')}
-                className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-150 relative ${
-                  activeTab === 'semua'
-                    ? 'text-[#16a34a] bg-green-50/70 border-b-2 border-[#16a34a]'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                }`}
+                className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-150 relative ${activeTab === 'semua'
+                  ? 'text-[#16a34a] bg-green-50/70 border-b-2 border-[#16a34a]'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                  }`}
               >
                 Semua
               </button>
               <button
                 onClick={() => setActiveTab('menunggu')}
-                className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-150 relative ${
-                  activeTab === 'menunggu'
-                    ? 'text-amber-700 bg-amber-50 border-b-2 border-amber-500'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                }`}
+                className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-150 relative ${activeTab === 'menunggu'
+                  ? 'text-amber-700 bg-amber-50 border-b-2 border-amber-500'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                  }`}
               >
                 Menunggu Validasi
               </button>
               <button
                 onClick={() => setActiveTab('disetujui')}
-                className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-150 relative ${
-                  activeTab === 'disetujui'
-                    ? 'text-[#16a34a] bg-green-50/70 border-b-2 border-[#16a34a]'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                }`}
+                className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-150 relative ${activeTab === 'disetujui'
+                  ? 'text-[#16a34a] bg-green-50/70 border-b-2 border-[#16a34a]'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                  }`}
               >
                 Disetujui
               </button>
               <button
                 onClick={() => setActiveTab('ditolak')}
-                className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-150 relative ${
-                  activeTab === 'ditolak'
-                    ? 'text-rose-600 bg-rose-50 border-b-2 border-rose-500'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                }`}
+                className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-150 relative ${activeTab === 'ditolak'
+                  ? 'text-rose-600 bg-rose-50 border-b-2 border-rose-500'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                  }`}
               >
                 Ditolak
               </button>
@@ -313,11 +309,10 @@ export default function RiwayatSetoranPage() {
               {/* Date filter button */}
               <button
                 onClick={() => setIsDateFilterModalOpen(true)}
-                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border text-xs font-medium transition shadow-xs ${
-                  customStartDate || customEndDate
-                    ? 'bg-green-50 border-[#16a34a] text-[#16a34a]'
-                    : 'bg-white border-gray-200/90 text-gray-700 hover:bg-gray-50'
-                }`}
+                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border text-xs font-medium transition shadow-xs ${customStartDate || customEndDate
+                  ? 'bg-green-50 border-[#16a34a] text-[#16a34a]'
+                  : 'bg-white border-gray-200/90 text-gray-700 hover:bg-gray-50'
+                  }`}
               >
                 <Calendar className="h-3.5 w-3.5 text-gray-500" />
                 <span>Filter Tanggal</span>
@@ -354,11 +349,15 @@ export default function RiwayatSetoranPage() {
                 const isMenunggu = item.status_validasi === 'menunggu';
                 const isDitolak = item.status_validasi === 'ditolak';
 
+                const isDiajukan = item.status_pengajuan === 'diajukan';
+                const isDijadwalkan = item.status_pengajuan === 'dijadwalkan';
+                const isSelesai = item.status_pengajuan === 'selesai';
+
                 const totalBeratVal = typeof item.total_berat_aktual === 'string'
                   ? parseFloat(item.total_berat_aktual)
                   : item.total_berat_aktual;
 
-                const code = formatSetoranCode(item.setoran_id, item.tanggal_setoran);
+                const code = formatSetoranCode(item.setoran_id, item.tanggal_setoran) ?? "-";
                 const dateIndo = formatIndoDate(item.tanggal_setoran);
                 const timeIndo = formatIndoTime(item.tanggal_setoran);
 
@@ -372,19 +371,19 @@ export default function RiwayatSetoranPage() {
                       <div className="md:col-span-3 space-y-2 border-b md:border-b-0 md:border-r border-gray-100 pb-3 md:pb-0 md:pr-4">
                         {/* Status Badge */}
                         <div>
-                          {isDisetujui && (
-                            <span className="inline-flex items-center gap-1.5 bg-[#f0fdf4] text-[#16a34a] border border-[#bbf7d0] px-3 py-1 rounded-full text-xs font-semibold">
-                              Disetujui
-                            </span>
-                          )}
-                          {isMenunggu && (
+                          {isDiajukan && (
                             <span className="inline-flex items-center gap-1.5 bg-amber-50 text-amber-700 border border-amber-200 px-3 py-1 rounded-full text-xs font-semibold">
-                              Menunggu Validasi
+                              Diajukan
                             </span>
                           )}
-                          {isDitolak && (
-                            <span className="inline-flex items-center gap-1.5 bg-rose-50 text-rose-700 border border-rose-200 px-3 py-1 rounded-full text-xs font-semibold">
-                              Ditolak
+                          {isDijadwalkan && (
+                            <span className="inline-flex items-center gap-1.5 bg-blue-50 text-blue-700 border border-blue-200 px-3 py-1 rounded-full text-xs font-semibold">
+                              Dijadwalkan
+                            </span>
+                          )}
+                          {isSelesai && (
+                            <span className="inline-flex items-center gap-1.5 bg-[#f0fdf4] text-[#16a34a] border border-[#bbf7d0] px-3 py-1 rounded-full text-xs font-semibold">
+                              Selesai
                             </span>
                           )}
                         </div>
@@ -392,9 +391,8 @@ export default function RiwayatSetoranPage() {
                         {/* Date & Time */}
                         <div className="pt-1">
                           <span
-                            className={`text-[11px] font-semibold block mb-0.5 ${
-                              isMenunggu ? 'text-amber-700 font-bold' : 'text-gray-400'
-                            }`}
+                            className={`text-[11px] font-semibold block mb-0.5 ${isMenunggu ? 'text-amber-700 font-bold' : 'text-gray-400'
+                              }`}
                           >
                             {isMenunggu ? 'Perkiraan Penjemputan' : 'Waktu Pengambilan'}
                           </span>
@@ -472,13 +470,12 @@ export default function RiwayatSetoranPage() {
                             {isMenunggu ? 'Poin Perkiraan' : 'Poin Diterima'}
                           </p>
                           <p
-                            className={`text-sm font-extrabold ${
-                              isDisetujui
-                                ? 'text-[#16a34a]'
-                                : isMenunggu
+                            className={`text-sm font-extrabold ${isDisetujui
+                              ? 'text-[#16a34a]'
+                              : isMenunggu
                                 ? 'text-amber-600'
                                 : 'text-rose-600'
-                            }`}
+                              }`}
                           >
                             {isDitolak
                               ? '0 poin'
@@ -840,11 +837,10 @@ export default function RiwayatSetoranPage() {
               {/* Catatan Validasi if present */}
               {selectedSetoran.catatan_validasi && (
                 <div
-                  className={`p-3.5 rounded-xl text-xs flex items-start gap-2.5 ${
-                    selectedSetoran.status_validasi === 'ditolak'
-                      ? 'bg-rose-50 border border-rose-200 text-rose-800'
-                      : 'bg-green-50 border border-green-200 text-emerald-900'
-                  }`}
+                  className={`p-3.5 rounded-xl text-xs flex items-start gap-2.5 ${selectedSetoran.status_validasi === 'ditolak'
+                    ? 'bg-rose-50 border border-rose-200 text-rose-800'
+                    : 'bg-green-50 border border-green-200 text-emerald-900'
+                    }`}
                 >
                   <AlertCircle className="h-4 w-4 flex-shrink-0 mt-0.5" />
                   <div>
@@ -872,7 +868,7 @@ export default function RiwayatSetoranPage() {
                     </thead>
                     <tbody className="divide-y divide-gray-100">
                       {selectedSetoran.detail_setoran &&
-                      selectedSetoran.detail_setoran.length > 0 ? (
+                        selectedSetoran.detail_setoran.length > 0 ? (
                         selectedSetoran.detail_setoran.map((d) => (
                           <tr key={d.detail_setoran_id} className="hover:bg-gray-50/50">
                             <td className="py-3 px-3">

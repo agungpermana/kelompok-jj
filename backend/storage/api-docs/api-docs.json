@@ -615,22 +615,13 @@
                     "Admin - Jenis Sampah"
                 ],
                 "summary": "Daftar jenis sampah (Admin)",
-                "description": "Mengambil daftar master jenis sampah beserta harga aktif, dengan pencarian dan filter kategori/satuan/status. Mendukung pengurutan serta paginasi.",
+                "description": "Mengambil daftar master jenis sampah beserta harga aktif, dengan pencarian dan filter satuan/status. Mendukung pengurutan serta paginasi.",
                 "operationId": "a47a6825860301a52eea8a43c77bc7f2",
                 "parameters": [
                     {
                         "name": "search",
                         "in": "query",
                         "description": "Cari berdasarkan nama jenis sampah.",
-                        "required": false,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "kategori",
-                        "in": "query",
-                        "description": "Filter berdasarkan kategori sampah. Gunakan 'Semua Kategori' atau 'semua' untuk menampilkan semua.",
                         "required": false,
                         "schema": {
                             "type": "string"
@@ -756,7 +747,7 @@
                     "Admin - Jenis Sampah"
                 ],
                 "summary": "Tambah jenis sampah baru (Admin)",
-                "description": "Menambahkan data master jenis sampah baru (nama, kategori, satuan, status, keterangan, icon).",
+                "description": "Menambahkan data master jenis sampah baru (nama, satuan, status, keterangan).",
                 "operationId": "55306efb61da58b7470227d2fa1177f5",
                 "requestBody": {
                     "required": true,
@@ -773,12 +764,6 @@
                                         "description": "Nama jenis sampah (unik).",
                                         "type": "string",
                                         "example": "Botol Plastik PET"
-                                    },
-                                    "kategori": {
-                                        "description": "Kategori sampah.",
-                                        "type": "string",
-                                        "example": "Plastik",
-                                        "nullable": true
                                     },
                                     "satuan": {
                                         "description": "Satuan penimbangan.",
@@ -799,12 +784,6 @@
                                         "description": "Deskripsi tambahan.",
                                         "type": "string",
                                         "example": "Botol plastik minuman kemasan bersih.",
-                                        "nullable": true
-                                    },
-                                    "icon": {
-                                        "description": "Nama ikon yang ditampilkan di aplikasi.",
-                                        "type": "string",
-                                        "example": "bottle",
                                         "nullable": true
                                     }
                                 },
@@ -961,7 +940,7 @@
                     "Admin - Jenis Sampah"
                 ],
                 "summary": "Ubah jenis sampah (Admin)",
-                "description": "Memperbarui master data jenis sampah (nama, kategori, satuan, status, keterangan, icon). Seluruh field bersifat opsional (parsial).",
+                "description": "Memperbarui master data jenis sampah (nama, satuan, status, keterangan). Seluruh field bersifat opsional (parsial).",
                 "operationId": "0d7e5cebf24ede20fcb3846a78ccc08d",
                 "parameters": [
                     {
@@ -987,12 +966,6 @@
                                         "type": "string",
                                         "example": "Botol Plastik PET"
                                     },
-                                    "kategori": {
-                                        "description": "Kategori sampah.",
-                                        "type": "string",
-                                        "example": "Plastik",
-                                        "nullable": true
-                                    },
                                     "satuan": {
                                         "description": "Satuan penimbangan.",
                                         "type": "string",
@@ -1012,12 +985,6 @@
                                         "description": "Deskripsi tambahan.",
                                         "type": "string",
                                         "example": "Botol plastik minuman kemasan bersih.",
-                                        "nullable": true
-                                    },
-                                    "icon": {
-                                        "description": "Nama ikon yang ditampilkan di aplikasi.",
-                                        "type": "string",
-                                        "example": "bottle",
                                         "nullable": true
                                     }
                                 },
@@ -3936,6 +3903,45 @@
                 ]
             }
         },
+        "/petugas/setoran": {
+            "get": {
+                "tags": [
+                    "Petugas - Setoran"
+                ],
+                "summary": "Daftar transaksi setoran sampah (Petugas)",
+                "description": "Mengambil seluruh transaksi setoran sampah yang ada di sistem.",
+                "operationId": "50a378b1355a297995bd5c7426f4a5d2",
+                "responses": {
+                    "200": {
+                        "description": "Daftar transaksi setoran berhasil diambil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Daftar transaksi setoran berhasil diambil."
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/petugas/jadwal/{jadwalId}/setoran/jenis": {
             "post": {
                 "tags": [
@@ -4451,6 +4457,159 @@
                                         "message": {
                                             "type": "string",
                                             "example": "Transaksi setoran sudah divalidasi sebelumnya."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/warga/dashboard": {
+            "get": {
+                "tags": [
+                    "Warga - Dashboard"
+                ],
+                "summary": "Dashboard ringkasan warga",
+                "description": "Mengambil ringkasan statistik aktivitas pengelolaan sampah warga yang sedang login.",
+                "operationId": "652fa5f4f4a5950a1e06a2ecdbba50ee",
+                "responses": {
+                    "200": {
+                        "description": "Dashboard berhasil diambil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Dashboard berhasil diambil."
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "total_setoran": {
+                                                    "description": "Total jumlah setoran",
+                                                    "type": "integer",
+                                                    "example": 12
+                                                },
+                                                "total_berat_sampah": {
+                                                    "description": "Total berat sampah dalam kg",
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 45.2
+                                                },
+                                                "total_poin_aktif": {
+                                                    "description": "Total poin yang sudah diterima dan disetujui",
+                                                    "type": "integer",
+                                                    "example": 1250
+                                                },
+                                                "penjemputan_aktif": {
+                                                    "description": "Jumlah pengajuan penjemputan yang masih aktif/menunggu",
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "setoran_menunggu_validasi": {
+                                                    "description": "Jumlah setoran yang menunggu validasi",
+                                                    "type": "integer",
+                                                    "example": 2
+                                                },
+                                                "pengajuan_terbaru": {
+                                                    "description": "Daftar pengajuan penjemputan yang belum diproses (pending), diurutkan berdasarkan created_at DESC",
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "pengajuan_id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "tanggal_pengajuan": {
+                                                                "type": "string",
+                                                                "format": "date-time",
+                                                                "example": "2026-09-15 08:00:00"
+                                                            },
+                                                            "alamat_penjemputan": {
+                                                                "type": "string",
+                                                                "example": "Jl. Merdeka No. 45"
+                                                            },
+                                                            "perkiraan_total_berat": {
+                                                                "type": "number",
+                                                                "format": "float",
+                                                                "example": 10.5
+                                                            },
+                                                            "status_pengajuan": {
+                                                                "type": "string",
+                                                                "example": "pending"
+                                                            },
+                                                            "created_at": {
+                                                                "type": "string",
+                                                                "format": "date-time",
+                                                                "example": "2026-09-15 08:30:00"
+                                                            },
+                                                            "detail_sampah": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "properties": {
+                                                                        "jenis_sampah": {
+                                                                            "type": "string",
+                                                                            "example": "Plastik"
+                                                                        },
+                                                                        "perkiraan_berat": {
+                                                                            "type": "number",
+                                                                            "format": "float",
+                                                                            "example": 5.2
+                                                                        },
+                                                                        "satuan": {
+                                                                            "type": "string",
+                                                                            "example": "kg"
+                                                                        }
+                                                                    },
+                                                                    "type": "object"
+                                                                }
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Profil warga tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Profil warga tidak ditemukan."
                                         }
                                     },
                                     "type": "object"
@@ -5618,7 +5777,6 @@
                 "required": [
                     "jenis_sampah_id",
                     "nama_jenis_sampah",
-                    "kategori",
                     "satuan",
                     "status"
                 ],
@@ -5634,11 +5792,6 @@
                         "type": "string",
                         "example": "Botol Plastik PET"
                     },
-                    "kategori": {
-                        "description": "Kategori sampah.",
-                        "type": "string",
-                        "example": "Plastik"
-                    },
                     "satuan": {
                         "description": "Satuan penimbangan.",
                         "type": "string",
@@ -5648,12 +5801,6 @@
                         "description": "Deskripsi tambahan jenis sampah.",
                         "type": "string",
                         "example": "Botol plastik bekas minuman kemasan.",
-                        "nullable": true
-                    },
-                    "icon": {
-                        "description": "Nama ikon yang ditampilkan di aplikasi.",
-                        "type": "string",
-                        "example": "recycle",
                         "nullable": true
                     },
                     "status": {
@@ -5681,7 +5828,7 @@
     "tags": [
         {
             "name": "Admin - Jenis Sampah",
-            "description": "API Master Data Jenis Sampah untuk Admin (Kelola data jenis sampah, kategori, satuan, keterangan, dan status)."
+            "description": "API Master Data Jenis Sampah untuk Admin (Kelola data jenis sampah, satuan, keterangan, dan status)."
         },
         {
             "name": "Admin - Pengepul",
@@ -5738,6 +5885,10 @@
         {
             "name": "Pengepul - Stok Sampah",
             "description": "Katalog & Detail Stok Sampah Tersedia untuk Pengepul"
+        },
+        {
+            "name": "Warga - Dashboard",
+            "description": "Warga - Dashboard"
         }
     ]
 }
