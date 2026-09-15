@@ -157,6 +157,13 @@ class PengajuanPenjemputanController extends Controller
 
             'detail_sampah.*.perkiraan_berat'
                 => 'required|numeric|min:0.01',
+        ], [
+            'alamat_penjemputan.required' => 'Alamat penjemputan wajib diisi.',
+            'perkiraan_total_berat.required' => 'Perkiraan total berat wajib diisi.',
+            'detail_sampah.required' => 'Minimal pilih 1 jenis sampah.',
+            'detail_sampah.min' => 'Minimal pilih 1 jenis sampah.',
+            'detail_sampah.*.jenis_sampah_id.exists' => 'Jenis sampah yang dipilih tidak valid atau sudah tidak aktif di sistem.',
+            'detail_sampah.*.perkiraan_berat.min' => 'Perkiraan berat sampah minimal 0.01 kg.',
         ]);
 
         $warga = $request->user()->warga;
@@ -170,7 +177,7 @@ class PengajuanPenjemputanController extends Controller
         $totalDetailBerat = collect($request->detail_sampah)
             ->sum('perkiraan_berat');
 
-        if ((float) $totalDetailBerat !== (float) $request->perkiraan_total_berat) {
+        if (round((float) $totalDetailBerat, 2) !== round((float) $request->perkiraan_total_berat, 2)) {
             return response()->json([
                 'message' => 'Total perkiraan berat tidak sesuai dengan detail sampah.',
                 'total_detail_berat' => $totalDetailBerat,

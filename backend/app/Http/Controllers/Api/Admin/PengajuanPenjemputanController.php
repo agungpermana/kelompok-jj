@@ -56,13 +56,10 @@ class PengajuanPenjemputanController extends Controller
             ], 404);
         }
 
-        $pengajuan = PengajuanPenjemputan::where(
-                'status_pengajuan',
-                'diajukan'
-            )
-            ->with([
+        $pengajuan = PengajuanPenjemputan::with([
                 'warga',
                 'detailPengajuanSampah.jenisSampah',
+                'jadwalPenjemputan.petugas',
             ])
             ->orderByDesc('tanggal_pengajuan')
             ->get();

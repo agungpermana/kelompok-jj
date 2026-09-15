@@ -1896,6 +1896,379 @@
                 ]
             }
         },
+        "/admin/petugas": {
+            "get": {
+                "tags": [
+                    "Admin - Petugas"
+                ],
+                "summary": "Daftar semua petugas",
+                "description": "Mengambil daftar data petugas dengan opsi pencarian, filter status, dan filter area.",
+                "operationId": "15bb93d68de98b6cd6cdda408737d150",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Cari berdasarkan nama petugas, nomor telepon, atau alamat/area",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "Ahmad"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "Filter status akun (aktif/nonaktif)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "aktif",
+                            "enum": [
+                                "aktif",
+                                "nonaktif"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "area",
+                        "in": "query",
+                        "description": "Filter berdasarkan alamat/area tugas",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "RT 02"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Nomor halaman",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Jumlah data per halaman",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Daftar petugas berhasil diambil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "current_page": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "last_page": {
+                                            "type": "integer",
+                                            "example": 3
+                                        },
+                                        "per_page": {
+                                            "type": "integer",
+                                            "example": 10
+                                        },
+                                        "total": {
+                                            "type": "integer",
+                                            "example": 28
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Admin - Petugas"
+                ],
+                "summary": "Tambah petugas baru",
+                "description": "Menambahkan data petugas baru dan akun user terkait secara otomatis (role: petugas).",
+                "operationId": "2c14f3255bb73fb1978fa9e47e2d86cc",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "username",
+                                    "email",
+                                    "password",
+                                    "nama_petugas",
+                                    "jenis_kelamin"
+                                ],
+                                "properties": {
+                                    "username": {
+                                        "description": "Username akun petugas",
+                                        "type": "string",
+                                        "example": "ahmad_fauzi"
+                                    },
+                                    "email": {
+                                        "description": "Email akun petugas",
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "ahmad@trashure.id"
+                                    },
+                                    "password": {
+                                        "description": "Password minimal 6 karakter",
+                                        "type": "string",
+                                        "example": "password123",
+                                        "minLength": 6
+                                    },
+                                    "nama_petugas": {
+                                        "description": "Nama lengkap petugas",
+                                        "type": "string",
+                                        "example": "Ahmad Fauzi"
+                                    },
+                                    "jenis_kelamin": {
+                                        "type": "string",
+                                        "example": "Laki-laki",
+                                        "enum": [
+                                            "Laki-laki",
+                                            "Perempuan",
+                                            "L",
+                                            "P"
+                                        ]
+                                    },
+                                    "alamat": {
+                                        "description": "Alamat atau area tugas petugas",
+                                        "type": "string",
+                                        "example": "RT 02 / RW 03",
+                                        "nullable": true
+                                    },
+                                    "no_telepon": {
+                                        "type": "string",
+                                        "example": "0812-3456-7890",
+                                        "nullable": true
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "example": "aktif",
+                                        "enum": [
+                                            "aktif",
+                                            "nonaktif"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Petugas berhasil ditambahkan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Petugas berhasil ditambahkan."
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validasi gagal"
+                    },
+                    "500": {
+                        "description": "Terjadi kesalahan server"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/admin/petugas/{id}": {
+            "get": {
+                "tags": [
+                    "Admin - Petugas"
+                ],
+                "summary": "Detail petugas",
+                "description": "Mengambil data detail petugas beserta data user berdasarkan ID.",
+                "operationId": "055f7163e27327fc98eeeb2f816b4bde",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID Petugas (petugas_id)",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detail petugas berhasil diambil"
+                    },
+                    "404": {
+                        "description": "Petugas tidak ditemukan"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Admin - Petugas"
+                ],
+                "summary": "Perbarui data petugas",
+                "description": "Memperbarui data petugas dan status akun pengguna terkait.",
+                "operationId": "45953d73e1a0abb2a5dda2e757b4fc61",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID Petugas (petugas_id)",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "nama_petugas",
+                                    "jenis_kelamin"
+                                ],
+                                "properties": {
+                                    "nama_petugas": {
+                                        "type": "string",
+                                        "example": "Ahmad Fauzi"
+                                    },
+                                    "jenis_kelamin": {
+                                        "type": "string",
+                                        "example": "Laki-laki"
+                                    },
+                                    "alamat": {
+                                        "type": "string",
+                                        "example": "RT 02 / RW 03",
+                                        "nullable": true
+                                    },
+                                    "no_telepon": {
+                                        "type": "string",
+                                        "example": "0812-3456-7890",
+                                        "nullable": true
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "example": "aktif",
+                                        "nullable": true,
+                                        "enum": [
+                                            "aktif",
+                                            "nonaktif"
+                                        ]
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "newpassword123",
+                                        "nullable": true,
+                                        "minLength": 6
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Petugas berhasil diperbarui"
+                    },
+                    "404": {
+                        "description": "Petugas tidak ditemukan"
+                    },
+                    "422": {
+                        "description": "Validasi gagal"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Admin - Petugas"
+                ],
+                "summary": "Hapus petugas",
+                "description": "Menghapus data petugas beserta akun user terkait secara aman.",
+                "operationId": "50a2cf1f1432878c5cb1c2f48853c413",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID Petugas (petugas_id)",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Petugas berhasil dihapus"
+                    },
+                    "404": {
+                        "description": "Petugas tidak ditemukan"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/admin/voucher": {
             "get": {
                 "tags": [
@@ -4698,6 +5071,221 @@
                     }
                 ]
             }
+        },
+        "/warga/setoran": {
+            "get": {
+                "tags": [
+                    "Warga - Setoran"
+                ],
+                "summary": "Daftar riwayat setoran sampah (Warga)",
+                "description": "Mengambil riwayat seluruh transaksi setoran sampah dan pengajuan penjemputan milik warga yang sedang login beserta ringkasan statistik dan filter status.",
+                "operationId": "0ae9e753046cb3d9e0b31b13b01f6ed7",
+                "parameters": [
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "Filter status validasi (semua, menunggu, disetujui, ditolak)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "semua",
+                            "enum": [
+                                "semua",
+                                "menunggu",
+                                "disetujui",
+                                "ditolak"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "bulan",
+                        "in": "query",
+                        "description": "Filter bulan setoran format YYYY-MM (contoh: 2026-09)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "2026-09"
+                        }
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "description": "Urutan data berdasarkan tanggal (terbaru, terlama)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "terbaru",
+                            "enum": [
+                                "terbaru",
+                                "terlama"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Riwayat setoran berhasil diambil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Riwayat setoran berhasil diambil."
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "ringkasan": {
+                                            "properties": {
+                                                "total_setoran": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "total_berat_sampah": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 5.2
+                                                },
+                                                "total_poin_diterima": {
+                                                    "type": "integer",
+                                                    "example": 100
+                                                },
+                                                "menunggu_validasi": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Profil warga tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Profil warga tidak ditemukan."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/warga/setoran/{id}": {
+            "get": {
+                "tags": [
+                    "Warga - Setoran"
+                ],
+                "summary": "Detail riwayat setoran sampah (Warga)",
+                "description": "Mengambil rincian informasi satu transaksi setoran sampah milik warga berdasarkan ID setoran atau ID pengajuan.",
+                "operationId": "cc5dcdbe197b82fb2d9ddf55d88e7964",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID Transaksi Setoran atau Pengajuan",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detail setoran berhasil diambil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Detail setoran berhasil diambil."
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Setoran atau profil warga tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Setoran tidak ditemukan."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
         }
     },
     "components": {
@@ -5100,6 +5688,10 @@
             "description": "CRUD Data Pengepul oleh Admin. Saat pengepul ditambahkan, akun pengguna (users) dengan role 'pengepul' juga otomatis dibuat."
         },
         {
+            "name": "Admin - Petugas",
+            "description": "CRUD Data Petugas oleh Admin"
+        },
+        {
             "name": "Admin - Voucher",
             "description": "API Master Data Voucher untuk Admin (Kelola voucher penukaran poin, jumlah poin, stok ketersediaan, dan status)."
         },
@@ -5138,6 +5730,10 @@
         {
             "name": "Warga - Pengajuan",
             "description": "Pengajuan Penjemputan Sampah oleh Warga"
+        },
+        {
+            "name": "Warga - Setoran",
+            "description": "Riwayat & Detail Setoran Sampah oleh Warga"
         },
         {
             "name": "Pengepul - Stok Sampah",
