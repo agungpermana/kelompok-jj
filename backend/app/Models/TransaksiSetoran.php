@@ -17,14 +17,14 @@ class TransaksiSetoran extends Model
         'jadwal_id',
         'warga_id',
         'petugas_id',
-        'validator_petugas_id',
+        'validator_admin_id',
         'tanggal_setoran',
         'konfirmasi_pengambilan',
         'status_validasi',
         'catatan_validasi',
         'tanggal_validasi',
         'total_berat_aktual',
-        'total_poin_sementara',
+        'total_poin',
     ];
 
     protected function casts(): array
@@ -56,23 +56,13 @@ class TransaksiSetoran extends Model
         return $this->belongsTo(Petugas::class, 'petugas_id', 'petugas_id');
     }
 
-    public function validatorPetugas()
+    public function validatorAdmin()
     {
-        return $this->belongsTo(Petugas::class, 'validator_petugas_id', 'petugas_id');
+        return $this->belongsTo(Admin::class, 'validator_admin_id', 'admin_id');
     }
 
     public function detailSetoran()
     {
         return $this->hasMany(DetailSetoran::class, 'setoran_id', 'setoran_id');
-    }
-
-    public function poinSementara()
-    {
-        return $this->hasOne(PoinSementara::class, 'setoran_id', 'setoran_id');
-    }
-
-    public function stokSementara()
-    {
-        return $this->hasMany(StokSementara::class, 'setoran_id', 'setoran_id');
     }
 }

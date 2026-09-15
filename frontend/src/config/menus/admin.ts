@@ -15,6 +15,7 @@ import {
   PackageSearch,
   BadgeDollarSign,
   Ticket,
+  FileCheck
 } from 'lucide-react';
 import type { MenuSection } from '@/components/layout/sidebar';
 
@@ -55,7 +56,8 @@ export const adminMenus: MenuSection[] = [
   {
     title: 'VALIDASI',
     items: [
-      { label: 'Validasi Poin & Stok', icon: ShieldCheck, href: '/admin/validasi-poin-stok', badge: 12 },
+      { label: 'Validasi Setoran', icon: ShieldCheck, href: '/admin/validasi-setoran' },
+      { label: 'Validasi Transaksi', icon: FileCheck, href: '/admin/validasi-transaksi' },
     ],
   },
   {

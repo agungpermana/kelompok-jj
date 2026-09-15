@@ -34,9 +34,4 @@ class Petugas extends Model
     {
         return $this->hasMany(TransaksiSetoran::class, 'petugas_id', 'petugas_id');
     }
-
-    public function validasiSetoran()
-    {
-        return $this->hasMany(TransaksiSetoran::class, 'validator_petugas_id', 'petugas_id');
-    }
 }

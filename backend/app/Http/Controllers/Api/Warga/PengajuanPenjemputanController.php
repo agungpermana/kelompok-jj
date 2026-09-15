@@ -463,7 +463,6 @@ class PengajuanPenjemputanController extends Controller
             ->with([
                 'jadwalPenjemputan',
                 'transaksiSetoran',
-                'transaksiSetoran.poinSementara',
             ])
             ->first();
 
@@ -495,12 +494,12 @@ class PengajuanPenjemputanController extends Controller
                     'tanggal_setoran' => $setoran->tanggal_setoran,
                     'status_validasi' => $setoran->status_validasi,
                     'total_berat_aktual' => $setoran->total_berat_aktual,
-                    'total_poin_sementara' => $setoran->total_poin_sementara,
+                    'total_poin' => $setoran->total_poin,
                 ] : null,
 
-                'poin' => $setoran?->poinSementara ? [
-                    'jumlah_poin' => $setoran->poinSementara->jumlah_poin,
-                    'status_poin' => $setoran->poinSementara->status_poin,
+                'poin' => $setoran && $setoran->status_validasi === 'disetujui' ? [
+                    'jumlah_poin' => (int) $setoran->total_poin,
+                    'status_poin' => 'disetujui',
                 ] : null,
             ],
         ]);

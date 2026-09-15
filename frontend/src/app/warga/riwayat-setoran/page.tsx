@@ -479,7 +479,7 @@ export default function RiwayatSetoranPage() {
                           >
                             {isDitolak
                               ? '0 poin'
-                              : `${formatNumber(item.total_poin_sementara)} poin`}
+                              : `${formatNumber((item as any).total_poin ?? item.total_poin_sementara)} poin`}
                           </p>
                         </div>
                       </div>
@@ -819,7 +819,7 @@ export default function RiwayatSetoranPage() {
                   <span className="font-bold text-[#16a34a]">
                     {selectedSetoran.status_validasi === 'menunggu'
                       ? 'Menunggu Validasi'
-                      : `${formatNumber(selectedSetoran.total_poin_sementara)} poin`}
+                      : `${formatNumber((selectedSetoran as any).total_poin ?? selectedSetoran.total_poin_sementara)} poin`}
                   </span>
                 </div>
                 <div>
@@ -829,7 +829,7 @@ export default function RiwayatSetoranPage() {
                   <span className="font-semibold text-gray-800">
                     {selectedSetoran.status_validasi === 'menunggu'
                       ? 'Menunggu Validasi Admin'
-                      : selectedSetoran.validator_petugas?.nama_petugas || 'Admin Bank Sampah'}
+                      : (selectedSetoran as any).validator_admin?.nama_admin || (selectedSetoran as any).validator_petugas?.nama_petugas || 'Admin Bank Sampah'}
                   </span>
                 </div>
               </div>
@@ -895,7 +895,7 @@ export default function RiwayatSetoranPage() {
                             <td className="py-3 px-3 text-right font-bold text-gray-900">
                               {selectedSetoran.status_validasi === 'ditolak'
                                 ? '0 poin'
-                                : `${formatNumber(d.poin_sementara)} poin`}
+                                : `${formatNumber((d as any).poin ?? d.poin_sementara)} poin`}
                             </td>
                           </tr>
                         ))

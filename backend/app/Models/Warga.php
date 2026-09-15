@@ -36,11 +36,6 @@ class Warga extends Model
         return $this->hasMany(TransaksiSetoran::class, 'warga_id', 'warga_id');
     }
 
-    public function poinSementara()
-    {
-        return $this->hasMany(PoinSementara::class, 'warga_id', 'warga_id');
-    }
-
     public function saldoPoin()
     {
         return $this->hasOne(SaldoPoin::class, 'warga_id', 'warga_id');
