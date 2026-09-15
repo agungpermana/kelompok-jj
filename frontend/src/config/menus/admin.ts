@@ -5,10 +5,8 @@ import {
   Truck,
   Recycle,
   Coins,
-  ShoppingCart,
   ArrowLeftRight,
   ShieldCheck,
-  FileCheck,
   FileText,
   FileBarChart,
   FileSpreadsheet,
@@ -51,7 +49,6 @@ export const adminMenus: MenuSection[] = [
       { label: 'Penjemputan', icon: Truck, href: '/admin/penjemputan' },
       { label: 'Setoran Sampah', icon: Recycle, href: '/admin/setoran-sampah' },
       { label: 'Poin & Saldo', icon: Coins, href: '/admin/poin-saldo' },
-      { label: 'Penjualan Sampah', icon: ShoppingCart, href: '/admin/penjualan-sampah' },
       { label: 'Penukaran Poin', icon: ArrowLeftRight, href: '/admin/penukaran-poin' },
     ],
   },
@@ -59,7 +56,6 @@ export const adminMenus: MenuSection[] = [
     title: 'VALIDASI',
     items: [
       { label: 'Validasi Poin & Stok', icon: ShieldCheck, href: '/admin/validasi-poin-stok', badge: 12 },
-      { label: 'Validasi Transaksi', icon: FileCheck, href: '/admin/validasi-transaksi' },
     ],
   },
   {
