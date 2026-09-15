@@ -10,7 +10,7 @@ use OpenApi\Attributes as OA;
 
 #[OA\Tag(
     name: "Admin - Jenis Sampah",
-    description: "API Master Data Jenis Sampah untuk Admin (Kelola data jenis sampah, kategori, satuan, keterangan, dan status)."
+    description: "API Master Data Jenis Sampah untuk Admin (Kelola data jenis sampah, satuan, keterangan, dan status)."
 )]
 #[OA\Schema(
     schema: "HargaSampah",
@@ -128,7 +128,7 @@ class JenisSampahController extends Controller
     #[OA\Get(
         path: "/admin/jenis-sampah",
         summary: "Daftar jenis sampah (Admin)",
-        description: "Mengambil daftar master jenis sampah beserta harga aktif, dengan pencarian dan filter kategori/satuan/status. Mendukung pengurutan serta paginasi.",
+        description: "Mengambil daftar master jenis sampah beserta harga aktif, dengan pencarian dan filter satuan/status. Mendukung pengurutan serta paginasi.",
         tags: ["Admin - Jenis Sampah"],
         security: [["bearerAuth" => []]],
         parameters: [
@@ -137,13 +137,6 @@ class JenisSampahController extends Controller
                 in: "query",
                 required: false,
                 description: "Cari berdasarkan nama jenis sampah.",
-                schema: new OA\Schema(type: "string"),
-            ),
-            new OA\Parameter(
-                name: "kategori",
-                in: "query",
-                required: false,
-                description: "Filter berdasarkan kategori sampah. Gunakan 'Semua Kategori' atau 'semua' untuk menampilkan semua.",
                 schema: new OA\Schema(type: "string"),
             ),
             new OA\Parameter(
@@ -235,10 +228,6 @@ class JenisSampahController extends Controller
             $query->where('nama_jenis_sampah', 'like', "%{$search}%");
         }
 
-        // Filter by category
-        if ($request->filled('kategori') && $request->kategori !== 'Semua Kategori' && $request->kategori !== 'semua') {
-            $query->where('kategori', $request->kategori);
-        }
 
         // Filter by unit
         if ($request->filled('satuan') && $request->satuan !== 'Semua Satuan' && $request->satuan !== 'semua') {
@@ -284,7 +273,7 @@ class JenisSampahController extends Controller
     #[OA\Post(
         path: "/admin/jenis-sampah",
         summary: "Tambah jenis sampah baru (Admin)",
-        description: "Menambahkan data master jenis sampah baru (nama, kategori, satuan, status, keterangan, icon).",
+        description: "Menambahkan data master jenis sampah baru (nama, satuan, status, keterangan).",
         tags: ["Admin - Jenis Sampah"],
         security: [["bearerAuth" => []]],
         requestBody: new OA\RequestBody(
@@ -297,13 +286,6 @@ class JenisSampahController extends Controller
                         type: "string",
                         description: "Nama jenis sampah (unik).",
                         example: "Botol Plastik PET",
-                    ),
-                    new OA\Property(
-                        property: "kategori",
-                        type: "string",
-                        nullable: true,
-                        description: "Kategori sampah.",
-                        example: "Plastik",
                     ),
                     new OA\Property(
                         property: "satuan",
@@ -324,13 +306,6 @@ class JenisSampahController extends Controller
                         nullable: true,
                         description: "Deskripsi tambahan.",
                         example: "Botol plastik minuman kemasan bersih.",
-                    ),
-                    new OA\Property(
-                        property: "icon",
-                        type: "string",
-                        nullable: true,
-                        description: "Nama ikon yang ditampilkan di aplikasi.",
-                        example: "bottle",
                     ),
                 ],
             ),
@@ -379,10 +354,8 @@ class JenisSampahController extends Controller
         // Sesuaikan dengan skema tabel jenis_sampah (tanpa harga dan poin)
         $validator = Validator::make($request->all(), [
             'nama_jenis_sampah' => 'required|string|max:100|unique:jenis_sampah,nama_jenis_sampah',
-            'kategori' => 'nullable|string|max:50',
             'satuan' => 'required|string|max:20',
             'keterangan' => 'nullable|string',
-            'icon' => 'nullable|string|max:50',
             'status' => 'required|string|in:aktif,tidak_aktif,nonaktif',
         ], [
             'nama_jenis_sampah.required' => 'Nama jenis sampah wajib diisi.',
@@ -403,10 +376,8 @@ class JenisSampahController extends Controller
 
             $jenisSampah = JenisSampah::create([
                 'nama_jenis_sampah' => $request->nama_jenis_sampah,
-                'kategori' => $request->kategori,
                 'satuan' => $request->satuan,
                 'keterangan' => $request->keterangan,
-                'icon' => $request->icon ?? 'bottle',
                 'status' => $statusNormalized,
             ]);
 
@@ -495,7 +466,7 @@ class JenisSampahController extends Controller
     #[OA\Put(
         path: "/admin/jenis-sampah/{id}",
         summary: "Ubah jenis sampah (Admin)",
-        description: "Memperbarui master data jenis sampah (nama, kategori, satuan, status, keterangan, icon). Seluruh field bersifat opsional (parsial).",
+        description: "Memperbarui master data jenis sampah (nama, satuan, status, keterangan). Seluruh field bersifat opsional (parsial).",
         tags: ["Admin - Jenis Sampah"],
         security: [["bearerAuth" => []]],
         parameters: [
@@ -518,13 +489,6 @@ class JenisSampahController extends Controller
                         example: "Botol Plastik PET",
                     ),
                     new OA\Property(
-                        property: "kategori",
-                        type: "string",
-                        nullable: true,
-                        description: "Kategori sampah.",
-                        example: "Plastik",
-                    ),
-                    new OA\Property(
                         property: "satuan",
                         type: "string",
                         description: "Satuan penimbangan.",
@@ -543,13 +507,6 @@ class JenisSampahController extends Controller
                         nullable: true,
                         description: "Deskripsi tambahan.",
                         example: "Botol plastik minuman kemasan bersih.",
-                    ),
-                    new OA\Property(
-                        property: "icon",
-                        type: "string",
-                        nullable: true,
-                        description: "Nama ikon yang ditampilkan di aplikasi.",
-                        example: "bottle",
                     ),
                 ],
             ),
@@ -614,10 +571,8 @@ class JenisSampahController extends Controller
 
         $validator = Validator::make($request->all(), [
             'nama_jenis_sampah' => 'sometimes|required|string|max:100|unique:jenis_sampah,nama_jenis_sampah,' . $id . ',jenis_sampah_id',
-            'kategori' => 'nullable|string|max:50',
             'satuan' => 'sometimes|required|string|max:20',
             'keterangan' => 'nullable|string',
-            'icon' => 'nullable|string|max:50',
             'status' => 'sometimes|required|string|in:aktif,tidak_aktif,nonaktif',
         ], [
             'nama_jenis_sampah.required' => 'Nama jenis sampah wajib diisi.',
@@ -640,10 +595,8 @@ class JenisSampahController extends Controller
 
             $updateData = [];
             if ($request->has('nama_jenis_sampah')) $updateData['nama_jenis_sampah'] = $request->nama_jenis_sampah;
-            if ($request->has('kategori')) $updateData['kategori'] = $request->kategori;
             if ($request->has('satuan')) $updateData['satuan'] = $request->satuan;
             if ($request->has('keterangan')) $updateData['keterangan'] = $request->keterangan;
-            if ($request->has('icon')) $updateData['icon'] = $request->icon;
             if ($request->has('status')) $updateData['status'] = $statusNormalized;
 
             if (!empty($updateData)) {
