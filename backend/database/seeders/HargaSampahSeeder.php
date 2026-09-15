@@ -11,6 +11,10 @@ class HargaSampahSeeder extends Seeder
     public function run(): void
     {
         $data = [
+            ['nama_jenis_sampah' => 'Plastik', 'harga_per_satuan' => 2500, 'nilai_poin_per_satuan' => 2.5],
+            ['nama_jenis_sampah' => 'Kertas', 'harga_per_satuan' => 2000, 'nilai_poin_per_satuan' => 2],
+            ['nama_jenis_sampah' => 'Logam', 'harga_per_satuan' => 6000, 'nilai_poin_per_satuan' => 6],
+            ['nama_jenis_sampah' => 'Kaca', 'harga_per_satuan' => 1000, 'nilai_poin_per_satuan' => 1],
             ['nama_jenis_sampah' => 'Botol Plastik', 'harga_per_satuan' => 2000, 'nilai_poin_per_satuan' => 2],
             ['nama_jenis_sampah' => 'Gelas Plastik', 'harga_per_satuan' => 1500, 'nilai_poin_per_satuan' => 1.5],
             ['nama_jenis_sampah' => 'Kresek / Plastik PE', 'harga_per_satuan' => 1000, 'nilai_poin_per_satuan' => 1],
