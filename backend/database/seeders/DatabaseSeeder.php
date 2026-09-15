@@ -24,8 +24,8 @@ class DatabaseSeeder extends Seeder
             PetugasSeeder::class,
             WargaSeeder::class,
             PengepulSeeder::class,
-
-
+            PetugasTugasSayaSeeder::class,
+            PenjemputanSeeder::class,
         ]);
     }
 }

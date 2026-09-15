@@ -28,7 +28,7 @@ class PetugasSeeder extends Seeder
                 'user_id' => $user->id,
             ],
             [
-                'nama_petugas' => 'Petugas Trashure',
+                'nama_petugas' => 'Ahmad Fauzi',
                 'jenis_kelamin' => 'L',
                 'alamat' => 'Jakarta',
                 'no_telepon' => '081234567890',

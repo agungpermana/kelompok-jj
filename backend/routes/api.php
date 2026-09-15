@@ -186,6 +186,11 @@ Route::middleware('auth:sanctum')->group(function () {
             [SetoranController::class, 'store']
         );
 
+        Route::get(
+            '/petugas/setoran',
+            [SetoranController::class, 'index']
+        );
+
         Route::patch(
             '/petugas/setoran/{setoranId}/validasi',
             [SetoranController::class, 'validasi']

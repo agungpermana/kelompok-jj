@@ -12,6 +12,48 @@ use OpenApi\Attributes as OA;
 
 class SetoranController extends Controller
 {
+    #[OA\Get(
+        path: "/petugas/setoran",
+        summary: "Daftar transaksi setoran sampah (Petugas)",
+        description: "Mengambil seluruh transaksi setoran sampah yang ada di sistem.",
+        tags: ["Petugas - Setoran"],
+        security: [["bearerAuth" => []]],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Daftar transaksi setoran berhasil diambil",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "message", type: "string", example: "Daftar transaksi setoran berhasil diambil."),
+                        new OA\Property(property: "data", type: "array", items: new OA\Items(type: "object"))
+                    ]
+                )
+            )
+        ]
+    )]
+    public function index(Request $request)
+    {
+        $query = TransaksiSetoran::with([
+            'detailSetoran.jenisSampah',
+            'warga',
+            'petugas',
+            'validatorPetugas',
+            'jadwalPenjemputan',
+            'pengajuanPenjemputan',
+        ])->orderByDesc('setoran_id');
+
+        if ($request->has('status') && $request->status !== 'semua') {
+            $query->where('status_validasi', $request->status);
+        }
+
+        $setoran = $query->get();
+
+        return response()->json([
+            'message' => 'Daftar transaksi setoran berhasil diambil.',
+            'data' => $setoran,
+        ]);
+    }
+
     #[OA\Post(
         path: "/petugas/jadwal/{jadwalId}/setoran/jenis",
         summary: "Catat jenis sampah aktual (Petugas)",
@@ -426,22 +468,23 @@ class SetoranController extends Controller
                     ->first();
 
                 if (!$harga) {
-                    throw new \Exception(
-                        "Harga sampah untuk {$jenis->nama_jenis_sampah} tidak ditemukan."
-                    );
+                    $harga = $jenis->hargaSampah()->where('status', 'aktif')->orderByDesc('berlaku_mulai')->first();
                 }
+
+                $hargaPerSatuan = $harga ? (float) $harga->harga_per_satuan : 2000;
+                $nilaiPoinPerSatuan = $harga ? (float) $harga->nilai_poin_per_satuan : 2;
 
                 $berat = (float) $item['berat_aktual'];
 
                 $poin = floor(
-                    $berat * (int) $harga->nilai_poin_per_satuan
+                    $berat * (int) $nilaiPoinPerSatuan
                 );
 
                 $transaksi->detailSetoran()->create([
                     'jenis_sampah_id' => $jenis->jenis_sampah_id,
                     'berat_aktual' => $berat,
-                    'harga_satuan' => $harga->harga_per_satuan,
-                    'nilai_poin_per_satuan' => $harga->nilai_poin_per_satuan,
+                    'harga_satuan' => $hargaPerSatuan,
+                    'nilai_poin_per_satuan' => $nilaiPoinPerSatuan,
                     'poin_sementara' => $poin,
                 ]);
 
@@ -453,6 +496,17 @@ class SetoranController extends Controller
                 'total_berat_aktual' => $totalBerat,
                 'total_poin_sementara' => $totalPoin,
             ]);
+
+            // Update jadwal status to selesai
+            $jadwal->update([
+                'status_jadwal' => 'selesai',
+            ]);
+
+            if ($jadwal->pengajuanPenjemputan) {
+                $jadwal->pengajuanPenjemputan->update([
+                    'status_pengajuan' => 'selesai',
+                ]);
+            }
 
             return $transaksi;
         });
@@ -551,14 +605,7 @@ class SetoranController extends Controller
             'catatan_validasi' => 'nullable|string',
         ]);
 
-        $transaksi = TransaksiSetoran::where(
-                'setoran_id',
-                $setoranId
-            )
-            ->where(
-                'petugas_id',
-                $petugas->petugas_id
-            )
+        $transaksi = TransaksiSetoran::where('setoran_id', $setoranId)
             ->with('detailSetoran')
             ->first();
 
@@ -574,12 +621,27 @@ class SetoranController extends Controller
             ], 422);
         }
 
-        $transaksi->update([
-            'validator_petugas_id' => $petugas->petugas_id,
-            'status_validasi' => $request->status_validasi,
-            'catatan_validasi' => $request->catatan_validasi,
-            'tanggal_validasi' => now(),
-        ]);
+        DB::transaction(function () use ($transaksi, $petugas, $request) {
+            $transaksi->update([
+                'validator_petugas_id' => $petugas->petugas_id,
+                'status_validasi' => $request->status_validasi,
+                'catatan_validasi' => $request->catatan_validasi,
+                'tanggal_validasi' => now(),
+            ]);
+
+            if ($request->status_validasi === 'disetujui') {
+                \App\Models\PoinSementara::updateOrCreate(
+                    ['setoran_id' => $transaksi->setoran_id],
+                    [
+                        'warga_id' => $transaksi->warga_id,
+                        'jumlah_poin' => $transaksi->total_poin_sementara,
+                        'status_poin' => 'menunggu',
+                    ]
+                );
+            } else {
+                \App\Models\PoinSementara::where('setoran_id', $transaksi->setoran_id)->delete();
+            }
+        });
 
         $transaksi->load([
             'detailSetoran.jenisSampah',
@@ -587,6 +649,8 @@ class SetoranController extends Controller
             'petugas',
             'validatorPetugas',
             'jadwalPenjemputan',
+            'pengajuanPenjemputan',
+            'poinSementara',
         ]);
 
         return response()->json([

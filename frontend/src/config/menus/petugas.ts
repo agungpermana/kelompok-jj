@@ -1,11 +1,11 @@
 import {
   LayoutDashboard,
   Truck,
-  MapPin,
   Clock,
-  CheckCircle,
+  Recycle,
   FileText,
-  User,
+  FileBarChart,
+  Settings,
 } from 'lucide-react';
 import type { MenuSection } from '@/components/layout/sidebar';
 
@@ -19,22 +19,39 @@ export const petugasMenus: MenuSection[] = [
   {
     title: 'PENJEMPUTAN',
     items: [
-      { label: 'Daftar Penjemputan', icon: Truck, href: '/petugas/penjemputan' },
-      { label: 'Penjemputan Aktif', icon: MapPin, href: '/petugas/penjemputan-aktif' },
-      { label: 'Riwayat Penjemputan', icon: Clock, href: '/petugas/riwayat-penjemputan' },
+      {
+        label: 'Penjemputan',
+        icon: Truck,
+        children: [
+          { label: 'Tugas Saya', icon: Truck, href: '/petugas/penjemputan' },
+          { label: 'Riwayat Penjemputan', icon: Clock, href: '/petugas/riwayat-penjemputan' },
+        ],
+      },
     ],
   },
   {
     title: 'SETORAN',
     items: [
-      { label: 'Validasi Setoran', icon: CheckCircle, href: '/petugas/validasi-setoran' },
-      { label: 'Riwayat Setoran', icon: FileText, href: '/petugas/riwayat-setoran' },
+      {
+        label: 'Setoran',
+        icon: Recycle,
+        children: [
+          { label: 'Validasi Setoran', icon: Recycle, href: '/petugas/validasi-setoran' },
+          { label: 'Riwayat Setoran', icon: FileText, href: '/petugas/riwayat-setoran' },
+        ],
+      },
+    ],
+  },
+  {
+    title: 'LAPORAN',
+    items: [
+      { label: 'Laporan', icon: FileBarChart, href: '/petugas/laporan' },
     ],
   },
   {
     title: 'PENGATURAN',
     items: [
-      { label: 'Profil Saya', icon: User, href: '/petugas/profil' },
+      { label: 'Pengaturan', icon: Settings, href: '/petugas/pengaturan' },
     ],
   },
 ];
