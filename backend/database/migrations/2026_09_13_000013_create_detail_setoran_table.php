@@ -14,7 +14,7 @@ return new class extends Migration {
             $table->decimal('berat_aktual', 12, 2);
             $table->decimal('harga_satuan', 12, 2);
             $table->integer('nilai_poin_per_satuan');
-            $table->integer('poin_sementara')->default(0);
+            $table->integer('poin')->default(0);
             $table->timestamps();
 
             $table->index('setoran_id');

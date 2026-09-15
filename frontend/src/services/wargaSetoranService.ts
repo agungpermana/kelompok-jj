@@ -7,7 +7,7 @@ export interface DetailSetoranItem {
   berat_aktual: number | string;
   harga_satuan?: number | string;
   nilai_poin_per_satuan?: number;
-  poin_sementara: number;
+  poin: number;
   jenis_sampah?: {
     jenis_sampah_id: number;
     nama_jenis_sampah: string;
@@ -22,7 +22,7 @@ export interface SetoranItem {
   jadwal_id: number;
   warga_id: number;
   petugas_id: number;
-  validator_petugas_id?: number | null;
+  validator_admin_id?: number | null;
   tanggal_setoran: string;
   perkiraan_tanggal_jemput?: string | null;
   perkiraan_waktu_jemput?: string | null;
@@ -35,22 +35,11 @@ export interface SetoranItem {
   status_pengajuan?: string | null;
   tanggal_validasi?: string | null;
   total_berat_aktual: number | string;
-  total_poin_sementara: number;
+  total_poin: number;
+  poin: number;
   detail_setoran?: DetailSetoranItem[];
-  petugas?: {
-    petugas_id: number;
-    nama_petugas: string;
-    no_telepon?: string;
-  };
-  validator_petugas?: {
-    petugas_id: number;
-    nama_petugas: string;
-  };
-  poin_sementara?: {
-    poin_sementara_id: number;
-    jumlah_poin: number;
-    status_poin: string;
-  };
+  petugas?: { petugas_id: number; nama_petugas: string; no_telepon?: string; };
+  validator_admin?: { admin_id: number; nama_admin: string; };
 }
 
 export interface RingkasanSetoran {
@@ -60,48 +49,21 @@ export interface RingkasanSetoran {
   menunggu_validasi: number;
 }
 
-export interface SetoranFilterParams {
-  status?: string;
-  sort?: string;
-  bulan?: string;
-}
+export interface SetoranFilterParams { status?: string; sort?: string; bulan?: string; }
 
-export const DEFAULT_RINGKASAN: RingkasanSetoran = {
-  total_setoran: 0,
-  total_berat_sampah: 0,
-  total_poin_diterima: 0,
-  menunggu_validasi: 0,
-};
+export const DEFAULT_RINGKASAN: RingkasanSetoran = { total_setoran: 0, total_berat_sampah: 0, total_poin_diterima: 0, menunggu_validasi: 0 };
 
-export async function fetchRiwayatSetoran(
-  params?: SetoranFilterParams
-): Promise<{ data: SetoranItem[]; ringkasan: RingkasanSetoran }> {
+export async function fetchRiwayatSetoran(params?: SetoranFilterParams): Promise<{ data: SetoranItem[]; ringkasan: RingkasanSetoran }> {
   try {
     const query = new URLSearchParams();
-    if (params?.status && params.status !== 'semua') {
-      query.append('status', params.status);
-    }
-    if (params?.sort) {
-      query.append('sort', params.sort);
-    }
-    if (params?.bulan) {
-      query.append('bulan', params.bulan);
-    }
-
+    if (params?.status && params.status !== 'semua') query.append('status', params.status);
+    if (params?.sort) query.append('sort', params.sort);
+    if (params?.bulan) query.append('bulan', params.bulan);
     const url = `${getApiUrl()}/warga/setoran${query.toString() ? `?${query.toString()}` : ''}`;
-    const res = await fetch(url, {
-      headers: getAuthHeaders(),
-    });
-
-    if (!res.ok) {
-      throw new Error(`Failed to fetch setoran (${res.status})`);
-    }
-
+    const res = await fetch(url, { headers: getAuthHeaders() });
+    if (!res.ok) throw new Error(`Failed to fetch setoran (${res.status})`);
     const json = await res.json();
-    const data = json.data && Array.isArray(json.data) ? json.data : [];
-    const ringkasan = json.ringkasan || DEFAULT_RINGKASAN;
-
-    return { data, ringkasan };
+    return { data: json.data && Array.isArray(json.data) ? json.data : [], ringkasan: json.ringkasan || DEFAULT_RINGKASAN };
   } catch (err) {
     console.warn('Error fetching riwayat setoran:', err);
     return { data: [], ringkasan: DEFAULT_RINGKASAN };
@@ -110,17 +72,11 @@ export async function fetchRiwayatSetoran(
 
 export async function fetchDetailSetoran(id: number): Promise<SetoranItem | null> {
   try {
-    const res = await fetch(`${getApiUrl()}/warga/setoran/${id}`, {
-      headers: getAuthHeaders(),
-    });
-    if (!res.ok) {
-      return null;
-    }
-    const json = await res.json();
-    return json.data || null;
+    const res = await fetch(`${getApiUrl()}/warga/setoran/${id}`, { headers: getAuthHeaders() });
+    if (!res.ok) return null;
+    return (await res.json()).data || null;
   } catch (err) {
     console.warn('Error fetching detail setoran:', err);
     return null;
   }
 }
-

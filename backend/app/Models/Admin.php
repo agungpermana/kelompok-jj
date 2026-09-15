@@ -27,14 +27,9 @@ class Admin extends Model
         return $this->hasMany(JadwalPenjemputan::class, 'admin_id', 'admin_id');
     }
 
-    public function poinSementara()
+    public function transaksiSetoranValidasi()
     {
-        return $this->hasMany(PoinSementara::class, 'validator_admin_id', 'admin_id');
-    }
-
-    public function stokSementara()
-    {
-        return $this->hasMany(StokSementara::class, 'validator_admin_id', 'admin_id');
+        return $this->hasMany(TransaksiSetoran::class, 'validator_admin_id', 'admin_id');
     }
 
     public function transaksiPenjualan()

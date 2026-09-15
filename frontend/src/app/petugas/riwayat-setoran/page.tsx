@@ -4,8 +4,8 @@ import PetugasHeader from '@/components/layout/PetugasHeader';
 import WasteIcon from '@/components/common/WasteIcon';
 import { Search, RotateCcw, FileText, Scale, Star, CheckCircle2, XCircle, Eye } from 'lucide-react';
 
-interface DetailSetoran { detail_setoran_id: number; jenis_sampah_id: number; berat_aktual: number; harga_satuan: number; nilai_poin_per_satuan: number; poin_sementara: number; jenis_sampah: { jenis_sampah_id: number; nama_jenis_sampah: string; }; }
-interface TransaksiSetoran { setoran_id: number; pengajuan_id: number; tanggal_setoran: string; tanggal_validasi?: string | null; status_validasi: string; total_berat_aktual: number; total_poin_sementara: number; warga: { warga_id: number; nama_warga: string; no_telepon?: string; alamat?: string; }; detail_setoran: DetailSetoran[]; validatorPetugas?: { nama_petugas: string; }; }
+interface DetailSetoran { detail_setoran_id: number; jenis_sampah_id: number; berat_aktual: number; harga_satuan: number; nilai_poin_per_satuan: number; poin: number; poin_sementara?: number; jenis_sampah: { jenis_sampah_id: number; nama_jenis_sampah: string; }; }
+interface TransaksiSetoran { setoran_id: number; pengajuan_id: number; tanggal_setoran: string; tanggal_validasi?: string | null; status_validasi: string; total_berat_aktual: number; total_poin: number; total_poin_sementara?: number; poin?: number; warga: { warga_id: number; nama_warga: string; no_telepon?: string; alamat?: string; }; detail_setoran: DetailSetoran[]; validator_admin?: { nama_admin: string; }; validatorAdmin?: { nama_admin: string; }; }
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 const getToken = () => { if (typeof window === 'undefined') return ''; return localStorage.getItem('trashure_token') || localStorage.getItem('token') || ''; };
@@ -29,7 +29,7 @@ export default function RiwayatSetoranPage() {
   const stats = useMemo(() => {
     const total = list.length;
     const totalBerat = list.reduce((s, x) => s + Number(x.total_berat_aktual || 0), 0);
-    const totalPoin = list.reduce((s, x) => s + Number(x.total_poin_sementara || 0), 0);
+    const totalPoin = list.reduce((s, x) => s + Number((x as any).total_poin ?? x.total_poin_sementara ?? 0), 0);
     const valid = list.filter(x => x.status_validasi === 'disetujui').length;
     const tidakValid = list.filter(x => x.status_validasi === 'ditolak').length;
     return { total, totalBerat, totalPoin, valid, tidakValid };
@@ -75,7 +75,7 @@ export default function RiwayatSetoranPage() {
         </div>
         <div className="flex items-center gap-4 bg-white rounded-2xl p-5 border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#fffbeb] text-[#d97706] flex-shrink-0"><Star className="h-6 w-6" /></div>
-          <div><p className="text-[11px] font-medium text-gray-500">Total Poin Sementara</p><p className="text-[20px] font-extrabold text-gray-900 leading-none mt-1">{stats.totalPoin}</p><p className="text-[11px] text-gray-400">Poin</p></div>
+          <div><p className="text-[11px] font-medium text-gray-500">Total Poin</p><p className="text-[20px] font-extrabold text-gray-900 leading-none mt-1">{stats.totalPoin}</p><p className="text-[11px] text-gray-400">Poin</p></div>
         </div>
         <div className="flex items-center gap-4 bg-white rounded-2xl p-5 border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#f5f3ff] text-[#7c3aed] flex-shrink-0"><CheckCircle2 className="h-6 w-6" /></div>
@@ -99,7 +99,7 @@ export default function RiwayatSetoranPage() {
       <div className="bg-white rounded-2xl border border-gray-200/80 shadow-[0_2px_12px_rgba(0,0,0,0.02)] overflow-hidden mb-5">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
-            <thead><tr className="border-b border-gray-100 bg-[#fafafa]/80 text-[12px] font-bold text-gray-600"><th className="px-5 py-4">No. Transaksi</th><th className="px-5 py-4">Warga</th><th className="px-5 py-4">Tanggal Setoran</th><th className="px-5 py-4">Jenis Sampah & Berat</th><th className="px-5 py-4">Total Berat</th><th className="px-5 py-4">Poin Sementara</th><th className="px-5 py-4">Status Validasi</th><th className="px-5 py-4">Aksi</th></tr></thead>
+            <thead><tr className="border-b border-gray-100 bg-[#fafafa]/80 text-[12px] font-bold text-gray-600"><th className="px-5 py-4">No. Transaksi</th><th className="px-5 py-4">Warga</th><th className="px-5 py-4">Tanggal Setoran</th><th className="px-5 py-4">Jenis Sampah & Berat</th><th className="px-5 py-4">Total Berat</th><th className="px-5 py-4">Poin</th><th className="px-5 py-4">Status Validasi</th><th className="px-5 py-4">Aksi</th></tr></thead>
             <tbody className="divide-y divide-gray-100">
               {loading ? <tr><td colSpan={8} className="py-10 text-center text-sm text-gray-400">Memuat...</td></tr> : paginated.length === 0 ? <tr><td colSpan={8} className="py-10 text-center text-sm text-gray-400">Tidak ada riwayat setoran</td></tr> : paginated.map(s => (
                 <tr key={s.setoran_id} className="hover:bg-gray-50/50">
@@ -108,11 +108,11 @@ export default function RiwayatSetoranPage() {
                   <td className="px-5 py-4 align-top text-[12px] text-gray-700">{new Date(s.tanggal_setoran).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}<br /><span className="text-gray-400">{new Date(s.tanggal_setoran).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</span></td>
                   <td className="px-5 py-4 align-top"><div className="space-y-1.5">{(s.detail_setoran || []).map(d => <div key={d.detail_setoran_id} className="flex items-center justify-between gap-3 text-[12px]"><span className="flex items-center gap-2"><WasteIcon type={d.jenis_sampah.nama_jenis_sampah} size={16} />{d.jenis_sampah.nama_jenis_sampah}</span><span className="font-medium text-gray-700">{Number(d.berat_aktual).toFixed(1).replace('.', ',')} kg</span></div>)}<div className="flex items-center justify-between gap-3 text-[12px] font-bold border-t border-gray-100 pt-1.5 mt-1.5"><span>Total</span><span>{Number(s.total_berat_aktual).toFixed(1).replace('.', ',')} kg</span></div></div></td>
                   <td className="px-5 py-4 align-top text-[13px] font-semibold text-gray-900">{Number(s.total_berat_aktual).toFixed(1).replace('.', ',')} kg</td>
-                  <td className="px-5 py-4 align-top text-center"><p className="text-[14px] font-bold text-gray-900">{s.total_poin_sementara}</p><p className="text-[11px] text-gray-400">poin</p></td>
+                  <td className="px-5 py-4 align-top text-center"><p className="text-[14px] font-bold text-gray-900">{(s as any).total_poin ?? s.total_poin_sementara}</p><p className="text-[11px] text-gray-400">poin</p></td>
                   <td className="px-5 py-4 align-top">
-                    {s.status_validasi === 'disetujui' && <><span className="inline-flex px-2.5 py-1 rounded-lg bg-[#f0fdf4] text-[#15803d] text-[11px] font-semibold border border-green-100">Terverifikasi</span><p className="text-[10px] text-gray-400 mt-1">Oleh Petugas<br />{s.tanggal_validasi ? new Date(s.tanggal_validasi).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + new Date(s.tanggal_validasi).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : '-'}</p></>}
-                    {s.status_validasi === 'menunggu' && <><span className="inline-flex px-2.5 py-1 rounded-lg bg-[#fffbeb] text-[#92400e] text-[11px] font-semibold border border-amber-100">Menunggu Validasi</span><p className="text-[10px] text-gray-400 mt-1">Oleh Petugas<br />{new Date(s.tanggal_setoran).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + new Date(s.tanggal_setoran).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</p></>}
-                    {s.status_validasi === 'ditolak' && <><span className="inline-flex px-2.5 py-1 rounded-lg bg-[#fef2f2] text-[#b91c1c] text-[11px] font-semibold border border-red-100">Ditolak</span><p className="text-[10px] text-gray-400 mt-1">Oleh Petugas<br />{s.tanggal_validasi ? new Date(s.tanggal_validasi).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) : '-'}</p></>}
+                    {s.status_validasi === 'disetujui' && <><span className="inline-flex px-2.5 py-1 rounded-lg bg-[#f0fdf4] text-[#15803d] text-[11px] font-semibold border border-green-100">Terverifikasi</span><p className="text-[10px] text-gray-400 mt-1">Oleh Admin<br />{s.tanggal_validasi ? new Date(s.tanggal_validasi).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + new Date(s.tanggal_validasi).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : '-'}</p></>}
+                    {s.status_validasi === 'menunggu' && <><span className="inline-flex px-2.5 py-1 rounded-lg bg-[#fffbeb] text-[#92400e] text-[11px] font-semibold border border-amber-100">Menunggu Validasi</span><p className="text-[10px] text-gray-400 mt-1">Menunggu Admin<br />{new Date(s.tanggal_setoran).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}</p></>}
+                    {s.status_validasi === 'ditolak' && <><span className="inline-flex px-2.5 py-1 rounded-lg bg-[#fef2f2] text-[#b91c1c] text-[11px] font-semibold border border-red-100">Ditolak</span><p className="text-[10px] text-gray-400 mt-1">Oleh Admin<br />{s.tanggal_validasi ? new Date(s.tanggal_validasi).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) : '-'}</p></>}
                   </td>
                   <td className="px-5 py-4 align-top"><button onClick={() => { setSelected(s); setShowDetail(true); }} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-gray-200 text-gray-700 bg-white hover:bg-gray-50 text-[12px] font-medium"><Eye size={14} />Lihat Detail</button></td>
                 </tr>
