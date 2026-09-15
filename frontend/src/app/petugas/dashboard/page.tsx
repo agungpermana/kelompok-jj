@@ -10,7 +10,7 @@ export default function PetugasDashboardPage() {
         subtitle="Ringkasan tugas penjemputan dan setoran hari ini."
       />
 
-      <div className="grid grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <div className="bg-white rounded-xl border border-gray-200/80 p-5 shadow-sm">
           <p className="text-sm text-gray-500 mb-1">Penjemputan Hari Ini</p>
           <p className="text-2xl font-bold text-gray-900">5</p>

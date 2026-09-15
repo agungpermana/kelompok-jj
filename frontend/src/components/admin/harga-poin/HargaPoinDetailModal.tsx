@@ -49,7 +49,7 @@ export default function HargaPoinDetailModal({
         </div>
 
         <div className="px-6 py-5 space-y-5">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="p-4 rounded-lg bg-green-50 border border-green-100">
               <div className="flex items-center gap-2 text-green-700 mb-1">
                 <DollarSign className="h-4 w-4" />

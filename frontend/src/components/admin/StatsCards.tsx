@@ -88,7 +88,7 @@ const stats: StatCard[] = [
 
 export default function StatsCards() {
   return (
-    <div className="grid grid-cols-6 gap-4 mb-6">
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
       {stats.map((stat) => (
         <div
           key={stat.title}

@@ -127,8 +127,8 @@ export function KomposisiChart() {
       </div>
 
       {/* Chart + Legend */}
-      <div className="flex items-center gap-4">
-        <div className="h-[180px] w-[180px] flex-shrink-0">
+      <div className="flex flex-col sm:flex-row items-center gap-4">
+        <div className="h-[180px] w-[180px] flex-shrink-0 mx-auto sm:mx-0">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie

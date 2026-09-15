@@ -174,7 +174,7 @@ export default function HargaPoinFormModal({
             </div>
           )}
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-semibold text-gray-700 mb-1">
                 Harga per {selectedJenis?.satuan || 'Satuan'} (Rp) <span className="text-red-500">*</span>
@@ -221,7 +221,7 @@ export default function HargaPoinFormModal({
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-semibold text-gray-700 mb-1">
                 Berlaku Mulai <span className="text-red-500">*</span>

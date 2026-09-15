@@ -1,6 +1,8 @@
+'use client';
+
 import React from 'react';
-import Link from 'next/link';
-import { Bell, ChevronDown, CalendarDays, User, ChevronRight } from 'lucide-react';
+import { Bell, ChevronDown, CalendarDays, User, Menu } from 'lucide-react';
+import { useSidebar } from './SidebarContext';
 
 export interface Breadcrumb {
   label: string;
@@ -14,6 +16,8 @@ interface AdminHeaderProps {
 }
 
 export default function AdminHeader({ title, subtitle, breadcrumbs }: AdminHeaderProps) {
+  const { toggle } = useSidebar();
+
   const today = new Date();
   const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
   const months = [
@@ -25,47 +29,58 @@ export default function AdminHeader({ title, subtitle, breadcrumbs }: AdminHeade
 
   return (
     <div className="mb-6">
-      <header className="flex items-center justify-between">
-        {/* Left: Title */}
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">{title}</h1>
-          {subtitle && (
-            <p className="text-sm text-gray-500 mt-0.5">{subtitle}</p>
-          )}
+      <header className="flex items-center justify-between gap-3">
+        {/* Left: Burger + Title */}
+        <div className="flex items-center gap-3 min-w-0">
+          {/* Hamburger button — mobile only */}
+          <button
+            onClick={toggle}
+            className="lg:hidden flex-shrink-0 flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 transition-colors shadow-sm"
+            aria-label="Buka menu"
+          >
+            <Menu className="h-5 w-5" />
+          </button>
+
+          <div className="min-w-0">
+            <h1 className="text-lg sm:text-2xl font-bold text-gray-900 truncate">{title}</h1>
+            {subtitle && (
+              <p className="text-xs sm:text-sm text-gray-500 mt-0.5 truncate">{subtitle}</p>
+            )}
+          </div>
         </div>
 
         {/* Right: Actions */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
           {/* Notification Bell */}
-          <button className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-white border border-gray-200 text-gray-500 hover:bg-gray-50 hover:text-gray-700 transition-colors shadow-sm">
-            <Bell className="h-[18px] w-[18px]" strokeWidth={1.8} />
+          <button className="relative flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-white border border-gray-200 text-gray-500 hover:bg-gray-50 hover:text-gray-700 transition-colors shadow-sm">
+            <Bell className="h-4 w-4 sm:h-[18px] sm:w-[18px]" strokeWidth={1.8} />
             <span className="absolute -top-1 -right-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#16a34a] px-1 text-[10px] font-bold text-white shadow-sm">
               3
             </span>
           </button>
 
-          {/* Date */}
-          <div className="flex items-center gap-2 rounded-xl bg-white border border-gray-200 px-3.5 py-2 text-sm text-gray-600 shadow-sm">
+          {/* Date — hidden on mobile */}
+          <div className="hidden md:flex items-center gap-2 rounded-xl bg-white border border-gray-200 px-3.5 py-2 text-sm text-gray-600 shadow-sm">
             <CalendarDays className="h-4 w-4 text-gray-400" strokeWidth={1.8} />
             <span className="font-medium">{dateStr}</span>
             <ChevronDown className="h-3.5 w-3.5 text-gray-400" />
           </div>
 
           {/* User Profile */}
-          <div className="flex items-center gap-2.5 rounded-xl bg-white border border-gray-200 px-3.5 py-2 shadow-sm cursor-pointer hover:bg-gray-50 transition-colors">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-[#22c55e] to-[#16a34a]">
-              <User className="h-4 w-4 text-white" strokeWidth={2} />
+          <div className="flex items-center gap-2 rounded-xl bg-white border border-gray-200 px-2.5 sm:px-3.5 py-2 shadow-sm cursor-pointer hover:bg-gray-50 transition-colors">
+            <div className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full bg-gradient-to-br from-[#22c55e] to-[#16a34a] flex-shrink-0">
+              <User className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-white" strokeWidth={2} />
             </div>
-            <div>
+            <div className="hidden sm:block">
               <p className="text-sm font-semibold text-gray-800 leading-tight">Admin Bank Sampah</p>
               <p className="text-[11px] text-gray-400 leading-tight">Super Admin</p>
             </div>
-            <ChevronDown className="h-3.5 w-3.5 text-gray-400 ml-1" />
+            <ChevronDown className="h-3.5 w-3.5 text-gray-400 hidden sm:block ml-1" />
           </div>
         </div>
       </header>
 
-      {/* Breadcrumbs Row if provided */}
+      {/* Breadcrumbs */}
       {breadcrumbs && breadcrumbs.length > 0 && (
         <nav className="flex items-center gap-2 text-xs text-gray-400 mt-3">
           {breadcrumbs.map((crumb, idx) => {
@@ -74,14 +89,9 @@ export default function AdminHeader({ title, subtitle, breadcrumbs }: AdminHeade
               <React.Fragment key={crumb.label}>
                 {idx > 0 && <span className="text-gray-300">&gt;</span>}
                 {isLast ? (
-                  <span className="font-semibold text-[#16a34a]">
-                    {crumb.label}
-                  </span>
+                  <span className="font-semibold text-[#16a34a]">{crumb.label}</span>
                 ) : crumb.href ? (
-                  <a
-                    href={crumb.href}
-                    className="text-gray-500 hover:text-gray-700 transition-colors"
-                  >
+                  <a href={crumb.href} className="text-gray-500 hover:text-gray-700 transition-colors">
                     {crumb.label}
                   </a>
                 ) : (

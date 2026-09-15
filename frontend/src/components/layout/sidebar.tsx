@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { LogOut, ChevronDown, ChevronRight, Leaf } from 'lucide-react';
+import { LogOut, ChevronDown, ChevronRight, Leaf, X } from 'lucide-react';
 
 export interface MenuItem {
   label: string;
@@ -24,9 +24,11 @@ interface SidebarProps {
     label?: string;
     subtitle?: string;
   };
+  isOpen?: boolean;
+  onClose?: () => void;
 }
 
-export default function Sidebar({ menuSections, logo }: SidebarProps) {
+export default function Sidebar({ menuSections, logo, isOpen = false, onClose }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [expandedMenus, setExpandedMenus] = useState<string[]>([]);
@@ -73,21 +75,39 @@ export default function Sidebar({ menuSections, logo }: SidebarProps) {
     }
   };
 
+  const handleLinkClick = () => {
+    // Close sidebar on mobile when a link is clicked
+    if (onClose) onClose();
+  };
+
   return (
-    <aside className="fixed top-0 left-0 z-40 flex h-screen w-[260px] flex-col bg-white border-r border-gray-200">
+    <aside
+      className={`fixed top-0 left-0 z-40 flex h-screen w-[260px] flex-col bg-white border-r border-gray-200 transition-transform duration-300 ease-in-out
+        ${isOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0`}
+    >
       {/* Logo */}
-      <div className="flex items-center gap-2.5 px-5 py-4 border-b border-gray-100">
-        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#22c55e] to-[#16a34a] shadow-md shadow-green-200">
-          <Leaf className="h-5 w-5 text-white" strokeWidth={2.5} />
+      <div className="flex items-center justify-between gap-2.5 px-5 py-4 border-b border-gray-100">
+        <div className="flex items-center gap-2.5">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#22c55e] to-[#16a34a] shadow-md shadow-green-200">
+            <Leaf className="h-5 w-5 text-white" strokeWidth={2.5} />
+          </div>
+          <div>
+            <h1 className="text-base font-extrabold tracking-tight text-[#16a34a]">
+              {logo?.label || 'TRASHURE'}
+            </h1>
+            <p className="text-[10px] font-medium text-gray-400 -mt-0.5">
+              {logo?.subtitle || 'Bank Sampah'}
+            </p>
+          </div>
         </div>
-        <div>
-          <h1 className="text-base font-extrabold tracking-tight text-[#16a34a]">
-            {logo?.label || 'TRASHURE'}
-          </h1>
-          <p className="text-[10px] font-medium text-gray-400 -mt-0.5">
-            {logo?.subtitle || 'Bank Sampah'}
-          </p>
-        </div>
+        {/* Close button — mobile only */}
+        <button
+          onClick={onClose}
+          className="lg:hidden p-1.5 rounded-lg text-gray-400 hover:bg-gray-100 transition-colors"
+          aria-label="Tutup sidebar"
+        >
+          <X className="h-5 w-5" />
+        </button>
       </div>
 
       {/* Navigation */}
@@ -131,6 +151,7 @@ export default function Sidebar({ menuSections, logo }: SidebarProps) {
                             <Link
                               key={child.href}
                               href={child.href}
+                              onClick={handleLinkClick}
                               className={`flex items-center gap-2 rounded-md px-2.5 py-1.5 text-[12.5px] font-medium transition-all duration-200 ${
                                 childActive
                                   ? 'text-[#16a34a] bg-green-50'
@@ -152,6 +173,7 @@ export default function Sidebar({ menuSections, logo }: SidebarProps) {
                 <Link
                   key={item.label}
                   href={item.href!}
+                  onClick={handleLinkClick}
                   className={`group flex items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] font-medium transition-all duration-200 ${
                     active
                       ? 'bg-[#16a34a] text-white shadow-md shadow-green-200'

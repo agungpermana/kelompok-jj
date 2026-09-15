@@ -202,7 +202,7 @@ export default function StokSampahPage() {
       )}
 
       {/* Stats */}
-      <div className="grid grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
         <div className="bg-white rounded-xl border border-gray-200/80 p-5 shadow-sm">
           <div className="flex items-center justify-between mb-2">
             <p className="text-sm text-gray-500">Total Stok Tersedia</p>

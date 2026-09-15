@@ -218,8 +218,8 @@ export default function WargaPage() {
 
       <div className="bg-white rounded-xl border border-gray-200/80 shadow-sm overflow-hidden">
         {/* Toolbar */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-          <div className="relative flex-1 max-w-sm">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 px-5 py-4 border-b border-gray-100">
+          <div className="relative flex-1 max-w-full sm:max-w-sm">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
             <input
               type="text"
@@ -413,7 +413,7 @@ export default function WargaPage() {
                   required
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-semibold text-gray-700 mb-1">Jenis Kelamin</label>
                   <select
