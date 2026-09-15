@@ -469,7 +469,7 @@ export default function RiwayatSetoranPage() {
 
                         <div>
                           <p className="text-[11px] text-gray-400 font-medium">
-                            {isMenunggu ? 'Poin Sementara' : 'Poin Diterima'}
+                            {isMenunggu ? 'Poin Perkiraan' : 'Poin Diterima'}
                           </p>
                           <p
                             className={`text-sm font-extrabold ${
