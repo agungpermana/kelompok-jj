@@ -114,6 +114,7 @@
                             "schema": {
                                 "required": [
                                     "jenis_sampah_id",
+                                    "jenis_sampah_id",
                                     "harga_per_satuan",
                                     "nilai_poin_per_satuan",
                                     "berlaku_mulai",
@@ -5094,6 +5095,18 @@
         {
             "name": "Admin - Jenis Sampah",
             "description": "API Master Data Jenis Sampah untuk Admin (Kelola data jenis sampah, kategori, satuan, keterangan, dan status)."
+        },
+        {
+            "name": "Admin - Pengepul",
+            "description": "CRUD Data Pengepul oleh Admin"
+        },
+        {
+            "name": "Admin - Petugas",
+            "description": "CRUD Data Petugas oleh Admin"
+        },
+        {
+            "name": "Admin - Warga",
+            "description": "CRUD Data Warga oleh Admin"
         },
         {
             "name": "Admin - Pengepul",

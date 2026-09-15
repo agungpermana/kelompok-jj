@@ -385,8 +385,8 @@ export default function JenisSampahPage() {
                       <td className="py-3 px-5">
                         <span
                           className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold ${isAktif
-                              ? 'bg-green-100 text-green-700'
-                              : 'bg-gray-100 text-gray-600'
+                            ? 'bg-green-100 text-green-700'
+                            : 'bg-gray-100 text-gray-600'
                             }`}
                         >
                           {isAktif ? 'Aktif' : 'Nonaktif'}
@@ -467,11 +467,10 @@ export default function JenisSampahPage() {
                 <button
                   key={pageNum}
                   onClick={() => setCurrentPage(pageNum)}
-                  className={`flex h-7 w-7 items-center justify-center rounded-md text-xs font-bold transition ${
-                    isActive
+                  className={`flex h-7 w-7 items-center justify-center rounded-md text-xs font-bold transition ${isActive
                       ? 'bg-[#16a34a] text-white'
                       : 'text-gray-500 hover:bg-gray-100'
-                  }`}
+                    }`}
                 >
                   {pageNum}
                 </button>
