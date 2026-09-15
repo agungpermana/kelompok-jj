@@ -103,7 +103,7 @@ class DashboardController extends Controller
 
         $totalPoinAktif = TransaksiSetoran::where('warga_id', $warga->warga_id)
             ->where('status_validasi', 'disetujui')
-            ->sum('total_poin_sementara');
+            ->sum('total_poin');
 
         $penjemputanAktif = PengajuanPenjemputan::where('warga_id', $warga->warga_id)
             ->where(function ($query) {
