@@ -207,8 +207,11 @@ class AuthController extends Controller
     )]
     public function me(Request $request)
     {
+        $user = $request->user();
+        $user->load(['admin', 'warga', 'petugas', 'pengepul']);
+
         return response()->json([
-            'user' => $request->user()
+            'user' => $user
         ]);
     }
 }

@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\Warga\JenisSampahController as WargaJenisSampahController;
 use App\Http\Controllers\Api\Warga\PengajuanPenjemputanController;
+use App\Http\Controllers\Api\Warga\SetoranController as WargaSetoranController;
 use App\Http\Controllers\Api\Petugas\JadwalPenjemputanController;
 use App\Http\Controllers\Api\Petugas\SetoranController;
 use App\Http\Controllers\Api\Admin\PengajuanPenjemputanController as AdminPengajuanPenjemputanController;
@@ -235,6 +236,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get(
             '/warga/pengajuan/{id}/status',
             [PengajuanPenjemputanController::class, 'status']
+        );
+        Route::get(
+            '/warga/setoran',
+            [WargaSetoranController::class, 'index']
+        );
+        Route::get(
+            '/warga/setoran/{id}',
+            [WargaSetoranController::class, 'show']
         );
     });
 
