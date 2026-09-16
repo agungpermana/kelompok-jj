@@ -19,6 +19,7 @@ class TransaksiPenjualan extends Model
         'total_penjualan',
         'status_transaksi',
         'media_konfirmasi',
+        'metode_transaksi',
         'catatan',
     ];
 

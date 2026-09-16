@@ -47,6 +47,7 @@ export const adminMenus: MenuSection[] = [
     items: [
       { label: 'Pengajuan Penjemputan', icon: FileText, href: '/admin/pengajuan-penjemputan' },
       { label: 'Setoran Sampah', icon: Recycle, href: '/admin/setoran-sampah' },
+      { label: 'Transaksi Penjualan', icon: BadgeDollarSign, href: '/admin/transaksi-penjualan' },
       { label: 'Poin & Saldo', icon: Coins, href: '/admin/poin-saldo' },
       { label: 'Penukaran Poin', icon: ArrowLeftRight, href: '/admin/penukaran-poin' },
     ],

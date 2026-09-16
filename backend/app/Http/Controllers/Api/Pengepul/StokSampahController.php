@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Pengepul;
 use App\Http\Controllers\Controller;
 use App\Models\StokSampah;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use OpenApi\Attributes as OA;
 
 class StokSampahController extends Controller
@@ -60,6 +61,16 @@ class StokSampahController extends Controller
             ->where('jumlah_stok', '>', 0)
             ->orderBy('jenis_sampah_id')
             ->get();
+
+        $stok->each(function ($item) {
+            $harga = DB::table('harga_sampah')
+                ->where('jenis_sampah_id', $item->jenis_sampah_id)
+                ->where('status', 'aktif')
+                ->orderBy('berlaku_mulai', 'desc')
+                ->first();
+            $item->harga_per_kg = $harga ? $harga->harga_per_satuan : 0;
+            $item->total_nilai = $item->harga_per_kg * $item->jumlah_stok;
+        });
 
         return response()->json([
             'message' => 'Daftar stok sampah berhasil diambil.',

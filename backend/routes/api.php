@@ -22,6 +22,8 @@ use App\Http\Controllers\Api\Admin\PengepulController as AdminPengepulController
 use App\Http\Controllers\Api\Admin\PetugasController as AdminPetugasController;
 use App\Http\Controllers\Api\Admin\SetoranValidasiController;
 use App\Http\Controllers\Api\Admin\PenukaranPoinController as AdminPenukaranPoinController;
+use App\Http\Controllers\Api\Admin\TransaksiPenjualanController;
+use App\Http\Controllers\Api\Admin\AdminDashboardController;
 use App\Http\Controllers\Api\Pengepul\StokSampahController as PengepulStokSampahController;
 
 // Default code
@@ -63,6 +65,8 @@ Route::middleware('auth:sanctum')->group(function () {
                 'user' => $request->user(),
             ]);
         });
+
+        Route::get('/admin/dashboard', [AdminDashboardController::class, 'index']);
         Route::get(
             '/admin/pengajuan',
             [AdminPengajuanPenjemputanController::class, 'index']
@@ -155,6 +159,13 @@ Route::middleware('auth:sanctum')->group(function () {
 
         // Penukaran Poin
         Route::get('/admin/penukaran-poin', [AdminPenukaranPoinController::class, 'index']);
+
+        // Transaksi Penjualan
+        Route::get('/admin/penjualan/jenis-sampah', [TransaksiPenjualanController::class, 'jenisSampah']);
+        Route::get('/admin/penjualan', [TransaksiPenjualanController::class, 'index']);
+        Route::post('/admin/penjualan', [TransaksiPenjualanController::class, 'store']);
+        Route::get('/admin/penjualan/{id}', [TransaksiPenjualanController::class, 'show']);
+        Route::delete('/admin/penjualan/{id}', [TransaksiPenjualanController::class, 'destroy']);
     });
 
 
