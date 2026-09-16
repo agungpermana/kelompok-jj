@@ -678,8 +678,8 @@ export default function PenukaranPoinPage() {
                             )
                           }
                           className={`flex h-12 items-center gap-2 border-b-2 px-1 text-sm transition-colors ${isActive
-                              ? 'border-green-600 font-semibold text-green-600'
-                              : 'border-transparent text-gray-600 hover:text-green-600'
+                            ? 'border-green-600 font-semibold text-green-600'
+                            : 'border-transparent text-gray-600 hover:text-green-600'
                             }`}
                         >
 
@@ -1012,8 +1012,8 @@ export default function PenukaranPoinPage() {
                                       }
                                     }}
                                     className={`shrink-0 rounded-md border px-3 py-1.5 text-[11px] font-semibold transition-colors ${canRedeem
-                                        ? 'border-green-300 bg-white text-green-700 hover:bg-green-50'
-                                        : 'cursor-not-allowed border-gray-200 bg-gray-50 text-gray-400'
+                                      ? 'border-green-300 bg-white text-green-700 hover:bg-green-50'
+                                      : 'cursor-not-allowed border-gray-200 bg-gray-50 text-gray-400'
                                       }`}
                                   >
                                     Tukar
@@ -1080,9 +1080,9 @@ export default function PenukaranPoinPage() {
                                   )
                                 }
                                 className={`flex h-9 w-9 items-center justify-center rounded-md text-sm font-medium transition-colors ${page ===
-                                    currentPage
-                                    ? 'bg-green-600 text-white shadow-sm'
-                                    : 'text-gray-600 hover:bg-gray-50'
+                                  currentPage
+                                  ? 'bg-green-600 text-white shadow-sm'
+                                  : 'text-gray-600 hover:bg-gray-50'
                                   }`}
                               >
                                 {page}
@@ -1353,43 +1353,20 @@ export default function PenukaranPoinPage() {
                     Setor sampah secara
                     rutin
                   </span>
-
                 </div>
-
                 <div className="flex items-start gap-2.5">
-
                   <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-green-600" />
-
                   <span className="text-xs leading-5 text-gray-700">
                     Pilah sampah sesuai
                     jenisnya
                   </span>
-
                 </div>
-
                 <div className="flex items-start gap-2.5">
-
                   <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-green-600" />
-
                   <span className="text-xs leading-5 text-gray-700">
-                    Ikuti aktivitas dan
-                    event dari bank
-                    sampah
+                    Validasi admin akan menentukan poin anda
                   </span>
-
                 </div>
-
-                <div className="flex items-start gap-2.5">
-
-                  <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-green-600" />
-
-                  <span className="text-xs leading-5 text-gray-700">
-                    Ajak teman untuk
-                    bergabung
-                  </span>
-
-                </div>
-
               </div>
 
               <div className="pointer-events-none absolute -bottom-8 -right-5 h-28 w-28 rounded-full bg-green-100/60" />
@@ -1473,9 +1450,9 @@ export default function PenukaranPoinPage() {
                 {tukarStatus && (
                   <div
                     className={`mb-4 flex items-start gap-2 rounded-lg p-3 ${tukarStatus.type ===
-                        'success'
-                        ? 'bg-green-50 text-green-700'
-                        : 'bg-red-50 text-red-700'
+                      'success'
+                      ? 'bg-green-50 text-green-700'
+                      : 'bg-red-50 text-red-700'
                       }`}
                   >
 
@@ -1556,10 +1533,10 @@ export default function PenukaranPoinPage() {
 
                       <span
                         className={`text-sm font-bold ${saldo -
-                            selectedHadiah.poin_dibutuhkan >=
-                            0
-                            ? 'text-green-600'
-                            : 'text-red-600'
+                          selectedHadiah.poin_dibutuhkan >=
+                          0
+                          ? 'text-green-600'
+                          : 'text-red-600'
                           }`}
                       >
                         {(
@@ -1630,9 +1607,9 @@ export default function PenukaranPoinPage() {
 
             <div
               className={`flex max-w-sm items-center gap-3 rounded-xl border bg-white px-4 py-3 shadow-xl ${tukarStatus.type ===
-                  'success'
-                  ? 'border-green-200'
-                  : 'border-red-200'
+                'success'
+                ? 'border-green-200'
+                : 'border-red-200'
                 }`}
             >
 
@@ -1645,9 +1622,9 @@ export default function PenukaranPoinPage() {
 
               <p
                 className={`text-sm font-medium ${tukarStatus.type ===
-                    'success'
-                    ? 'text-green-700'
-                    : 'text-red-700'
+                  'success'
+                  ? 'text-green-700'
+                  : 'text-red-700'
                   }`}
               >
                 {
