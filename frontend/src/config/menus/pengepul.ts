@@ -19,7 +19,7 @@ export const pengepulMenus: MenuSection[] = [
     ],
   },
   {
-    title: 'PENGATURAN',
+    title: 'PROFIL',
     items: [
       { label: 'Profil Saya', icon: User, href: '/pengepul/profil' },
     ],

@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { LogOut, ChevronDown, ChevronRight, Leaf } from 'lucide-react';
+import { LogOut, ChevronDown, ChevronRight, Leaf, User } from 'lucide-react';
 
 export interface MenuItem {
   label: string;
@@ -24,9 +24,14 @@ interface SidebarProps {
     label?: string;
     subtitle?: string;
   };
+  profileCard?: {
+    name: string;
+    role: string;
+    href: string;
+  };
 }
 
-export default function Sidebar({ menuSections, logo }: SidebarProps) {
+export default function Sidebar({ menuSections, logo, profileCard }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [expandedMenus, setExpandedMenus] = useState<string[]>([]);
@@ -178,6 +183,29 @@ export default function Sidebar({ menuSections, logo }: SidebarProps) {
           </div>
         ))}
       </nav>
+
+      {/* Profile Card (optional) */}
+      {profileCard && (
+        <div className="px-3 py-3 border-t border-gray-100">
+          <Link
+            href={profileCard.href}
+            className="flex items-center gap-3 p-2 rounded-2xl hover:bg-gray-50 transition-colors cursor-pointer border border-transparent hover:border-gray-100"
+          >
+            <div className="flex h-[42px] w-[42px] items-center justify-center rounded-full bg-gradient-to-br from-[#22c55e] to-[#16a34a] flex-shrink-0">
+              <User className="h-5 w-5 text-white" strokeWidth={2} />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-[14px] font-bold text-gray-800 truncate leading-tight">
+                {profileCard.name}
+              </p>
+              <p className="text-[12px] font-medium text-gray-400 truncate leading-tight mt-0.5">
+                {profileCard.role}
+              </p>
+            </div>
+            <ChevronDown className="h-4 w-4 text-gray-400 flex-shrink-0" />
+          </Link>
+        </div>
+      )}
 
       {/* Logout Button */}
       <div className="border-t border-gray-100 px-3 py-3">

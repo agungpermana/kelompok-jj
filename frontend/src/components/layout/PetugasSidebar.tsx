@@ -10,8 +10,7 @@ import {
   Home,
   Truck,
   GitFork,
-  BarChart3,
-  Settings,
+  User,
   LogOut,
 } from 'lucide-react';
 import PetugasAvatar from '@/components/common/PetugasAvatar';
@@ -78,8 +77,7 @@ export default function PetugasSidebar() {
   const isValidasiSetoranActive = pathname === '/petugas/validasi-setoran';
   const isRiwayatSetoranActive = pathname === '/petugas/riwayat-setoran';
   const isDashboardActive = pathname === '/petugas/dashboard';
-  const isLaporanActive = pathname === '/petugas/laporan';
-  const isPengaturanActive = pathname === '/petugas/pengaturan' || pathname === '/petugas/profil';
+  const isProfilActive = pathname === '/petugas/profil';
 
   return (
     <aside className="fixed top-0 left-0 z-40 flex h-screen w-[260px] flex-col bg-white border-r border-gray-100 shadow-[2px_0_12px_rgba(0,0,0,0.02)]">
@@ -240,30 +238,17 @@ export default function PetugasSidebar() {
           )}
         </div>
 
-        {/* Laporan */}
+        {/* Profil */}
         <Link
-          href="/petugas/riwayat-penjemputan"
+          href="/petugas/profil"
           className={`flex items-center gap-3.5 rounded-xl px-3.5 py-2.5 text-[14px] font-medium transition-all duration-200 ${
-            isLaporanActive
+            isProfilActive
               ? 'bg-[#f0fdf4] text-[#16a34a] font-semibold'
               : 'text-gray-700 hover:bg-gray-50/80 hover:text-gray-900'
           }`}
         >
-          <BarChart3 className="h-[19px] w-[19px] text-gray-600 flex-shrink-0" strokeWidth={1.8} />
-          <span>Laporan</span>
-        </Link>
-
-        {/* Pengaturan */}
-        <Link
-          href="/petugas/dashboard"
-          className={`flex items-center gap-3.5 rounded-xl px-3.5 py-2.5 text-[14px] font-medium transition-all duration-200 ${
-            isPengaturanActive
-              ? 'bg-[#f0fdf4] text-[#16a34a] font-semibold'
-              : 'text-gray-700 hover:bg-gray-50/80 hover:text-gray-900'
-          }`}
-        >
-          <Settings className="h-[19px] w-[19px] text-gray-600 flex-shrink-0" strokeWidth={1.8} />
-          <span>Pengaturan</span>
+          <User className="h-[19px] w-[19px] text-gray-600 flex-shrink-0" strokeWidth={1.8} />
+          <span>Profil</span>
         </Link>
 
         {/* Keluar */}
@@ -279,7 +264,10 @@ export default function PetugasSidebar() {
 
       {/* User Profile Card at Bottom */}
       <div className="p-4 border-t border-gray-100 bg-white">
-        <div className="flex items-center gap-3 p-2 rounded-2xl hover:bg-gray-50 transition-colors cursor-pointer border border-transparent hover:border-gray-100">
+        <Link
+          href="/petugas/profil"
+          className="flex items-center gap-3 p-2 rounded-2xl hover:bg-gray-50 transition-colors cursor-pointer border border-transparent hover:border-gray-100"
+        >
           <PetugasAvatar size={42} />
           <div className="flex-1 min-w-0">
             <p className="text-[14px] font-bold text-gray-800 truncate leading-tight">
@@ -290,7 +278,7 @@ export default function PetugasSidebar() {
             </p>
           </div>
           <ChevronDown className="h-4 w-4 text-gray-400 flex-shrink-0" />
-        </div>
+        </Link>
       </div>
     </aside>
   );

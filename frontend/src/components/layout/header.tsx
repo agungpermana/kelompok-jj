@@ -1,6 +1,7 @@
+'use client';
+
 import React from 'react';
-import Link from 'next/link';
-import { Bell, ChevronDown, CalendarDays, User, ChevronRight } from 'lucide-react';
+import { Bell, ChevronDown, CalendarDays, ChevronRight } from 'lucide-react';
 
 export interface Breadcrumb {
   label: string;
@@ -49,18 +50,6 @@ export default function AdminHeader({ title, subtitle, breadcrumbs }: AdminHeade
             <CalendarDays className="h-4 w-4 text-gray-400" strokeWidth={1.8} />
             <span className="font-medium">{dateStr}</span>
             <ChevronDown className="h-3.5 w-3.5 text-gray-400" />
-          </div>
-
-          {/* User Profile */}
-          <div className="flex items-center gap-2.5 rounded-xl bg-white border border-gray-200 px-3.5 py-2 shadow-sm cursor-pointer hover:bg-gray-50 transition-colors">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-[#22c55e] to-[#16a34a]">
-              <User className="h-4 w-4 text-white" strokeWidth={2} />
-            </div>
-            <div>
-              <p className="text-sm font-semibold text-gray-800 leading-tight">Admin Bank Sampah</p>
-              <p className="text-[11px] text-gray-400 leading-tight">Super Admin</p>
-            </div>
-            <ChevronDown className="h-3.5 w-3.5 text-gray-400 ml-1" />
           </div>
         </div>
       </header>

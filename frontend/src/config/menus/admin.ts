@@ -6,16 +6,15 @@ import {
   Recycle,
   Coins,
   ArrowLeftRight,
-  ShieldCheck,
   FileText,
   FileBarChart,
   FileSpreadsheet,
   FilePieChart,
-  Settings,
   PackageSearch,
   BadgeDollarSign,
   Ticket,
-  FileCheck
+  FileCheck,
+  User,
 } from 'lucide-react';
 import type { MenuSection } from '@/components/layout/sidebar';
 
@@ -47,7 +46,6 @@ export const adminMenus: MenuSection[] = [
     title: 'TRANSAKSI',
     items: [
       { label: 'Pengajuan Penjemputan', icon: FileText, href: '/admin/pengajuan-penjemputan' },
-      // { label: 'Penjemputan', icon: Truck, href: '/admin/penjemputan' },
       { label: 'Setoran Sampah', icon: Recycle, href: '/admin/setoran-sampah' },
       { label: 'Poin & Saldo', icon: Coins, href: '/admin/poin-saldo' },
       { label: 'Penukaran Poin', icon: ArrowLeftRight, href: '/admin/penukaran-poin' },
@@ -56,7 +54,6 @@ export const adminMenus: MenuSection[] = [
   {
     title: 'VALIDASI',
     items: [
-      { label: 'Validasi Setoran', icon: ShieldCheck, href: '/admin/validasi-setoran' },
       { label: 'Validasi Transaksi', icon: FileCheck, href: '/admin/validasi-transaksi' },
     ],
   },
@@ -71,9 +68,9 @@ export const adminMenus: MenuSection[] = [
     ],
   },
   {
-    title: 'PENGATURAN',
+    title: 'PROFIL',
     items: [
-      { label: 'Pengaturan Sistem', icon: Settings, href: '/admin/pengaturan' },
+      { label: 'Profil Saya', icon: User, href: '/admin/profil' },
     ],
   },
 ];

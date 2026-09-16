@@ -10,7 +10,7 @@ export default function PengepulDashboardPage() {
         subtitle="Ringkasan stok dan penjualan sampah."
       />
 
-      <div className="grid grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-3 gap-4 mb-6">
         <div className="bg-white rounded-xl border border-gray-200/80 p-5 shadow-sm">
           <p className="text-sm text-gray-500 mb-1">Total Stok</p>
           <p className="text-2xl font-bold text-gray-900">324,8 kg</p>
@@ -22,10 +22,6 @@ export default function PengepulDashboardPage() {
         <div className="bg-white rounded-xl border border-gray-200/80 p-5 shadow-sm">
           <p className="text-sm text-gray-500 mb-1">Saldo</p>
           <p className="text-2xl font-bold text-gray-900">Rp 12.350.000</p>
-        </div>
-        <div className="bg-white rounded-xl border border-gray-200/80 p-5 shadow-sm">
-          <p className="text-sm text-gray-500 mb-1">Transaksi Pending</p>
-          <p className="text-2xl font-bold text-amber-500">3</p>
         </div>
       </div>
     </div>
