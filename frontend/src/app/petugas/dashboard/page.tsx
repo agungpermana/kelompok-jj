@@ -83,8 +83,7 @@ export default function PetugasDashboardPage() {
         </div>
       </div>
 
-      {dashboard.jadwal_hari_ini.length > 0 && (
-        <div className="bg-white rounded-xl border border-gray-200/80 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-xl border border-gray-200/80 shadow-sm overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-200/80 bg-gray-50">
             <h3 className="text-lg font-semibold text-gray-900">Tugas Penjemputan Hari Ini</h3>
             <p className="text-sm text-gray-500 mt-1">Daftar jadwal penjemputan yang dijadwalkan untuk hari ini</p>
@@ -106,48 +105,64 @@ export default function PetugasDashboardPage() {
                 </tr>
               </thead>
               <tbody>
-                {dashboard.jadwal_hari_ini.map((jadwal, idx) => {
-                  const statusConfig = getStatusBadge(jadwal.status_jadwal);
-                  return (
-                    <tr key={jadwal.jadwal_id} className="border-b border-gray-200/80 hover:bg-gray-50/50 transition-colors">
-                      <td className="px-6 py-4 text-sm text-gray-900">{idx + 1}</td>
-                      <td className="px-6 py-4 text-sm font-medium text-gray-900">{formatTime(jadwal.waktu_penjemputan)}</td>
-                      <td className="px-6 py-4 text-sm text-gray-700">{jadwal.nama_warga}</td>
-                      <td className="px-6 py-4 text-sm text-gray-700">{jadwal.alamat_penjemputan}</td>
-                      <td className="px-6 py-4 text-sm text-gray-700">{jadwal.no_telepon}</td>
-                      <td className="px-6 py-4 text-sm text-gray-700">
-                        <div className="space-y-1">
-                          {jadwal.detail_sampah.map((sampah, sIdx) => (
-                            <div key={sIdx} className="text-xs">
-                              {sampah.jenis_sampah}
-                            </div>
-                          ))}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 text-sm font-medium text-gray-900 text-right">
-                        {jadwal.perkiraan_total_berat.toLocaleString('id-ID', { maximumFractionDigits: 1 })} kg
-                      </td>
-                      <td className="px-6 py-4 text-center">
-                        <span className={`inline-block px-3 py-1 text-xs font-medium rounded-full ${statusConfig.bg} ${statusConfig.text}`}>
-                          {statusConfig.label}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-center">
-                        <a
-                          href={`/petugas/penjemputan`}
-                          className="inline-block px-3 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded hover:bg-blue-200 transition-colors"
-                        >
-                          Lihat
-                        </a>
-                      </td>
-                    </tr>
-                  );
-                })}
+                {isLoading ? (
+                  <tr>
+                    <td colSpan={9} className="px-6 py-12 text-center">
+                      <div className="flex flex-col items-center gap-2">
+                        <div className="w-6 h-6 border-2 border-[#16a34a] border-t-transparent rounded-full animate-spin" />
+                        <p className="text-sm text-gray-500">Memuat data...</p>
+                      </div>
+                    </td>
+                  </tr>
+                ) : dashboard.jadwal_hari_ini.length === 0 ? (
+                  <tr>
+                    <td colSpan={9} className="px-6 py-12 text-center text-sm text-gray-400">
+                      Tidak ada jadwal penjemputan terbaru hari ini.
+                    </td>
+                  </tr>
+                ) : (
+                  dashboard.jadwal_hari_ini.map((jadwal, idx) => {
+                    const statusConfig = getStatusBadge(jadwal.status_jadwal);
+                    return (
+                      <tr key={jadwal.jadwal_id} className="border-b border-gray-200/80 hover:bg-gray-50/50 transition-colors">
+                        <td className="px-6 py-4 text-sm text-gray-900">{idx + 1}</td>
+                        <td className="px-6 py-4 text-sm font-medium text-gray-900">{formatTime(jadwal.waktu_penjemputan)}</td>
+                        <td className="px-6 py-4 text-sm text-gray-700">{jadwal.nama_warga}</td>
+                        <td className="px-6 py-4 text-sm text-gray-700">{jadwal.alamat_penjemputan}</td>
+                        <td className="px-6 py-4 text-sm text-gray-700">{jadwal.no_telepon}</td>
+                        <td className="px-6 py-4 text-sm text-gray-700">
+                          <div className="space-y-1">
+                            {jadwal.detail_sampah.map((sampah, sIdx) => (
+                              <div key={sIdx} className="text-xs">
+                                {sampah.jenis_sampah}
+                              </div>
+                            ))}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 text-sm font-medium text-gray-900 text-right">
+                          {jadwal.perkiraan_total_berat.toLocaleString('id-ID', { maximumFractionDigits: 1 })} kg
+                        </td>
+                        <td className="px-6 py-4 text-center">
+                          <span className={`inline-block px-3 py-1 text-xs font-medium rounded-full ${statusConfig.bg} ${statusConfig.text}`}>
+                            {statusConfig.label}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-center">
+                          <a
+                            href={`/petugas/penjemputan`}
+                            className="inline-block px-3 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded hover:bg-blue-200 transition-colors"
+                          >
+                            Lihat
+                          </a>
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
               </tbody>
             </table>
           </div>
         </div>
-      )}
     </div>
   );
 }

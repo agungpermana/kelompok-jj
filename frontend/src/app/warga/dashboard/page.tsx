@@ -78,8 +78,7 @@ export default function WargaDashboardPage() {
         </div>
       </div>
 
-      {dashboard.pengajuan_terbaru.length > 0 && (
-        <div className="bg-white rounded-xl border border-gray-200/80 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-xl border border-gray-200/80 shadow-sm overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-200/80 bg-gray-50">
             <h3 className="text-lg font-semibold text-gray-900">Pengajuan Penjemputan Terbaru</h3>
             <p className="text-sm text-gray-500 mt-1">Pengajuan yang belum diproses oleh admin maupun petugas</p>
@@ -99,46 +98,62 @@ export default function WargaDashboardPage() {
                 </tr>
               </thead>
               <tbody>
-                {dashboard.pengajuan_terbaru.map((pengajuan, idx) => {
-                  const statusConfig = getStatusBadge(pengajuan.status_pengajuan);
-                  return (
-                    <tr key={pengajuan.pengajuan_id} className="border-b border-gray-200/80 hover:bg-gray-50/50 transition-colors">
-                      <td className="px-6 py-4 text-sm text-gray-900">{idx + 1}</td>
-                      <td className="px-6 py-4 text-sm text-gray-700">{formatDate(pengajuan.created_at)}</td>
-                      <td className="px-6 py-4 text-sm text-gray-700">{pengajuan.alamat_penjemputan}</td>
-                      <td className="px-6 py-4 text-sm text-gray-700">
-                        <div className="space-y-1">
-                          {pengajuan.detail_sampah.map((sampah, sIdx) => (
-                            <div key={sIdx} className="text-xs">
-                              {sampah.jenis_sampah}
-                            </div>
-                          ))}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 text-sm font-medium text-gray-900 text-right">
-                        {pengajuan.perkiraan_total_berat.toLocaleString('id-ID', { maximumFractionDigits: 1 })} kg
-                      </td>
-                      <td className="px-6 py-4 text-center">
-                        <span className={`inline-block px-3 py-1 text-xs font-medium rounded-full ${statusConfig.bg} ${statusConfig.text}`}>
-                          {statusConfig.label}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-center">
-                        <a
-                          href={`/warga/riwayat-setoran`}
-                          className="inline-block px-3 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded hover:bg-blue-200 transition-colors"
-                        >
-                          Lihat
-                        </a>
-                      </td>
-                    </tr>
-                  );
-                })}
+                {isLoading ? (
+                  <tr>
+                    <td colSpan={7} className="px-6 py-12 text-center">
+                      <div className="flex flex-col items-center gap-2">
+                        <div className="w-6 h-6 border-2 border-[#16a34a] border-t-transparent rounded-full animate-spin" />
+                        <p className="text-sm text-gray-500">Memuat data...</p>
+                      </div>
+                    </td>
+                  </tr>
+                ) : dashboard.pengajuan_terbaru.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="px-6 py-12 text-center text-sm text-gray-400">
+                      Tidak ada pengajuan penjemputan terbaru.
+                    </td>
+                  </tr>
+                ) : (
+                  dashboard.pengajuan_terbaru.map((pengajuan, idx) => {
+                    const statusConfig = getStatusBadge(pengajuan.status_pengajuan);
+                    return (
+                      <tr key={pengajuan.pengajuan_id} className="border-b border-gray-200/80 hover:bg-gray-50/50 transition-colors">
+                        <td className="px-6 py-4 text-sm text-gray-900">{idx + 1}</td>
+                        <td className="px-6 py-4 text-sm text-gray-700">{formatDate(pengajuan.created_at)}</td>
+                        <td className="px-6 py-4 text-sm text-gray-700">{pengajuan.alamat_penjemputan}</td>
+                        <td className="px-6 py-4 text-sm text-gray-700">
+                          <div className="space-y-1">
+                            {pengajuan.detail_sampah.map((sampah, sIdx) => (
+                              <div key={sIdx} className="text-xs">
+                                {sampah.jenis_sampah}
+                              </div>
+                            ))}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 text-sm font-medium text-gray-900 text-right">
+                          {pengajuan.perkiraan_total_berat.toLocaleString('id-ID', { maximumFractionDigits: 1 })} kg
+                        </td>
+                        <td className="px-6 py-4 text-center">
+                          <span className={`inline-block px-3 py-1 text-xs font-medium rounded-full ${statusConfig.bg} ${statusConfig.text}`}>
+                            {statusConfig.label}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-center">
+                          <a
+                            href={`/warga/riwayat-setoran`}
+                            className="inline-block px-3 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded hover:bg-blue-200 transition-colors"
+                          >
+                            Lihat
+                          </a>
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
               </tbody>
             </table>
           </div>
         </div>
-      )}
     </div>
   );
 }

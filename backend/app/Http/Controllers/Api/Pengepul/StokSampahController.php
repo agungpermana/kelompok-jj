@@ -49,9 +49,8 @@ class StokSampahController extends Controller
     )]
     public function index(Request $request)
     {
-        $pengepul = $request->user()->pengepul;
-
-        if (!$pengepul) {
+        $user = $request->user();
+        if ($user->role !== 'admin' && !$user->pengepul) {
             return response()->json([
                 'message' => 'Profil pengepul tidak ditemukan.',
             ], 404);
@@ -126,9 +125,8 @@ class StokSampahController extends Controller
     )]
     public function show(Request $request, $id)
     {
-        $pengepul = $request->user()->pengepul;
-
-        if (!$pengepul) {
+        $user = $request->user();
+        if ($user->role !== 'admin' && !$user->pengepul) {
             return response()->json([
                 'message' => 'Profil pengepul tidak ditemukan.',
             ], 404);

@@ -24,6 +24,8 @@ use App\Http\Controllers\Api\Admin\SetoranValidasiController;
 use App\Http\Controllers\Api\Admin\PenukaranPoinController as AdminPenukaranPoinController;
 use App\Http\Controllers\Api\Admin\TransaksiPenjualanController;
 use App\Http\Controllers\Api\Admin\AdminDashboardController;
+use App\Http\Controllers\Api\Admin\LaporanController as AdminLaporanController;
+use App\Http\Controllers\Api\Admin\LaporanDataController as AdminLaporanDataController;
 use App\Http\Controllers\Api\Pengepul\StokSampahController as PengepulStokSampahController;
 
 // Default code
@@ -39,6 +41,27 @@ use App\Http\Controllers\Api\Pengepul\StokSampahController as PengepulStokSampah
 */
 
 Route::post('/login', [AuthController::class, 'login']);
+
+// PDF download via token query param (for browser window.open)
+Route::get('/download/laporan/{type}', function ($type) {
+    $token = request()->query('token') ?? request()->bearerToken();
+    if (!$token) {
+        return response()->json(['message' => 'Unauthorized'], 401);
+    }
+    $user = \Laravel\Sanctum\PersonalAccessToken::findToken($token)?->tokenable;
+    if (!$user) {
+        return response()->json(['message' => 'Unauthorized'], 401);
+    }
+    \Illuminate\Support\Facades\Auth::setUser($user);
+
+    $validTypes = ['setoran','penjemputan','penjualan','stok','poin'];
+    if (!in_array($type, $validTypes)) {
+        return response()->json(['message' => 'Not found'], 404);
+    }
+
+    $controller = new \App\Http\Controllers\Api\Admin\LaporanController();
+    return $controller->$type(request());
+});
 
 Route::middleware('auth:sanctum')->group(function () {
 
@@ -166,6 +189,24 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/admin/penjualan', [TransaksiPenjualanController::class, 'store']);
         Route::get('/admin/penjualan/{id}', [TransaksiPenjualanController::class, 'show']);
         Route::delete('/admin/penjualan/{id}', [TransaksiPenjualanController::class, 'destroy']);
+
+        // Laporan PDF (support token via query param for download)
+        Route::get('/admin/laporan/{type}', function ($type) {
+            $controller = new \App\Http\Controllers\Api\Admin\LaporanController();
+            $request = request();
+            $method = $type;
+            if (!in_array($method, ['setoran','penjemputan','keuangan','stok','poin'])) {
+                return response()->json(['message' => 'Not found'], 404);
+            }
+            return $controller->$method($request);
+        });
+
+        // Laporan Data (JSON)
+        Route::get('/admin/laporan-data/setoran', [AdminLaporanDataController::class, 'setoran']);
+        Route::get('/admin/laporan-data/penjemputan', [AdminLaporanDataController::class, 'penjemputan']);
+        Route::get('/admin/laporan-data/penjualan', [AdminLaporanDataController::class, 'penjualan']);
+        Route::get('/admin/laporan-data/stok', [AdminLaporanDataController::class, 'stok']);
+        Route::get('/admin/laporan-data/poin', [AdminLaporanDataController::class, 'poin']);
     });
 
 
@@ -314,7 +355,7 @@ Route::middleware('auth:sanctum')->group(function () {
     |--------------------------------------------------------------------------
     */
 
-    Route::middleware('role:pengepul')->group(function () {
+    Route::middleware('role:pengepul,admin')->group(function () {
 
         Route::get('/pengepul/test', function (Request $request) {
             return response()->json([
