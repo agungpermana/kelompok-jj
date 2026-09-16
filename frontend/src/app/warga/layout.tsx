@@ -2,6 +2,22 @@
 
 import Sidebar from '@/components/layout/sidebar';
 import { wargaMenus } from '@/config/menus/warga';
+import { SidebarProvider, useSidebar } from '@/contexts/SidebarContext';
+
+function WargaLayoutInner({ children }: { children: React.ReactNode }) {
+  const { collapsed } = useSidebar();
+
+  return (
+    <div className="flex min-h-screen bg-[#f4f6f8]">
+      <div style={{ '--sidebar-w': collapsed ? '72px' : '260px' } as React.CSSProperties}>
+        <Sidebar menuSections={wargaMenus} />
+      </div>
+      <main className="flex-1 p-4 sm:p-5 lg:p-6 mt-12 lg:mt-0 min-w-0">
+        {children}
+      </main>
+    </div>
+  );
+}
 
 export default function WargaLayout({
   children,
@@ -9,11 +25,8 @@ export default function WargaLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen bg-[#f4f6f8]">
-      <Sidebar menuSections={wargaMenus} />
-      <main className="flex-1 ml-[260px] p-6">
-        {children}
-      </main>
-    </div>
+    <SidebarProvider>
+      <WargaLayoutInner>{children}</WargaLayoutInner>
+    </SidebarProvider>
   );
 }

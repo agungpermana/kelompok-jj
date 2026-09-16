@@ -592,7 +592,7 @@ export default function TugasSayaPage() {
       />
 
       {/* 4 Summary Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4 sm:mb-5 lg:mb-6">
         {/* Card 1: Dijadwalkan */}
         <div className="flex items-center gap-4 bg-white rounded-2xl p-5 border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#eff6ff] text-[#2563eb] flex-shrink-0">
@@ -725,17 +725,17 @@ export default function TugasSayaPage() {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="border-b border-gray-100 bg-[#fafafa]/80 text-[13px] font-bold text-gray-700">
-                <th className="px-6 py-4">
+                <th className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4">
                   <div className="flex items-center gap-1.5 cursor-pointer">
                     <span>Waktu Penjemputan</span>
                     <ChevronsUpDown className="h-3.5 w-3.5 text-gray-400" />
                   </div>
                 </th>
-                <th className="px-6 py-4">Warga</th>
-                <th className="px-6 py-4">Alamat</th>
-                <th className="px-6 py-4">Jenis Sampah</th>
-                <th className="px-6 py-4 text-center">Status</th>
-                <th className="px-6 py-4 text-center">Aksi</th>
+                <th className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4">Warga</th>
+                <th className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4">Alamat</th>
+                <th className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4">Jenis Sampah</th>
+                <th className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 text-center">Status</th>
+                <th className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 text-center">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 text-[13px]">
@@ -777,10 +777,10 @@ export default function TugasSayaPage() {
                       }`}
                     >
                       {/* Waktu Penjemputan */}
-                      <td className="px-6 py-4.5 align-middle">
+                      <td className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4.5 align-middle">
                         <div className="flex items-center gap-3">
                           <div
-                            className={`flex h-10 w-10 items-center justify-center rounded-xl flex-shrink-0 ${
+                            className={`flex h-9 sm:h-10 w-9 sm:w-10 items-center justify-center rounded-lg sm:rounded-xl flex-shrink-0 ${
                               isDiproses
                                 ? 'bg-[#fffbeb] text-[#d97706]'
                                 : 'bg-[#eff6ff] text-[#2563eb]'
@@ -804,7 +804,7 @@ export default function TugasSayaPage() {
                       </td>
 
                       {/* Warga */}
-                      <td className="px-6 py-4.5 align-middle">
+                      <td className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4.5 align-middle">
                         <div>
                           <p className="text-[14px] font-semibold text-gray-900 leading-tight">
                             {warga?.nama_warga || 'Warga'}
@@ -816,14 +816,14 @@ export default function TugasSayaPage() {
                       </td>
 
                       {/* Alamat */}
-                      <td className="px-6 py-4.5 align-middle max-w-xs">
+                      <td className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4.5 align-middle max-w-xs">
                         <div className="whitespace-pre-line text-gray-700 leading-snug">
                           {renderFormattedAddress(alamat)}
                         </div>
                       </td>
 
                       {/* Jenis Sampah */}
-                      <td className="px-6 py-4.5 align-middle">
+                      <td className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4.5 align-middle">
                         <div className="flex flex-col gap-1.5">
                           {detailSampahList.map((sampah, idx) => {
                             const nama = sampah.jenis_sampah?.nama_jenis_sampah || 'Sampah';
@@ -840,16 +840,16 @@ export default function TugasSayaPage() {
                       </td>
 
                       {/* Status */}
-                      <td className="px-6 py-4.5 align-middle text-center">
+                      <td className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4.5 align-middle text-center">
                         {renderStatusBadge(item.status_jadwal)}
                       </td>
 
                       {/* Aksi - NOTE: NO THREE DOTS! Only the Detail button */}
-                      <td className="px-6 py-4.5 align-middle text-center">
+                      <td className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4.5 align-middle text-center">
                         <button
                           type="button"
                           onClick={() => handleViewDetail(item)}
-                          className="inline-flex items-center justify-center px-4 py-1.5 rounded-xl border border-[#86efac] text-[#16a34a] hover:bg-[#f0fdf4] hover:border-[#16a34a] text-[12.5px] font-semibold transition-all shadow-xs"
+                          className="inline-flex items-center justify-center px-4 py-1.5 rounded-lg sm:rounded-xl border border-[#86efac] text-[#16a34a] hover:bg-[#f0fdf4] hover:border-[#16a34a] text-[12.5px] font-semibold transition-all shadow-xs"
                         >
                           Detail
                         </button>
@@ -863,7 +863,7 @@ export default function TugasSayaPage() {
         </div>
 
         {/* Table Footer / Pagination */}
-        <div className="flex flex-col sm:flex-row items-center justify-between px-6 py-4 border-t border-gray-100 gap-3 text-[13px] text-gray-500">
+        <div className="flex flex-col sm:flex-row items-center justify-between px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 border-t border-gray-100 gap-3 text-[13px] text-gray-500">
           <p>
             Menampilkan 1 - {filteredList.length} dari {filteredList.length} tugas
           </p>
@@ -905,7 +905,7 @@ export default function TugasSayaPage() {
       {showDetailModal && selectedJadwal && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl max-w-xl w-full max-h-[90vh] overflow-y-auto shadow-2xl animate-in fade-in zoom-in-95 duration-200">
-            <div className="sticky top-0 bg-white border-b border-gray-100 px-6 py-4 flex justify-between items-center z-10">
+            <div className="sticky top-0 bg-white border-b border-gray-100 px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 flex justify-between items-center z-10">
               <div>
                 <h3 className="text-[17px] font-bold text-gray-900">Detail Penjemputan</h3>
                 <p className="text-xs text-gray-400">
@@ -924,7 +924,7 @@ export default function TugasSayaPage() {
             <div className="p-6 space-y-5 text-[13.5px]">
               {/* Jadwal Info Card */}
               <div className="bg-[#f8fafc] rounded-2xl p-4 border border-gray-100">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <div>
                     <span className="text-xs text-gray-500 font-medium">Tanggal Penjemputan</span>
                     <p className="font-bold text-gray-900 mt-0.5">
@@ -990,7 +990,7 @@ export default function TugasSayaPage() {
                     (item, idx) => (
                       <div
                         key={idx}
-                        className="flex items-center justify-between p-3 rounded-xl border border-gray-100 bg-gray-50/50"
+                        className="flex items-center justify-between p-3 rounded-lg sm:rounded-xl border border-gray-100 bg-gray-50/50"
                       >
                         <div className="flex items-center gap-2">
                           <WasteIcon type={item.jenis_sampah?.nama_jenis_sampah} size={18} />
@@ -1007,7 +1007,7 @@ export default function TugasSayaPage() {
 
               {/* Catatan */}
               {selectedJadwal.catatan && (
-                <div className="p-3 bg-blue-50/70 border border-blue-100 rounded-xl text-xs text-blue-900">
+                <div className="p-3 bg-blue-50/70 border border-blue-100 rounded-lg sm:rounded-xl text-xs text-blue-900">
                   <span className="font-bold block mb-0.5">Catatan Penjemputan:</span>
                   <p>{selectedJadwal.catatan}</p>
                 </div>
@@ -1015,11 +1015,11 @@ export default function TugasSayaPage() {
             </div>
 
             {/* Modal Actions */}
-            <div className="border-t border-gray-100 px-6 py-4 flex items-center justify-end gap-3 bg-gray-50/50">
+            <div className="border-t border-gray-100 px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 flex items-center justify-end gap-3 bg-gray-50/50">
               <button
                 type="button"
                 onClick={() => setShowDetailModal(false)}
-                className="px-4 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-100 rounded-xl transition-colors"
+                className="px-4 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-100 rounded-lg sm:rounded-xl transition-colors"
               >
                 Tutup
               </button>
@@ -1028,7 +1028,7 @@ export default function TugasSayaPage() {
                   type="button"
                   onClick={() => handleProses(selectedJadwal)}
                   disabled={processingJadwal === selectedJadwal.jadwal_id}
-                  className="flex items-center gap-1.5 px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold rounded-xl transition-colors shadow-sm disabled:opacity-50"
+                  className="flex items-center gap-1.5 px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold rounded-lg sm:rounded-xl transition-colors shadow-sm disabled:opacity-50"
                 >
                   <Play className="h-3.5 w-3.5" />
                   {processingJadwal === selectedJadwal.jadwal_id
@@ -1040,7 +1040,7 @@ export default function TugasSayaPage() {
                 <button
                   type="button"
                   onClick={() => handleBukaFormSetoran(selectedJadwal)}
-                  className="flex items-center gap-1.5 px-4 py-2 bg-[#16a34a] hover:bg-[#15803d] text-white text-xs font-bold rounded-xl transition-colors shadow-sm"
+                  className="flex items-center gap-1.5 px-4 py-2 bg-[#16a34a] hover:bg-[#15803d] text-white text-xs font-bold rounded-lg sm:rounded-xl transition-colors shadow-sm"
                 >
                   <CheckCircle className="h-3.5 w-3.5" />
                   Input Transaksi Setoran
@@ -1055,7 +1055,7 @@ export default function TugasSayaPage() {
       {showSetoranModal && selectedJadwal && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl max-w-xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
-            <div className="sticky top-0 bg-white border-b border-gray-100 px-6 py-4 flex justify-between items-center">
+            <div className="sticky top-0 bg-white border-b border-gray-100 px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 flex justify-between items-center">
               <h3 className="text-[17px] font-bold text-gray-900">Input Setoran Penjemputan</h3>
               <button
                 type="button"
@@ -1067,7 +1067,7 @@ export default function TugasSayaPage() {
             </div>
 
             <div className="p-6 space-y-4 text-xs">
-              <div className="bg-gray-50 p-3.5 rounded-xl space-y-1">
+              <div className="bg-gray-50 p-3.5 rounded-lg sm:rounded-xl space-y-1">
                 <p className="font-bold text-gray-800">
                   {selectedJadwal.pengajuan_penjemputan?.warga?.nama_warga}
                 </p>
@@ -1087,7 +1087,7 @@ export default function TugasSayaPage() {
                           updated[index].jenis_sampah_id = val;
                           setDetailSampah(updated);
                         }}
-                        className="flex-1 px-3 py-2 border border-gray-200 rounded-xl bg-white font-medium"
+                        className="flex-1 px-3 py-2 border border-gray-200 rounded-lg sm:rounded-xl bg-white font-medium"
                       >
                         <option value={0}>Pilih Jenis Sampah</option>
                         {jenisSampahList.map((item) => (
@@ -1108,7 +1108,7 @@ export default function TugasSayaPage() {
                           setDetailSampah(updated);
                         }}
                         placeholder="Berat (kg)"
-                        className="w-32 px-3 py-2 border border-gray-200 rounded-xl bg-white font-bold text-gray-900"
+                        className="w-32 px-3 py-2 border border-gray-200 rounded-lg sm:rounded-xl bg-white font-bold text-gray-900"
                       />
                       {detailSampah.length > 1 && (
                         <button
@@ -1117,7 +1117,7 @@ export default function TugasSayaPage() {
                             const updated = detailSampah.filter((_, i) => i !== index);
                             setDetailSampah(updated);
                           }}
-                          className="h-9 w-9 flex items-center justify-center rounded-xl bg-red-50 text-red-500 hover:bg-red-100 transition-colors flex-shrink-0"
+                          className="h-9 w-9 flex items-center justify-center rounded-lg sm:rounded-xl bg-red-50 text-red-500 hover:bg-red-100 transition-colors flex-shrink-0"
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
@@ -1175,17 +1175,17 @@ export default function TugasSayaPage() {
                     onChange={(e) => setCatatanPenolakan(e.target.value)}
                     placeholder="Contoh: Tidak ada orang di rumah, alamat tidak ditemukan, dll."
                     rows={3}
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#16a34a] focus:ring-2 focus:ring-green-100 resize-none"
+                    className="w-full px-4 py-2.5 border border-gray-200 rounded-lg sm:rounded-xl text-sm focus:outline-none focus:border-[#16a34a] focus:ring-2 focus:ring-green-100 resize-none"
                   />
                 </div>
               )}
             </div>
 
-            <div className="border-t border-gray-100 px-6 py-4 flex justify-end gap-2 bg-gray-50/50">
+            <div className="border-t border-gray-100 px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 flex justify-end gap-2 bg-gray-50/50">
               <button
                 type="button"
                 onClick={() => setShowSetoranModal(false)}
-                className="px-4 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-100 rounded-xl"
+                className="px-4 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-100 rounded-lg sm:rounded-xl"
               >
                 Batal
               </button>
@@ -1193,7 +1193,7 @@ export default function TugasSayaPage() {
                 type="button"
                 onClick={submitSetoran}
                 disabled={loadingSetoran}
-                className="px-5 py-2 text-xs font-bold text-white bg-[#16a34a] hover:bg-[#15803d] rounded-xl disabled:opacity-50"
+                className="px-5 py-2 text-xs font-bold text-white bg-[#16a34a] hover:bg-[#15803d] rounded-lg sm:rounded-xl disabled:opacity-50"
               >
                 {loadingSetoran ? 'Menyimpan...' : 'Simpan Setoran'}
               </button>

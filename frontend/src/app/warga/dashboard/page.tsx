@@ -45,42 +45,42 @@ export default function WargaDashboardPage() {
   };
 
   return (
-    <div className="max-w-[1440px] mx-auto">
+    <div className="w-full">
       <AdminHeader
         title="Dashboard Warga"
         subtitle="Ringkasan aktivitas pengelolaan sampah Anda."
       />
 
-      <div className="grid grid-cols-4 gap-4 mb-6">
-        <div className="bg-white rounded-xl border border-gray-200/80 p-5 shadow-sm">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-5 lg:mb-6">
+        <div className="bg-white rounded-lg sm:rounded-xl border border-gray-200/80 p-5 shadow-sm">
           <p className="text-sm text-gray-500 mb-1">Total Setoran</p>
-          <p className="text-2xl font-bold text-gray-900">
+          <p className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">
             {isLoading ? '-' : dashboard.total_setoran}
           </p>
         </div>
-        <div className="bg-white rounded-xl border border-gray-200/80 p-5 shadow-sm">
+        <div className="bg-white rounded-lg sm:rounded-xl border border-gray-200/80 p-5 shadow-sm">
           <p className="text-sm text-gray-500 mb-1">Total Berat</p>
-          <p className="text-2xl font-bold text-gray-900">
+          <p className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">
             {isLoading ? '-' : `${dashboard.total_berat_sampah.toLocaleString('id-ID', { maximumFractionDigits: 1 })} kg`}
           </p>
         </div>
-        <div className="bg-white rounded-xl border border-gray-200/80 p-5 shadow-sm">
+        <div className="bg-white rounded-lg sm:rounded-xl border border-gray-200/80 p-5 shadow-sm">
           <p className="text-sm text-gray-500 mb-1">Poin Aktif</p>
-          <p className="text-2xl font-bold text-[#16a34a]">
+          <p className="text-lg sm:text-xl lg:text-2xl font-bold text-[#16a34a]">
             {isLoading ? '-' : dashboard.total_poin_aktif.toLocaleString('id-ID')}
           </p>
         </div>
-        <div className="bg-white rounded-xl border border-gray-200/80 p-5 shadow-sm">
+        <div className="bg-white rounded-lg sm:rounded-xl border border-gray-200/80 p-5 shadow-sm">
           <p className="text-sm text-gray-500 mb-1">Penjemputan Aktif</p>
-          <p className="text-2xl font-bold text-amber-500">
+          <p className="text-lg sm:text-xl lg:text-2xl font-bold text-amber-500">
             {isLoading ? '-' : dashboard.penjemputan_aktif}
           </p>
         </div>
       </div>
 
       {dashboard.pengajuan_terbaru.length > 0 && (
-        <div className="bg-white rounded-xl border border-gray-200/80 shadow-sm overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-200/80 bg-gray-50">
+        <div className="bg-white rounded-lg sm:rounded-xl border border-gray-200/80 shadow-sm overflow-hidden">
+          <div className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 border-b border-gray-200/80 bg-gray-50">
             <h3 className="text-lg font-semibold text-gray-900">Pengajuan Penjemputan Terbaru</h3>
             <p className="text-sm text-gray-500 mt-1">Pengajuan yang belum diproses oleh admin maupun petugas</p>
           </div>
@@ -103,10 +103,10 @@ export default function WargaDashboardPage() {
                   const statusConfig = getStatusBadge(pengajuan.status_pengajuan);
                   return (
                     <tr key={pengajuan.pengajuan_id} className="border-b border-gray-200/80 hover:bg-gray-50/50 transition-colors">
-                      <td className="px-6 py-4 text-sm text-gray-900">{idx + 1}</td>
-                      <td className="px-6 py-4 text-sm text-gray-700">{formatDate(pengajuan.created_at)}</td>
-                      <td className="px-6 py-4 text-sm text-gray-700">{pengajuan.alamat_penjemputan}</td>
-                      <td className="px-6 py-4 text-sm text-gray-700">
+                      <td className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 text-sm text-gray-900">{idx + 1}</td>
+                      <td className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 text-sm text-gray-700">{formatDate(pengajuan.created_at)}</td>
+                      <td className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 text-sm text-gray-700">{pengajuan.alamat_penjemputan}</td>
+                      <td className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 text-sm text-gray-700">
                         <div className="space-y-1">
                           {pengajuan.detail_sampah.map((sampah, sIdx) => (
                             <div key={sIdx} className="text-xs">
@@ -115,15 +115,15 @@ export default function WargaDashboardPage() {
                           ))}
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-sm font-medium text-gray-900 text-right">
+                      <td className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 text-sm font-medium text-gray-900 text-right">
                         {pengajuan.perkiraan_total_berat.toLocaleString('id-ID', { maximumFractionDigits: 1 })} kg
                       </td>
-                      <td className="px-6 py-4 text-center">
+                      <td className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 text-center">
                         <span className={`inline-block px-3 py-1 text-xs font-medium rounded-full ${statusConfig.bg} ${statusConfig.text}`}>
                           {statusConfig.label}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-center">
+                      <td className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 text-center">
                         <a
                           href={`/warga/riwayat-setoran`}
                           className="inline-block px-3 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded hover:bg-blue-200 transition-colors"

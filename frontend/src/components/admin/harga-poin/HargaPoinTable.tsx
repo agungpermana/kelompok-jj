@@ -59,33 +59,33 @@ export default function HargaPoinTable({
   };
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200/80 shadow-sm overflow-hidden">
+    <div className="bg-white rounded-lg sm:rounded-xl border border-gray-200/80 shadow-sm overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
             <tr className="bg-gray-50/80">
-              <th className="px-5 py-3 text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider w-14">
+              <th className="px-2 sm:px-3 lg:px-5 py-2 sm:py-2.5 lg:py-3 text-left text-[9px] sm:text-[10px] lg:text-[11px] font-semibold text-gray-500 uppercase tracking-wider w-10 sm:w-12 lg:w-14">
                 No
               </th>
-              <th className="px-5 py-3 text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
+              <th className="px-2 sm:px-3 lg:px-5 py-2 sm:py-2.5 lg:py-3 text-left text-[9px] sm:text-[10px] lg:text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
                 Jenis Sampah
               </th>
-              <th className="px-5 py-3 text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
+              <th className="px-2 sm:px-3 lg:px-5 py-2 sm:py-2.5 lg:py-3 text-left text-[9px] sm:text-[10px] lg:text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
                 Satuan
               </th>
-              <th className="px-5 py-3 text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
+              <th className="px-2 sm:px-3 lg:px-5 py-2 sm:py-2.5 lg:py-3 text-left text-[9px] sm:text-[10px] lg:text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
                 Harga
               </th>
-              <th className="px-5 py-3 text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
+              <th className="px-2 sm:px-3 lg:px-5 py-2 sm:py-2.5 lg:py-3 text-left text-[9px] sm:text-[10px] lg:text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
                 Poin
               </th>
-              <th className="px-5 py-3 text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
+              <th className="px-2 sm:px-3 lg:px-5 py-2 sm:py-2.5 lg:py-3 text-left text-[9px] sm:text-[10px] lg:text-[11px] font-semibold text-gray-500 uppercase tracking-wider whitespace-nowrap">
                 Berlaku Mulai
               </th>
-              <th className="px-5 py-3 text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
+              <th className="px-2 sm:px-3 lg:px-5 py-2 sm:py-2.5 lg:py-3 text-left text-[9px] sm:text-[10px] lg:text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
                 Status
               </th>
-              <th className="px-5 py-3 text-center text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
+              <th className="px-2 sm:px-3 lg:px-5 py-2 sm:py-2.5 lg:py-3 text-center text-[9px] sm:text-[10px] lg:text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
                 Aksi
               </th>
             </tr>
@@ -95,9 +95,9 @@ export default function HargaPoinTable({
               <tr>
                 <td
                   colSpan={8}
-                  className="px-5 py-12 text-center text-sm text-gray-400"
+                  className="px-3 sm:px-4 lg:px-5 py-8 sm:py-12 text-center text-xs sm:text-sm text-gray-400"
                 >
-                  <Loader2 className="h-6 w-6 animate-spin mx-auto mb-2 text-gray-300" />
+                  <Loader2 className="h-5 sm:h-6 w-5 sm:w-6 animate-spin mx-auto mb-2 text-gray-300" />
                   Memuat data...
                 </td>
               </tr>
@@ -105,7 +105,7 @@ export default function HargaPoinTable({
               <tr>
                 <td
                   colSpan={8}
-                  className="px-5 py-12 text-center text-sm text-gray-400"
+                  className="px-3 sm:px-4 lg:px-5 py-8 sm:py-12 text-center text-xs sm:text-sm text-gray-400"
                 >
                   Tidak ada data harga & poin ditemukan.
                 </td>
@@ -118,52 +118,52 @@ export default function HargaPoinTable({
                     key={item.id}
                     className="hover:bg-gray-50/50 transition-colors"
                   >
-                    <td className="px-5 py-3 text-sm text-gray-500">
+                    <td className="px-2 sm:px-3 lg:px-5 py-2 sm:py-2.5 lg:py-3 text-[10px] sm:text-xs lg:text-sm text-gray-500">
                       {rowNumber}
                     </td>
-                    <td className="px-5 py-3">
-                      <p className="text-sm font-medium text-gray-700">
+                    <td className="px-2 sm:px-3 lg:px-5 py-2 sm:py-2.5 lg:py-3">
+                      <p className="text-[10px] sm:text-xs lg:text-sm font-medium text-gray-700 truncate">
                         {item.namaJenisSampah}
                       </p>
-                      <p className="text-xs text-gray-400">{item.kategori}</p>
+                      <p className="text-[9px] sm:text-[10px] text-gray-400 truncate">{item.kategori}</p>
                     </td>
-                    <td className="px-5 py-3 text-sm text-gray-600">
+                    <td className="px-2 sm:px-3 lg:px-5 py-2 sm:py-2.5 lg:py-3 text-[10px] sm:text-xs lg:text-sm text-gray-600 whitespace-nowrap">
                       {item.satuan}
                     </td>
-                    <td className="px-5 py-3 text-sm font-bold text-green-700">
+                    <td className="px-2 sm:px-3 lg:px-5 py-2 sm:py-2.5 lg:py-3 text-[10px] sm:text-xs lg:text-sm font-bold text-green-700 whitespace-nowrap">
                       {formatRupiah(item.hargaPerSatuan)}
                     </td>
-                    <td className="px-5 py-3 text-sm font-medium text-gray-700">
+                    <td className="px-2 sm:px-3 lg:px-5 py-2 sm:py-2.5 lg:py-3 text-[10px] sm:text-xs lg:text-sm font-medium text-gray-700 whitespace-nowrap">
                       {item.nilaiPoinPerSatuan}
                     </td>
-                    <td className="px-5 py-3 text-sm text-gray-600">
+                    <td className="px-2 sm:px-3 lg:px-5 py-2 sm:py-2.5 lg:py-3 text-[10px] sm:text-xs lg:text-sm text-gray-600 whitespace-nowrap">
                       {item.berlakuMulai}
                     </td>
-                    <td className="px-5 py-3">
+                    <td className="px-2 sm:px-3 lg:px-5 py-2 sm:py-2.5 lg:py-3">
                       <StatusBadge status={item.status} />
                     </td>
-                    <td className="px-5 py-3">
-                      <div className="flex items-center justify-center gap-2">
+                    <td className="px-2 sm:px-3 lg:px-5 py-2 sm:py-2.5 lg:py-3">
+                      <div className="flex items-center justify-center gap-1 sm:gap-2">
                         <button
                           onClick={() => onView(item)}
-                          className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+                          className="p-1 sm:p-1.5 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
                           title="Detail"
                         >
-                          <Eye className="h-4 w-4" />
+                          <Eye className="h-3.5 sm:h-4 w-3.5 sm:w-4" />
                         </button>
                         <button
                           onClick={() => onEdit(item)}
-                          className="p-1.5 rounded-lg text-blue-600 hover:bg-blue-50 transition-colors"
+                          className="p-1 sm:p-1.5 rounded-lg text-blue-600 hover:bg-blue-50 transition-colors"
                           title="Edit"
                         >
-                          <Pencil className="h-4 w-4" />
+                          <Pencil className="h-3.5 sm:h-4 w-3.5 sm:w-4" />
                         </button>
                         <button
                           onClick={() => onDelete(item)}
-                          className="p-1.5 rounded-lg text-red-500 hover:bg-red-50 transition-colors"
+                          className="p-1 sm:p-1.5 rounded-lg text-red-500 hover:bg-red-50 transition-colors"
                           title="Hapus"
                         >
-                          <Trash2 className="h-4 w-4" />
+                          <Trash2 className="h-3.5 sm:h-4 w-3.5 sm:w-4" />
                         </button>
                       </div>
                     </td>
@@ -175,25 +175,24 @@ export default function HargaPoinTable({
         </table>
       </div>
 
-      {/* Pagination */}
-      <div className="flex items-center justify-between px-5 py-3 border-t border-gray-100">
-        <p className="text-[11px] text-gray-400">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 px-2 sm:px-3 lg:px-5 py-2 sm:py-2.5 lg:py-3 border-t border-gray-100">
+        <p className="text-[9px] sm:text-[10px] lg:text-[11px] text-gray-400">
           Menampilkan {totalData > 0 ? startIndex + 1 : 0} - {endIndex} dari{' '}
           {totalData} data
         </p>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-0.5 sm:gap-1 overflow-x-auto">
           <button
             onClick={() => onPageChange(currentPage - 1)}
             disabled={currentPage <= 1}
-            className="flex h-7 w-7 items-center justify-center rounded-md text-xs text-gray-400 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            className="flex h-6 sm:h-7 w-6 sm:w-7 items-center justify-center rounded-md text-xs text-gray-400 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors flex-shrink-0"
           >
-            <ChevronLeft className="h-4 w-4" />
+            <ChevronLeft className="h-3.5 sm:h-4 w-3.5 sm:w-4" />
           </button>
           {Array.from({ length: lastPage }, (_, i) => i + 1).map((page) => (
             <button
               key={page}
               onClick={() => onPageChange(page)}
-              className={`flex h-7 w-7 items-center justify-center rounded-md text-xs font-bold transition-colors ${
+              className={`flex h-6 sm:h-7 w-6 sm:w-7 items-center justify-center rounded-md text-xs font-bold transition-colors flex-shrink-0 ${
                 currentPage === page
                   ? 'bg-[#16a34a] text-white'
                   : 'text-gray-500 hover:bg-gray-100'
@@ -205,7 +204,7 @@ export default function HargaPoinTable({
           <button
             onClick={() => onPageChange(currentPage + 1)}
             disabled={currentPage >= lastPage}
-            className="flex h-7 w-7 items-center justify-center rounded-md text-xs text-gray-400 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            className="flex h-6 sm:h-7 w-6 sm:w-7 items-center justify-center rounded-md text-xs text-gray-400 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors flex-shrink-0"
           >
             <ChevronRight className="h-4 w-4" />
           </button>

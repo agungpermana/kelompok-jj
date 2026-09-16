@@ -46,11 +46,11 @@ export default function AdminValidasiSetoranPage() {
     <div className="max-w-[1400px] mx-auto pb-12">
       <AdminHeader title="Validasi Setoran" subtitle="Validasi hasil penjemputan petugas — jika disetujui, poin warga & stok sampah langsung diperbarui." />
 
-      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm"><p className="text-xs text-gray-500">Menunggu Validasi</p><p className="text-2xl font-extrabold">{stats.menunggu}</p></div>
-        <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm"><p className="text-xs text-gray-500">Terverifikasi</p><p className="text-2xl font-extrabold">{stats.terverifikasi}</p></div>
-        <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm"><p className="text-xs text-gray-500">Ditolak</p><p className="text-2xl font-extrabold">{stats.ditolak}</p></div>
-        <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm"><p className="text-xs text-gray-500">Total</p><p className="text-2xl font-extrabold">{stats.total}</p></div>
+      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-4 sm:mb-5 lg:mb-6">
+        <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm"><p className="text-xs text-gray-500">Menunggu Validasi</p><p className="text-lg sm:text-xl lg:text-2xl font-extrabold">{stats.menunggu}</p></div>
+        <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm"><p className="text-xs text-gray-500">Terverifikasi</p><p className="text-lg sm:text-xl lg:text-2xl font-extrabold">{stats.terverifikasi}</p></div>
+        <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm"><p className="text-xs text-gray-500">Ditolak</p><p className="text-lg sm:text-xl lg:text-2xl font-extrabold">{stats.ditolak}</p></div>
+        <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm"><p className="text-xs text-gray-500">Total</p><p className="text-lg sm:text-xl lg:text-2xl font-extrabold">{stats.total}</p></div>
       </div>
 
       <div className="flex flex-col lg:flex-row gap-3 mb-5">
@@ -76,7 +76,7 @@ export default function AdminValidasiSetoranPage() {
                   <td className="px-5 py-4 text-xs font-bold">{s.total_poin} poin</td>
                   <td className="px-5 py-4 text-xs">{s.status_validasi==='menunggu' ? <span className="px-2 py-1 rounded-lg bg-amber-50 text-amber-700 text-xs font-semibold">Menunggu</span> : s.status_validasi==='disetujui' ? <span className="px-2 py-1 rounded-lg bg-green-50 text-green-700 text-xs font-semibold">Disetujui</span> : <span className="px-2 py-1 rounded-lg bg-red-50 text-red-700 text-xs font-semibold">Ditolak</span>}</td>
                   <td className="px-5 py-4">
-                    {s.status_validasi==='menunggu' ? <div className="flex flex-col gap-1"><button onClick={()=>openValidasi(s,'disetujui')} className="inline-flex items-center gap-1 px-3 py-1 rounded-xl border border-green-200 text-green-600 bg-white text-xs font-semibold"><Check size={12}/>Setujui</button><button onClick={()=>openValidasi(s,'ditolak')} className="inline-flex items-center gap-1 px-3 py-1 rounded-xl border border-red-200 text-red-600 bg-white text-xs font-semibold"><X size={12}/>Tolak</button></div> : <span className="text-xs text-gray-400">Selesai</span>}
+                    {s.status_validasi==='menunggu' ? <div className="flex flex-col gap-1"><button onClick={()=>openValidasi(s,'disetujui')} className="inline-flex items-center gap-1 px-3 py-1 rounded-lg sm:rounded-xl border border-green-200 text-green-600 bg-white text-xs font-semibold"><Check size={12}/>Setujui</button><button onClick={()=>openValidasi(s,'ditolak')} className="inline-flex items-center gap-1 px-3 py-1 rounded-lg sm:rounded-xl border border-red-200 text-red-600 bg-white text-xs font-semibold"><X size={12}/>Tolak</button></div> : <span className="text-xs text-gray-400">Selesai</span>}
                   </td>
                 </tr>
               ))}
@@ -88,13 +88,13 @@ export default function AdminValidasiSetoranPage() {
       {showValidasi && selected && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl max-w-md w-full shadow-xl">
-            <div className="border-b px-6 py-4"><h2 className="font-bold">Validasi STN-{String(selected.setoran_id).padStart(4,'0')}</h2><p className="text-xs text-gray-500">{selected.warga.nama_warga} • {selected.total_poin} poin • {selected.total_berat_aktual} kg</p></div>
+            <div className="border-b px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4"><h2 className="font-bold">Validasi STN-{String(selected.setoran_id).padStart(4,'0')}</h2><p className="text-xs text-gray-500">{selected.warga.nama_warga} • {selected.total_poin} poin • {selected.total_berat_aktual} kg</p></div>
             <div className="p-6 space-y-4">
               <div className="flex gap-4"><label className="flex items-center gap-2 cursor-pointer"><input type="radio" checked={validasiData.status_validasi==='disetujui'} onChange={()=>setValidasiData({...validasiData,status_validasi:'disetujui'})}/>Disetujui — tambah poin & stok</label><label className="flex items-center gap-2 cursor-pointer"><input type="radio" checked={validasiData.status_validasi==='ditolak'} onChange={()=>setValidasiData({...validasiData,status_validasi:'ditolak'})}/>Ditolak</label></div>
-              <textarea value={validasiData.catatan_validasi} onChange={e=>setValidasiData({...validasiData,catatan_validasi:e.target.value})} placeholder="Catatan validasi..." rows={3} className="w-full border rounded-xl px-3 py-2 text-sm" />
-              <p className="text-xs text-amber-600 bg-amber-50 p-2 rounded-xl">Jika disetujui: saldo_poin warga +{selected.total_poin} dan stok_sampah per jenis +berat aktual.</p>
+              <textarea value={validasiData.catatan_validasi} onChange={e=>setValidasiData({...validasiData,catatan_validasi:e.target.value})} placeholder="Catatan validasi..." rows={3} className="w-full border rounded-lg sm:rounded-xl px-3 py-2 text-sm" />
+              <p className="text-xs text-amber-600 bg-amber-50 p-2 rounded-lg sm:rounded-xl">Jika disetujui: saldo_poin warga +{selected.total_poin} dan stok_sampah per jenis +berat aktual.</p>
             </div>
-            <div className="border-t px-6 py-4 flex justify-end gap-3"><button onClick={()=>setShowValidasi(false)} disabled={validating} className="px-4 py-2 border rounded-xl text-sm">Batal</button><button onClick={submitValidasi} disabled={validating} className={`px-4 py-2 rounded-xl text-sm font-semibold text-white ${validasiData.status_validasi==='disetujui'?'bg-[#16a34a]':'bg-red-600'}`}>{validating?'Memproses...': validasiData.status_validasi==='disetujui'?'Setujui':'Tolak'}</button></div>
+            <div className="border-t px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 flex justify-end gap-3"><button onClick={()=>setShowValidasi(false)} disabled={validating} className="px-4 py-2 border rounded-lg sm:rounded-xl text-sm">Batal</button><button onClick={submitValidasi} disabled={validating} className={`px-4 py-2 rounded-lg sm:rounded-xl text-sm font-semibold text-white ${validasiData.status_validasi==='disetujui'?'bg-[#16a34a]':'bg-red-600'}`}>{validating?'Memproses...': validasiData.status_validasi==='disetujui'?'Setujui':'Tolak'}</button></div>
           </div>
         </div>
       )}

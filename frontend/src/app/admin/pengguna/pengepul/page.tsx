@@ -148,7 +148,7 @@ export default function PengepulPage() {
   };
 
   return (
-    <div className="max-w-[1440px] mx-auto pb-12">
+    <div className="w-full pb-12">
       {/* Header with Breadcrumbs */}
       <AdminHeader
         title="Data Pengepul"
@@ -173,7 +173,7 @@ export default function PengepulPage() {
 
       {/* Flash Message (diatas tabel) */}
       {message && (
-        <div className={`mb-4 p-3.5 rounded-xl flex items-start gap-2.5 ${message.type === 'success' ? 'bg-green-50 border border-green-200 text-green-700' : 'bg-red-50 border border-red-200 text-red-700'}`}>
+        <div className={`mb-4 p-3.5 rounded-lg sm:rounded-xl flex items-start gap-2.5 ${message.type === 'success' ? 'bg-green-50 border border-green-200 text-green-700' : 'bg-red-50 border border-red-200 text-red-700'}`}>
           {message.type === 'success' ? <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0" /> : <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />}
           <span className="text-sm">{message.text}</span>
           <button onClick={() => setMessage(null)} className="ml-auto"><X className="w-4 h-4" /></button>

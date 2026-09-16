@@ -45,34 +45,34 @@ function WasteBadgeIcon({ name }: { name: string }) {
   const lower = name.toLowerCase();
   if (lower.includes('botol') || lower.includes('pet')) {
     return (
-      <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-blue-500 border border-blue-100 flex-shrink-0">
+      <div className="flex h-11 w-11 items-center justify-center rounded-lg sm:rounded-xl bg-blue-50 text-blue-500 border border-blue-100 flex-shrink-0">
         <Wine className="h-5 w-5" />
       </div>
     );
   }
   if (lower.includes('kardus') || lower.includes('kertas') || lower.includes('koran')) {
     return (
-      <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-amber-50 text-amber-600 border border-amber-100 flex-shrink-0">
+      <div className="flex h-11 w-11 items-center justify-center rounded-lg sm:rounded-xl bg-amber-50 text-amber-600 border border-amber-100 flex-shrink-0">
         <Package className="h-5 w-5" />
       </div>
     );
   }
   if (lower.includes('kaleng') || lower.includes('aluminium') || lower.includes('besi') || lower.includes('logam')) {
     return (
-      <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-slate-100 text-slate-600 border border-slate-200 flex-shrink-0">
+      <div className="flex h-11 w-11 items-center justify-center rounded-lg sm:rounded-xl bg-slate-100 text-slate-600 border border-slate-200 flex-shrink-0">
         <Boxes className="h-5 w-5" />
       </div>
     );
   }
   if (lower.includes('plastik') || lower.includes('kresek')) {
     return (
-      <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-pink-50 text-pink-500 border border-pink-100 flex-shrink-0">
+      <div className="flex h-11 w-11 items-center justify-center rounded-lg sm:rounded-xl bg-pink-50 text-pink-500 border border-pink-100 flex-shrink-0">
         <ShoppingBag className="h-5 w-5" />
       </div>
     );
   }
   return (
-    <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100 flex-shrink-0">
+    <div className="flex h-11 w-11 items-center justify-center rounded-lg sm:rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100 flex-shrink-0">
       <Leaf className="h-5 w-5" />
     </div>
   );
@@ -283,21 +283,21 @@ export default function PengajuanPenjemputanPage() {
   };
 
   return (
-    <div className="max-w-[1440px] mx-auto pb-16 font-sans">
+    <div className="w-full pb-16 font-sans">
       {/* Top Header */}
-      <header className="flex items-start justify-between mb-8">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
+      <header className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-8">
+        <div className="min-w-0">
+          <h1 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 tracking-tight">
             Pengajuan Penjemputan
           </h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-xs sm:text-sm text-gray-500 mt-1 line-clamp-2">
             Ajukan penjemputan sampah yang sudah Anda pilah. Petugas kami akan mengambil sesuai jadwal.
           </p>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
           {/* Notification with Badge 5 */}
-          <button className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-white border border-gray-200/90 text-gray-600 hover:bg-gray-50 transition-colors shadow-sm">
+          <button className="relative flex h-9 sm:h-10 w-9 sm:w-10 items-center justify-center rounded-lg sm:rounded-xl bg-white border border-gray-200/90 text-gray-600 hover:bg-gray-50 transition-colors shadow-sm">
             <Bell className="h-[18px] w-[18px]" strokeWidth={2} />
             <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white shadow">
               5
@@ -305,7 +305,7 @@ export default function PengajuanPenjemputanPage() {
           </button>
 
           {/* User Profile */}
-          <div className="flex items-center gap-3 rounded-xl bg-white border border-gray-200/90 px-3.5 py-1.5 shadow-sm cursor-pointer hover:bg-gray-50 transition-colors">
+          <div className="flex items-center gap-3 rounded-lg sm:rounded-xl bg-white border border-gray-200/90 px-3.5 py-1.5 shadow-sm cursor-pointer hover:bg-gray-50 transition-colors">
             <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-tr from-amber-200 to-rose-200 text-gray-800 font-semibold text-sm shadow-inner overflow-hidden">
               <img
                 src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80"
@@ -317,7 +317,7 @@ export default function PengajuanPenjemputanPage() {
               />
             </div>
             <div className="text-left">
-              <p className="text-sm font-semibold text-gray-900 leading-tight">
+              <p className="text-xs sm:text-sm font-semibold text-gray-900 leading-tight">
                 {userProfile?.warga?.nama_warga || userProfile?.username || 'Warga'}
               </p>
             </div>
@@ -345,12 +345,12 @@ export default function PengajuanPenjemputanPage() {
         {/* LEFT COLUMN: Stepper + Active Step Content */}
         <div className="lg:col-span-8 space-y-6">
           {/* Stepper Header Navigation */}
-          <div className="bg-white rounded-2xl border border-gray-200/80 p-5 shadow-sm">
-            <div className="flex items-center justify-between">
+          <div className="bg-white rounded-2xl border border-gray-200/80 p-4 sm:p-5 shadow-sm">
+            <div className="flex items-center justify-between overflow-x-auto">
               {/* Step 1 */}
               <div
                 onClick={() => setCurrentStep(1)}
-                className={`flex items-center gap-3 cursor-pointer group transition-opacity ${
+                className={`flex items-center gap-2 sm:gap-3 cursor-pointer group transition-opacity flex-shrink-0 ${
                   currentStep === 1 ? 'opacity-100' : 'opacity-75 hover:opacity-100'
                 }`}
               >
@@ -365,7 +365,7 @@ export default function PengajuanPenjemputanPage() {
                 >
                   {currentStep > 1 ? <Check className="h-4 w-4 stroke-[2.5]" /> : '1'}
                 </div>
-                <div>
+                <div className="hidden sm:block">
                   <p
                     className={`text-sm font-bold ${
                       currentStep === 1 ? 'text-gray-900' : 'text-gray-600'
@@ -378,7 +378,7 @@ export default function PengajuanPenjemputanPage() {
               </div>
 
               {/* Arrow */}
-              <div className="text-gray-300 px-2 font-light select-none">
+              <div className="text-gray-300 px-1 sm:px-2 font-light select-none flex-shrink-0">
                 <ArrowRight className="h-4 w-4" />
               </div>
 
@@ -402,7 +402,7 @@ export default function PengajuanPenjemputanPage() {
                 >
                   {currentStep > 2 ? <Check className="h-4 w-4 stroke-[2.5]" /> : '2'}
                 </div>
-                <div>
+                <div className="hidden sm:block">
                   <p
                     className={`text-sm font-bold ${
                       currentStep === 2 ? 'text-gray-900' : 'text-gray-600'
@@ -415,7 +415,7 @@ export default function PengajuanPenjemputanPage() {
               </div>
 
               {/* Arrow */}
-              <div className="text-gray-300 px-2 font-light select-none">
+              <div className="text-gray-300 px-1 sm:px-2 font-light select-none flex-shrink-0">
                 <ArrowRight className="h-4 w-4" />
               </div>
 
@@ -437,7 +437,7 @@ export default function PengajuanPenjemputanPage() {
                 >
                   3
                 </div>
-                <div>
+                <div className="hidden sm:block">
                   <p
                     className={`text-sm font-bold ${
                       currentStep === 3 ? 'text-gray-900' : 'text-gray-600'
@@ -453,7 +453,7 @@ export default function PengajuanPenjemputanPage() {
 
           {/* STEP 1: DATA SAMPAH */}
           {currentStep === 1 && (
-            <div className="bg-white rounded-2xl border border-gray-200/80 p-6 md:p-7 shadow-sm space-y-6">
+            <div className="bg-white rounded-2xl border border-gray-200/80 p-4 sm:p-5 lg:p-6 md:p-7 shadow-sm space-y-6">
               <div>
                 <h2 className="text-lg font-bold text-gray-900">1. Data Sampah</h2>
                 <p className="text-sm text-gray-500 mt-0.5">
@@ -479,7 +479,7 @@ export default function PengajuanPenjemputanPage() {
                       setCatalogSearch('');
                       setIsCatalogModalOpen(true);
                     }}
-                    className="mt-4 inline-flex items-center gap-2 px-5 py-2.5 bg-[#16a34a] hover:bg-[#15803d] text-white rounded-xl text-xs font-semibold shadow-sm transition hover:shadow active:scale-[0.99]"
+                    className="mt-4 inline-flex items-center gap-2 px-5 py-2.5 bg-[#16a34a] hover:bg-[#15803d] text-white rounded-lg sm:rounded-xl text-xs font-semibold shadow-sm transition hover:shadow active:scale-[0.99]"
                   >
                     <Plus className="h-4 w-4 stroke-[2.5]" />
                     <span>Pilih Jenis Sampah</span>
@@ -487,8 +487,8 @@ export default function PengajuanPenjemputanPage() {
                 </div>
               ) : (
                 <>
-                  <div className="border border-gray-100 rounded-xl overflow-hidden shadow-xs">
-                    <div className="grid grid-cols-12 bg-gray-50/80 px-4 py-3 text-xs font-semibold text-gray-500 border-b border-gray-100">
+                  <div className="border border-gray-100 rounded-lg sm:rounded-xl overflow-hidden shadow-xs">
+                    <div className="hidden md:grid grid-cols-12 bg-gray-50/80 px-4 py-3 text-xs font-semibold text-gray-500 border-b border-gray-100">
                       <div className="col-span-6">Jenis Sampah</div>
                       <div className="col-span-3 text-left">Perkiraan Berat</div>
                       <div className="col-span-2 text-left">Satuan</div>
@@ -500,13 +500,13 @@ export default function PengajuanPenjemputanPage() {
                       {items.map((item, index) => (
                         <div
                           key={item.jenis_sampah_id || index}
-                          className="grid grid-cols-12 items-center px-4 py-3.5 hover:bg-gray-50/40 transition-colors"
+                          className="md:grid md:grid-cols-12 md:items-center px-4 py-3.5 hover:bg-gray-50/40 transition-colors"
                         >
                           {/* Jenis Sampah with Icon */}
-                          <div className="col-span-6 flex items-center gap-3 pr-3">
+                          <div className="md:col-span-6 flex items-center gap-3 pr-3">
                             <WasteBadgeIcon name={item.nama_jenis_sampah} />
-                            <div className="truncate">
-                              <p className="text-sm font-semibold text-gray-900 truncate">
+                            <div className="truncate flex-1 min-w-0">
+                              <p className="text-xs sm:text-sm font-semibold text-gray-900 truncate">
                                 {item.nama_jenis_sampah}
                               </p>
                               <p className="text-xs text-gray-400 truncate mt-0.5">
@@ -516,7 +516,8 @@ export default function PengajuanPenjemputanPage() {
                           </div>
 
                           {/* Perkiraan Berat Input */}
-                          <div className="col-span-3 pr-4">
+                          <div className="md:col-span-3 pr-4 mt-2 md:mt-0">
+                            <label className="text-[10px] text-gray-400 md:hidden mb-1 block">Perkiraan Berat</label>
                             <div className="relative">
                               <input
                                 type="number"
@@ -525,29 +526,30 @@ export default function PengajuanPenjemputanPage() {
                                 value={item.perkiraan_berat === 0 ? '' : item.perkiraan_berat}
                                 onChange={(e) => handleWeightChange(index, e.target.value)}
                                 placeholder="0.00"
-                                className="w-full bg-white border border-gray-200 rounded-xl px-3.5 py-2 text-sm font-medium text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-[#16a34a] transition"
+                                className="w-full bg-white border border-gray-200 rounded-lg sm:rounded-xl px-3.5 py-2 text-sm font-medium text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-[#16a34a] transition"
                               />
                             </div>
                           </div>
 
                           {/* Satuan Select / Display */}
-                          <div className="col-span-2 pr-2">
+                          <div className="md:col-span-2 pr-2 mt-2 md:mt-0">
+                            <label className="text-[10px] text-gray-400 md:hidden mb-1 block">Satuan</label>
                             <select
                               value={item.satuan}
                               disabled
-                              className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs font-medium text-gray-600 appearance-none cursor-default"
+                              className="w-full bg-gray-50 border border-gray-200 rounded-lg sm:rounded-xl px-3 py-2 text-xs font-medium text-gray-600 appearance-none cursor-default"
                             >
                               <option value="kg">kg</option>
                             </select>
                           </div>
 
                           {/* Aksi / Delete Button */}
-                          <div className="col-span-1 flex justify-center">
+                          <div className="md:col-span-1 flex justify-end md:justify-center mt-2 md:mt-0">
                             <button
                               type="button"
                               onClick={() => handleRemoveItem(index)}
                               title="Hapus baris"
-                              className="flex h-9 w-9 items-center justify-center rounded-xl text-red-500 hover:bg-red-50 hover:text-red-600 transition"
+                              className="flex h-9 w-9 items-center justify-center rounded-lg sm:rounded-xl text-red-500 hover:bg-red-50 hover:text-red-600 transition"
                             >
                               <Trash2 className="h-4 w-4" />
                             </button>
@@ -565,7 +567,7 @@ export default function PengajuanPenjemputanPage() {
                         setCatalogSearch('');
                         setIsCatalogModalOpen(true);
                       }}
-                      className="w-full flex items-center justify-center gap-2 py-3 px-4 border-2 border-dashed border-gray-200 hover:border-[#16a34a] hover:bg-green-50/30 text-[#16a34a] rounded-xl text-sm font-semibold transition-all duration-200 shadow-xs"
+                      className="w-full flex items-center justify-center gap-2 py-3 px-4 border-2 border-dashed border-gray-200 hover:border-[#16a34a] hover:bg-green-50/30 text-[#16a34a] rounded-lg sm:rounded-xl text-sm font-semibold transition-all duration-200 shadow-xs"
                     >
                       <Plus className="h-4 w-4 stroke-[2.5]" />
                       <span>Tambah Jenis Sampah Lainnya</span>
@@ -575,7 +577,7 @@ export default function PengajuanPenjemputanPage() {
               )}
 
               {/* Catatan Alert Box */}
-              <div className="flex items-start gap-3 bg-[#f0fdf4] border border-[#bbf7d0] rounded-xl p-4 text-gray-700 shadow-xs">
+              <div className="flex items-start gap-3 bg-[#f0fdf4] border border-[#bbf7d0] rounded-lg sm:rounded-xl p-4 text-gray-700 shadow-xs">
                 <div className="flex h-5 w-5 items-center justify-center rounded-full bg-green-500 text-white flex-shrink-0 mt-0.5">
                   <Info className="h-3.5 w-3.5" />
                 </div>
@@ -591,7 +593,7 @@ export default function PengajuanPenjemputanPage() {
                   type="button"
                   disabled={items.length === 0}
                   onClick={handleNextToStep2}
-                  className={`flex items-center gap-2 px-7 py-2.5 rounded-xl font-medium text-sm transition shadow-sm ${
+                  className={`flex items-center gap-2 px-7 py-2.5 rounded-lg sm:rounded-xl font-medium text-sm transition shadow-sm ${
                     items.length === 0
                       ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
                       : 'bg-[#16a34a] hover:bg-[#15803d] text-white hover:shadow active:scale-[0.99]'
@@ -606,7 +608,7 @@ export default function PengajuanPenjemputanPage() {
 
           {/* STEP 2: ALAMAT & JADWAL */}
           {currentStep === 2 && (
-            <div className="bg-white rounded-2xl border border-gray-200/80 p-6 md:p-7 shadow-sm space-y-6">
+            <div className="bg-white rounded-2xl border border-gray-200/80 p-4 sm:p-5 lg:p-6 md:p-7 shadow-sm space-y-6">
               <div>
                 <h2 className="text-lg font-bold text-gray-900">2. Alamat & Jadwal Penjemputan</h2>
                 <p className="text-sm text-gray-500 mt-0.5">
@@ -626,7 +628,7 @@ export default function PengajuanPenjemputanPage() {
                       value={alamat}
                       onChange={(e) => setAlamat(e.target.value)}
                       placeholder="Masukkan alamat lengkap rumah/kantor Anda (jalan, RT/RW, nomor rumah, kelurahan)..."
-                      className="w-full bg-white border border-gray-200 rounded-xl p-3.5 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-[#16a34a] transition"
+                      className="w-full bg-white border border-gray-200 rounded-lg sm:rounded-xl p-3.5 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-[#16a34a] transition"
                     />
                   </div>
                 </div>
@@ -642,7 +644,7 @@ export default function PengajuanPenjemputanPage() {
                       value={patokan}
                       onChange={(e) => setPatokan(e.target.value)}
                       placeholder="Contoh: Pagar hitam depan musholla, dekat pos ronda RT 02"
-                      className="w-full bg-white border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-[#16a34a] transition"
+                      className="w-full bg-white border border-gray-200 rounded-lg sm:rounded-xl px-3.5 py-2.5 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-[#16a34a] transition"
                     />
                   </div>
                 </div>
@@ -658,7 +660,7 @@ export default function PengajuanPenjemputanPage() {
                         type="date"
                         value={tanggal}
                         onChange={(e) => setTanggal(e.target.value)}
-                        className="w-full bg-white border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm font-medium text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-[#16a34a] transition"
+                        className="w-full bg-white border border-gray-200 rounded-lg sm:rounded-xl px-3.5 py-2.5 text-sm font-medium text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-[#16a34a] transition"
                       />
                     </div>
                   </div>
@@ -670,7 +672,7 @@ export default function PengajuanPenjemputanPage() {
                     <select
                       value={sesiWaktu}
                       onChange={(e) => setSesiWaktu(e.target.value)}
-                      className="w-full bg-white border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm font-medium text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-[#16a34a] transition"
+                      className="w-full bg-white border border-gray-200 rounded-lg sm:rounded-xl px-3.5 py-2.5 text-sm font-medium text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-[#16a34a] transition"
                     >
                       <option value="08:00 - 11:00 (Pagi)">08:00 - 11:00 (Pagi)</option>
                       <option value="13:00 - 15:00 (Siang)">13:00 - 15:00 (Siang)</option>
@@ -690,7 +692,7 @@ export default function PengajuanPenjemputanPage() {
                       value={noTelepon}
                       onChange={(e) => setNoTelepon(e.target.value)}
                       placeholder="081234567890"
-                      className="w-full bg-white border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-[#16a34a] transition"
+                      className="w-full bg-white border border-gray-200 rounded-lg sm:rounded-xl px-3.5 py-2.5 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-[#16a34a] transition"
                     />
                   </div>
 
@@ -703,7 +705,7 @@ export default function PengajuanPenjemputanPage() {
                       value={catatan}
                       onChange={(e) => setCatatan(e.target.value)}
                       placeholder="Contoh: Sampah diletakkan di teras depan"
-                      className="w-full bg-white border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-[#16a34a] transition"
+                      className="w-full bg-white border border-gray-200 rounded-lg sm:rounded-xl px-3.5 py-2.5 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-[#16a34a] transition"
                     />
                   </div>
                 </div>
@@ -714,7 +716,7 @@ export default function PengajuanPenjemputanPage() {
                 <button
                   type="button"
                   onClick={() => setCurrentStep(1)}
-                  className="flex items-center gap-2 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 px-6 py-2.5 rounded-xl font-medium text-sm transition"
+                  className="flex items-center gap-2 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 px-6 py-2.5 rounded-lg sm:rounded-xl font-medium text-sm transition"
                 >
                   <ArrowLeft className="h-4 w-4" />
                   <span>Sebelumnya</span>
@@ -722,7 +724,7 @@ export default function PengajuanPenjemputanPage() {
                 <button
                   type="button"
                   onClick={handleNextToStep3}
-                  className="flex items-center gap-2 bg-[#16a34a] hover:bg-[#15803d] text-white px-7 py-2.5 rounded-xl font-medium text-sm transition shadow-sm hover:shadow"
+                  className="flex items-center gap-2 bg-[#16a34a] hover:bg-[#15803d] text-white px-7 py-2.5 rounded-lg sm:rounded-xl font-medium text-sm transition shadow-sm hover:shadow"
                 >
                   <span>Selanjutnya</span>
                   <ArrowRight className="h-4 w-4" />
@@ -733,7 +735,7 @@ export default function PengajuanPenjemputanPage() {
 
           {/* STEP 3: KONFIRMASI */}
           {currentStep === 3 && (
-            <div className="bg-white rounded-2xl border border-gray-200/80 p-6 md:p-7 shadow-sm space-y-6">
+            <div className="bg-white rounded-2xl border border-gray-200/80 p-4 sm:p-5 lg:p-6 md:p-7 shadow-sm space-y-6">
               <div>
                 <h2 className="text-lg font-bold text-gray-900">3. Konfirmasi Pengajuan</h2>
                 <p className="text-sm text-gray-500 mt-0.5">
@@ -742,14 +744,14 @@ export default function PengajuanPenjemputanPage() {
               </div>
 
               {errorMessage && (
-                <div className="flex items-center gap-3 bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl text-sm">
+                <div className="flex items-center gap-3 bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg sm:rounded-xl text-sm">
                   <AlertCircle className="h-5 w-5 flex-shrink-0 text-red-500" />
                   <span>{errorMessage}</span>
                 </div>
               )}
 
               {/* Review Section: Detail Sampah */}
-              <div className="bg-gray-50/70 rounded-xl p-4 border border-gray-100 space-y-3">
+              <div className="bg-gray-50/70 rounded-lg sm:rounded-xl p-4 border border-gray-100 space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold uppercase tracking-wider text-gray-500">
                     Daftar Sampah Terpilah
@@ -782,7 +784,7 @@ export default function PengajuanPenjemputanPage() {
 
               {/* Review Section: Lokasi & Waktu */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="bg-gray-50/70 rounded-xl p-4 border border-gray-100 space-y-2">
+                <div className="bg-gray-50/70 rounded-lg sm:rounded-xl p-4 border border-gray-100 space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold uppercase tracking-wider text-gray-500">
                       Lokasi Penjemputan
@@ -806,7 +808,7 @@ export default function PengajuanPenjemputanPage() {
                   </div>
                 </div>
 
-                <div className="bg-gray-50/70 rounded-xl p-4 border border-gray-100 space-y-2">
+                <div className="bg-gray-50/70 rounded-lg sm:rounded-xl p-4 border border-gray-100 space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold uppercase tracking-wider text-gray-500">
                       Jadwal Penjemputan
@@ -834,7 +836,7 @@ export default function PengajuanPenjemputanPage() {
 
               {/* Checkbox Consent */}
               <div className="pt-2">
-                <label className="flex items-start gap-3 p-3.5 bg-green-50/50 border border-green-200/60 rounded-xl cursor-pointer hover:bg-green-50 transition">
+                <label className="flex items-start gap-3 p-3.5 bg-green-50/50 border border-green-200/60 rounded-lg sm:rounded-xl cursor-pointer hover:bg-green-50 transition">
                   <input
                     type="checkbox"
                     checked={agreed}
@@ -853,7 +855,7 @@ export default function PengajuanPenjemputanPage() {
                   type="button"
                   disabled={isSubmitting}
                   onClick={() => setCurrentStep(2)}
-                  className="flex items-center gap-2 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 px-6 py-2.5 rounded-xl font-medium text-sm transition"
+                  className="flex items-center gap-2 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 px-6 py-2.5 rounded-lg sm:rounded-xl font-medium text-sm transition"
                 >
                   <ArrowLeft className="h-4 w-4" />
                   <span>Sebelumnya</span>
@@ -862,7 +864,7 @@ export default function PengajuanPenjemputanPage() {
                   type="button"
                   disabled={!agreed || isSubmitting}
                   onClick={handleSubmitPengajuan}
-                  className={`flex items-center gap-2 bg-[#16a34a] hover:bg-[#15803d] text-white px-7 py-2.5 rounded-xl font-medium text-sm transition shadow-sm ${
+                  className={`flex items-center gap-2 bg-[#16a34a] hover:bg-[#15803d] text-white px-7 py-2.5 rounded-lg sm:rounded-xl font-medium text-sm transition shadow-sm ${
                     !agreed || isSubmitting
                       ? 'opacity-60 cursor-not-allowed'
                       : 'hover:shadow active:scale-[0.99]'
@@ -894,7 +896,7 @@ export default function PengajuanPenjemputanPage() {
             </h3>
 
             {/* Green Badge Encouragement */}
-            <div className="flex items-start gap-3 bg-[#f0fdf4] border border-[#bbf7d0] rounded-xl p-3.5 text-emerald-950">
+            <div className="flex items-start gap-3 bg-[#f0fdf4] border border-[#bbf7d0] rounded-lg sm:rounded-xl p-3.5 text-emerald-950">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#22c55e] text-white flex-shrink-0 mt-0.5 shadow-sm">
                 <Leaf className="h-4 w-4 stroke-[2.5]" />
               </div>
@@ -911,7 +913,7 @@ export default function PengajuanPenjemputanPage() {
             {/* Total Perkiraan Berat */}
             <div className="pt-1 border-b border-gray-100 pb-4">
               <p className="text-xs text-gray-500 font-medium">Total Perkiraan Berat</p>
-              <p className="text-2xl font-extrabold text-gray-900 mt-0.5 tracking-tight">
+              <p className="text-lg sm:text-xl lg:text-2xl font-extrabold text-gray-900 mt-0.5 tracking-tight">
                 {totalBerat.toFixed(2)} kg
               </p>
             </div>
@@ -966,7 +968,7 @@ export default function PengajuanPenjemputanPage() {
               href="https://wa.me/6281234567890?text=Halo%20Trashure,%20saya%20ingin%20bertanya%20tentang%20pengajuan%20penjemputan%20sampah."
               target="_blank"
               rel="noopener noreferrer"
-              className="flex w-full items-center justify-center gap-2 bg-white hover:bg-emerald-50 text-[#16a34a] border border-emerald-200 rounded-xl py-2 px-4 text-xs font-semibold shadow-xs transition"
+              className="flex w-full items-center justify-center gap-2 bg-white hover:bg-emerald-50 text-[#16a34a] border border-emerald-200 rounded-lg sm:rounded-xl py-2 px-4 text-xs font-semibold shadow-xs transition"
             >
               <MessageCircle className="h-4 w-4" />
               <span>Hubungi Kami</span>
@@ -979,7 +981,7 @@ export default function PengajuanPenjemputanPage() {
       {/* MODAL: Tambah Jenis Sampah dari Katalog */}
       {isCatalogModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4">
-          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-gray-100 space-y-4 max-h-[85vh] flex flex-col">
+          <div className="bg-white rounded-2xl max-w-lg w-full p-4 sm:p-5 lg:p-6 shadow-2xl border border-gray-100 space-y-4 max-h-[85vh] flex flex-col">
             <div className="flex items-center justify-between pb-3 border-b border-gray-100">
               <div>
                 <h3 className="text-base font-bold text-gray-900">Pilih Jenis Sampah</h3>
@@ -1003,7 +1005,7 @@ export default function PengajuanPenjemputanPage() {
                 value={catalogSearch}
                 onChange={(e) => setCatalogSearch(e.target.value)}
                 placeholder="Cari jenis sampah (misal: Kardus, Botol, Kaca)..."
-                className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-10 pr-4 py-2 text-xs font-medium text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-[#16a34a] transition"
+                className="w-full bg-gray-50 border border-gray-200 rounded-lg sm:rounded-xl pl-10 pr-4 py-2 text-xs font-medium text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-[#16a34a] transition"
               />
             </div>
 
@@ -1018,12 +1020,12 @@ export default function PengajuanPenjemputanPage() {
                   <div
                     key={c.jenis_sampah_id}
                     onClick={() => handleAddItemFromCatalog(c)}
-                    className="flex items-center justify-between p-3 rounded-xl border border-gray-100 hover:border-green-300 hover:bg-green-50/40 cursor-pointer transition group"
+                    className="flex items-center justify-between p-3 rounded-lg sm:rounded-xl border border-gray-100 hover:border-green-300 hover:bg-green-50/40 cursor-pointer transition group"
                   >
                     <div className="flex items-center gap-3">
                       <WasteBadgeIcon name={c.nama_jenis_sampah} />
                       <div>
-                        <p className="text-sm font-semibold text-gray-900 group-hover:text-[#16a34a] transition">
+                        <p className="text-xs sm:text-sm font-semibold text-gray-900 group-hover:text-[#16a34a] transition">
                           {c.nama_jenis_sampah}
                         </p>
                         <p className="text-xs text-gray-400 line-clamp-1">
@@ -1046,7 +1048,7 @@ export default function PengajuanPenjemputanPage() {
               <button
                 type="button"
                 onClick={() => setIsCatalogModalOpen(false)}
-                className="px-4 py-2 text-xs font-medium text-gray-600 hover:bg-gray-100 rounded-xl transition"
+                className="px-4 py-2 text-xs font-medium text-gray-600 hover:bg-gray-100 rounded-lg sm:rounded-xl transition"
               >
                 Tutup
               </button>
@@ -1058,7 +1060,7 @@ export default function PengajuanPenjemputanPage() {
       {/* MODAL: Berhasil Terkirim */}
       {successModalData && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-gray-100 text-center space-y-5 animate-in fade-in zoom-in duration-200">
+          <div className="bg-white rounded-2xl max-w-md w-full p-4 sm:p-5 lg:p-6 shadow-2xl border border-gray-100 text-center space-y-5 animate-in fade-in zoom-in duration-200">
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-green-100 text-[#16a34a] mx-auto">
               <CheckCircle2 className="h-9 w-9 stroke-[2.5]" />
             </div>
@@ -1072,7 +1074,7 @@ export default function PengajuanPenjemputanPage() {
               </p>
             </div>
 
-            <div className="bg-gray-50 rounded-xl p-3.5 border border-gray-100 text-xs text-gray-600 text-left space-y-1">
+            <div className="bg-gray-50 rounded-lg sm:rounded-xl p-3.5 border border-gray-100 text-xs text-gray-600 text-left space-y-1">
               <p className="flex justify-between">
                 <span className="text-gray-400">Total Berat:</span>
                 <span className="font-semibold text-gray-800">{totalBerat.toFixed(2)} kg</span>
@@ -1095,13 +1097,13 @@ export default function PengajuanPenjemputanPage() {
                   setCurrentStep(1);
                   setItems([]);
                 }}
-                className="flex-1 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 py-2.5 rounded-xl font-medium text-xs transition"
+                className="flex-1 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 py-2.5 rounded-lg sm:rounded-xl font-medium text-xs transition"
               >
                 Buat Pengajuan Baru
               </button>
               <Link
                 href="/warga/dashboard"
-                className="flex-1 bg-[#16a34a] hover:bg-[#15803d] text-white py-2.5 rounded-xl font-medium text-xs transition shadow-sm text-center"
+                className="flex-1 bg-[#16a34a] hover:bg-[#15803d] text-white py-2.5 rounded-lg sm:rounded-xl font-medium text-xs transition shadow-sm text-center"
               >
                 Kembali ke Dashboard
               </Link>

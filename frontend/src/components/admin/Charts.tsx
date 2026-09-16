@@ -74,18 +74,16 @@ function RoundedBar(props: { x?: number; y?: number; width?: number; height?: nu
 
 export function SetoranChart() {
   return (
-    <div className="bg-white rounded-xl border border-gray-200/80 p-5 shadow-sm">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-bold text-gray-800">Grafik Setoran Sampah (kg)</h3>
-        <button className="flex items-center gap-1 rounded-lg border border-gray-200 px-2.5 py-1.5 text-xs text-gray-500 hover:bg-gray-50 transition-colors">
+    <div className="bg-white rounded-lg sm:rounded-xl border border-gray-200/80 p-3 sm:p-4 lg:p-5 shadow-sm">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 mb-3 sm:mb-4">
+        <h3 className="text-xs sm:text-sm font-bold text-gray-800">Grafik Setoran Sampah (kg)</h3>
+        <button className="flex items-center gap-1 rounded-lg border border-gray-200 px-2 sm:px-2.5 py-1 sm:py-1.5 text-[11px] sm:text-xs text-gray-500 hover:bg-gray-50 transition-colors whitespace-nowrap">
           7 Hari Terakhir
-          <ChevronDown className="h-3 w-3" />
+          <ChevronDown className="h-2.5 sm:h-3 w-2.5 sm:w-3" />
         </button>
       </div>
 
-      {/* Chart */}
-      <div className="h-[200px]">
+      <div className="h-[150px] sm:h-[180px] lg:h-[200px]">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={setoranData} margin={{ top: 5, right: 5, bottom: 5, left: -10 }}>
             <defs>
@@ -95,23 +93,22 @@ export function SetoranChart() {
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
-            <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
-            <YAxis tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false} domain={[0, 'auto']} />
+            <XAxis dataKey="name" tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
+            <YAxis tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={false} tickLine={false} domain={[0, 'auto']} />
             <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(22, 163, 74, 0.05)' }} />
             <Bar dataKey="value" fill="url(#setoranGradient)" shape={<RoundedBar />} maxBarSize={36} />
           </BarChart>
         </ResponsiveContainer>
       </div>
 
-      {/* Footer Stats */}
-      <div className="flex items-center gap-8 mt-4 pt-3 border-t border-gray-100">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-6 lg:gap-8 mt-2 sm:mt-3 lg:mt-4 pt-2 sm:pt-3 lg:pt-3 border-t border-gray-100">
         <div>
-          <p className="text-xs text-gray-400 mb-0.5">Total Berat</p>
-          <p className="text-base font-bold text-gray-800">186,4 kg</p>
+          <p className="text-[10px] sm:text-xs text-gray-400 mb-0.5">Total Berat</p>
+          <p className="text-sm sm:text-base font-bold text-gray-800">186,4 kg</p>
         </div>
         <div>
-          <p className="text-xs text-gray-400 mb-0.5">Rata-rata per Hari</p>
-          <p className="text-base font-bold text-gray-800">26,6 kg</p>
+          <p className="text-[10px] sm:text-xs text-gray-400 mb-0.5">Rata-rata per Hari</p>
+          <p className="text-sm sm:text-base font-bold text-gray-800">26,6 kg</p>
         </div>
       </div>
     </div>
@@ -120,23 +117,21 @@ export function SetoranChart() {
 
 export function KomposisiChart() {
   return (
-    <div className="bg-white rounded-xl border border-gray-200/80 p-5 shadow-sm">
-      {/* Header */}
-      <div className="mb-4">
-        <h3 className="text-sm font-bold text-gray-800">Komposisi Jenis Sampah (kg)</h3>
+    <div className="bg-white rounded-lg sm:rounded-xl border border-gray-200/80 p-3 sm:p-4 lg:p-5 shadow-sm">
+      <div className="mb-3 sm:mb-4">
+        <h3 className="text-xs sm:text-sm font-bold text-gray-800">Komposisi Jenis Sampah (kg)</h3>
       </div>
 
-      {/* Chart + Legend */}
-      <div className="flex items-center gap-4">
-        <div className="h-[180px] w-[180px] flex-shrink-0">
+      <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4">
+        <div className="h-[140px] sm:h-[160px] lg:h-[180px] w-[140px] sm:w-[160px] lg:w-[180px] flex-shrink-0">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
                 data={komposisiData}
                 cx="50%"
                 cy="50%"
-                innerRadius={50}
-                outerRadius={80}
+                innerRadius={35}
+                outerRadius={60}
                 paddingAngle={2}
                 dataKey="value"
                 stroke="none"
@@ -149,24 +144,22 @@ export function KomposisiChart() {
           </ResponsiveContainer>
         </div>
 
-        {/* Legend */}
-        <div className="flex-1 space-y-1.5">
+        <div className="flex-1 space-y-1">
           {komposisiData.map((item, index) => (
-            <div key={item.name} className="flex items-center gap-2 text-xs">
+            <div key={item.name} className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs">
               <span
-                className="h-2.5 w-2.5 rounded-sm flex-shrink-0"
+                className="h-2 w-2 sm:h-2.5 sm:w-2.5 rounded-sm flex-shrink-0"
                 style={{ backgroundColor: KOMPOSISI_COLORS[index] }}
               />
-              <span className="text-gray-600 flex-1">{item.name}</span>
-              <span className="font-semibold text-gray-800">{item.value} kg ({item.percentage})</span>
+              <span className="text-gray-600 flex-1 min-w-0">{item.name}</span>
+              <span className="font-semibold text-gray-800 whitespace-nowrap text-[9px] sm:text-[10px]">{item.value} kg ({item.percentage})</span>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Footer */}
-      <div className="mt-4 pt-3 border-t border-gray-100">
-        <p className="text-xs text-gray-400">
+      <div className="mt-2 sm:mt-3 lg:mt-4 pt-2 sm:pt-3 lg:pt-3 border-t border-gray-100">
+        <p className="text-[10px] sm:text-xs text-gray-400">
           Total: <span className="font-bold text-gray-800">158,2 kg</span>
         </p>
       </div>
@@ -176,20 +169,18 @@ export function KomposisiChart() {
 
 export function PoinChart() {
   return (
-    <div className="bg-white rounded-xl border border-gray-200/80 p-5 shadow-sm">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-bold text-gray-800">
-          Poin Diberikan <span className="text-gray-400 font-normal">(7 Hari Terakhir)</span>
+    <div className="bg-white rounded-lg sm:rounded-xl border border-gray-200/80 p-3 sm:p-4 lg:p-5 shadow-sm">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 mb-3 sm:mb-4">
+        <h3 className="text-xs sm:text-sm font-bold text-gray-800">
+          Poin Diberikan <span className="text-gray-400 font-normal text-[10px] sm:text-xs">(7 Hari Terakhir)</span>
         </h3>
-        <button className="flex items-center gap-1 rounded-lg border border-gray-200 px-2.5 py-1.5 text-xs text-gray-500 hover:bg-gray-50 transition-colors">
+        <button className="flex items-center gap-1 rounded-lg border border-gray-200 px-2 sm:px-2.5 py-1 sm:py-1.5 text-[11px] sm:text-xs text-gray-500 hover:bg-gray-50 transition-colors whitespace-nowrap">
           7 Hari Terakhir
-          <ChevronDown className="h-3 w-3" />
+          <ChevronDown className="h-2.5 sm:h-3 w-2.5 sm:w-3" />
         </button>
       </div>
 
-      {/* Chart */}
-      <div className="h-[200px]">
+      <div className="h-[150px] sm:h-[180px] lg:h-[200px]">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={poinData} margin={{ top: 5, right: 5, bottom: 5, left: -10 }}>
             <defs>
@@ -199,23 +190,22 @@ export function PoinChart() {
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
-            <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
-            <YAxis tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false} domain={[0, 'auto']} />
+            <XAxis dataKey="name" tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
+            <YAxis tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={false} tickLine={false} domain={[0, 'auto']} />
             <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(139, 92, 246, 0.05)' }} />
             <Bar dataKey="value" fill="url(#poinGradient)" shape={<RoundedBar />} maxBarSize={36} />
           </BarChart>
         </ResponsiveContainer>
       </div>
 
-      {/* Footer Stats */}
-      <div className="flex items-center gap-8 mt-4 pt-3 border-t border-gray-100">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-6 lg:gap-8 mt-2 sm:mt-3 lg:mt-4 pt-2 sm:pt-3 lg:pt-3 border-t border-gray-100">
         <div>
-          <p className="text-xs text-gray-400 mb-0.5">Total Poin</p>
-          <p className="text-base font-bold text-gray-800">362 poin</p>
+          <p className="text-[10px] sm:text-xs text-gray-400 mb-0.5">Total Poin</p>
+          <p className="text-sm sm:text-base font-bold text-gray-800">362 poin</p>
         </div>
         <div>
-          <p className="text-xs text-gray-400 mb-0.5">Rata-rata per Hari</p>
-          <p className="text-base font-bold text-gray-800">51,7 poin</p>
+          <p className="text-[10px] sm:text-xs text-gray-400 mb-0.5">Rata-rata per Hari</p>
+          <p className="text-sm sm:text-base font-bold text-gray-800">51,7 poin</p>
         </div>
       </div>
     </div>

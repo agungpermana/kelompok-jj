@@ -66,7 +66,7 @@ export default function RiwayatPenjemputanPage() {
     <div className="max-w-[1400px] mx-auto pb-12">
       <PetugasHeader title="Riwayat Penjemputan" subtitle="Riwayat penjemputan sampah yang telah selesai atau dibatalkan." />
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4 sm:mb-5 lg:mb-6">
         <div className="flex items-center gap-4 bg-white rounded-2xl p-5 border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#f0fdf4] text-[#16a34a] flex-shrink-0"><CheckCircle2 className="h-6 w-6" /></div>
           <div><p className="text-[12px] font-medium text-gray-500">Selesai</p><div className="flex items-baseline gap-1.5"><span className="text-[22px] font-extrabold text-gray-900 leading-none">{stats.selesai}</span><span className="text-[11px] text-gray-400">Penjemputan</span></div></div>
@@ -110,7 +110,7 @@ export default function RiwayatPenjemputanPage() {
                     <td className="px-5 py-4"><div className="space-y-1">{(j.pengajuan_penjemputan?.detail_pengajuan_sampah || []).map(d => <div key={d.detail_pengajuan_id} className="flex items-center gap-2 text-[12px] text-gray-700"><WasteIcon type={d.jenis_sampah.nama_jenis_sampah} size={14} />{d.jenis_sampah.nama_jenis_sampah}</div>)}</div></td>
                     <td className="px-5 py-4 text-[13px] font-semibold text-gray-900">{Number(j.pengajuan_penjemputan?.perkiraan_total_berat || 0).toFixed(1).replace('.', ',')} kg</td>
                     <td className="px-5 py-4">{isSelesai ? <span className="inline-flex px-2.5 py-1 rounded-lg bg-[#f0fdf4] text-[#15803d] text-[11px] font-semibold border border-green-100">Selesai</span> : isBatal ? <span className="inline-flex px-2.5 py-1 rounded-lg bg-[#fef2f2] text-[#b91c1c] text-[11px] font-semibold border border-red-100">Dibatalkan</span> : <span className="inline-flex px-2.5 py-1 rounded-lg bg-[#eff6ff] text-[#1d4ed8] text-[11px] font-semibold border border-blue-100">Dalam Proses</span>}</td>
-                    <td className="px-5 py-4"><div className="flex items-center gap-2"><button onClick={() => { setSelected(j); setShowDetail(true); }} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-green-200 text-[#16a34a] bg-white hover:bg-green-50 text-[12px] font-medium"><Eye size={14} />Lihat Detail</button><button className="p-1.5 text-gray-400 hover:text-gray-600"><MoreVertical size={14} /></button></div></td>
+                    <td className="px-5 py-4"><div className="flex items-center gap-2"><button onClick={() => { setSelected(j); setShowDetail(true); }} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg sm:rounded-xl border border-green-200 text-[#16a34a] bg-white hover:bg-green-50 text-[12px] font-medium"><Eye size={14} />Lihat Detail</button><button className="p-1.5 text-gray-400 hover:text-gray-600"><MoreVertical size={14} /></button></div></td>
                   </tr>
                 );
               })}
@@ -135,10 +135,10 @@ export default function RiwayatPenjemputanPage() {
       {showDetail && selected && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl max-w-lg w-full shadow-xl max-h-[90vh] overflow-y-auto">
-            <div className="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center"><h2 className="font-bold">Detail Penjemputan</h2><button onClick={() => setShowDetail(false)} className="text-gray-400">✕</button></div>
+            <div className="sticky top-0 bg-white border-b px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 flex justify-between items-center"><h2 className="font-bold">Detail Penjemputan</h2><button onClick={() => setShowDetail(false)} className="text-gray-400">✕</button></div>
             <div className="p-6 space-y-4 text-sm">
-              <div className="grid grid-cols-2 gap-4 bg-gray-50 p-4 rounded-xl"><div><p className="text-gray-500">Warga</p><p className="font-semibold">{selected.pengajuan_penjemputan?.warga?.nama_warga}</p></div><div><p className="text-gray-500">Tanggal</p><p className="font-semibold">{selected.tanggal_penjemputan} {selected.waktu_penjemputan}</p></div><div className="col-span-2"><p className="text-gray-500">Alamat</p><p className="font-semibold">{selected.pengajuan_penjemputan?.alamat_penjemputan}</p></div></div>
-              <div className="space-y-1">{selected.pengajuan_penjemputan?.detail_pengajuan_sampah?.map(d => <div key={d.detail_pengajuan_id} className="flex justify-between border rounded-xl p-3 text-xs"><span className="flex gap-2 items-center"><WasteIcon type={d.jenis_sampah.nama_jenis_sampah} size={14} />{d.jenis_sampah.nama_jenis_sampah}</span><span>{d.perkiraan_berat} kg</span></div>)}</div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 bg-gray-50 p-4 rounded-lg sm:rounded-xl"><div><p className="text-gray-500">Warga</p><p className="font-semibold">{selected.pengajuan_penjemputan?.warga?.nama_warga}</p></div><div><p className="text-gray-500">Tanggal</p><p className="font-semibold">{selected.tanggal_penjemputan} {selected.waktu_penjemputan}</p></div><div className="col-span-2"><p className="text-gray-500">Alamat</p><p className="font-semibold">{selected.pengajuan_penjemputan?.alamat_penjemputan}</p></div></div>
+              <div className="space-y-1">{selected.pengajuan_penjemputan?.detail_pengajuan_sampah?.map(d => <div key={d.detail_pengajuan_id} className="flex justify-between border rounded-lg sm:rounded-xl p-3 text-xs"><span className="flex gap-2 items-center"><WasteIcon type={d.jenis_sampah.nama_jenis_sampah} size={14} />{d.jenis_sampah.nama_jenis_sampah}</span><span>{d.perkiraan_berat} kg</span></div>)}</div>
             </div>
           </div>
         </div>

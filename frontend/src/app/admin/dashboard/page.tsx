@@ -7,25 +7,21 @@ import { PengajuanTable, SetoranValidasiList, AktivitasTerbaru } from '@/compone
 
 export default function DashboardPage() {
   return (
-    <div className="max-w-[1440px] mx-auto">
-      {/* Header */}
+    <div className="w-full">
       <AdminHeader
         title="Dashboard Admin"
         subtitle="Ringkasan aktivitas pengelolaan bank sampah secara keseluruhan."
       />
 
-      {/* Stats Cards */}
       <StatsCards />
 
-      {/* Charts Row */}
-      <div className="grid grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-4 mb-4 sm:mb-5 lg:mb-6">
         <SetoranChart />
         <KomposisiChart />
         <PoinChart />
       </div>
 
-      {/* Tables Row */}
-      <div className="grid grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-4 mb-4 sm:mb-5 lg:mb-6">
         <PengajuanTable />
         <SetoranValidasiList />
         <AktivitasTerbaru />

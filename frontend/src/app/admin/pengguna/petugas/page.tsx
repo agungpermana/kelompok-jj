@@ -70,7 +70,7 @@ function PetugasAvatar({ nama, jenisKelamin }: { nama: string; jenisKelamin?: st
     );
 
   return (
-    <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-100 overflow-hidden border-2 border-emerald-500/20 shadow-sm">
+    <div className="relative flex h-9 sm:h-10 w-9 sm:w-10 shrink-0 items-center justify-center rounded-full bg-emerald-100 overflow-hidden border-2 border-emerald-500/20 shadow-sm">
       {isFemale ? (
         // Hijab / Female petugas illustration in green uniform
         <svg viewBox="0 0 36 36" fill="none" className="h-full w-full">
@@ -356,7 +356,7 @@ export default function PetugasPage() {
   };
 
   return (
-    <div className="max-w-[1440px] mx-auto pb-10">
+    <div className="w-full pb-10">
       {/* Header with Breadcrumb, Notification & Profile */}
       <AdminHeader
         title="Data Petugas"
@@ -371,7 +371,7 @@ export default function PetugasPage() {
       {/* Alert Notification */}
       {message && (
         <div
-          className={`mb-5 p-4 rounded-xl flex items-start gap-3 transition-all ${
+          className={`mb-5 p-4 rounded-lg sm:rounded-xl flex items-start gap-3 transition-all ${
             message.type === 'success'
               ? 'bg-emerald-50 border border-emerald-200 text-emerald-800'
               : 'bg-red-50 border border-red-200 text-red-700'
@@ -393,7 +393,7 @@ export default function PetugasPage() {
       )}
 
       {/* Toolbar & Filters Card */}
-      <div className="bg-white rounded-2xl border border-gray-200/80 shadow-xs mb-6 p-5">
+      <div className="bg-white rounded-2xl border border-gray-200/80 shadow-xs mb-4 sm:mb-5 lg:mb-6 p-5">
         <div className="flex flex-col lg:flex-row items-stretch lg:items-end justify-between gap-4">
           {/* Search Box */}
           <div className="flex-1 min-w-[280px]">
@@ -404,7 +404,7 @@ export default function PetugasPage() {
                 placeholder="Cari nama petugas, nomor telepon, atau area..."
                 value={search}
                 onChange={(e) => handleSearch(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:border-[#16a34a] focus:ring-3 focus:ring-[#16a34a]/15 transition-all text-gray-800 placeholder-gray-400"
+                className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-[#16a34a] focus:ring-3 focus:ring-[#16a34a]/15 transition-all text-gray-800 placeholder-gray-400"
               />
             </div>
           </div>
@@ -419,7 +419,7 @@ export default function PetugasPage() {
                   setStatusFilter(e.target.value);
                   fetchPetugas(1, search, e.target.value, areaFilter);
                 }}
-                className="w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:border-[#16a34a] focus:ring-3 focus:ring-[#16a34a]/15 transition-all bg-white text-gray-700 cursor-pointer appearance-none"
+                className="w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-[#16a34a] focus:ring-3 focus:ring-[#16a34a]/15 transition-all bg-white text-gray-700 cursor-pointer appearance-none"
               >
                 <option value="">Semua Status</option>
                 <option value="aktif">Aktif</option>
@@ -441,7 +441,7 @@ export default function PetugasPage() {
                   setAreaFilter(e.target.value);
                   fetchPetugas(1, search, statusFilter, e.target.value);
                 }}
-                className="w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:border-[#16a34a] focus:ring-3 focus:ring-[#16a34a]/15 transition-all bg-white text-gray-700 cursor-pointer appearance-none"
+                className="w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-[#16a34a] focus:ring-3 focus:ring-[#16a34a]/15 transition-all bg-white text-gray-700 cursor-pointer appearance-none"
               >
                 <option value="">Semua Area</option>
                 {uniqueAreas.map((area) => (
@@ -460,7 +460,7 @@ export default function PetugasPage() {
           <div className="shrink-0">
             <button
               onClick={openAddModal}
-              className="w-full sm:w-auto flex items-center justify-center gap-2 bg-[#16a34a] hover:bg-[#15803d] text-white px-5 py-2.5 rounded-xl text-sm font-semibold shadow-sm hover:shadow-md transition-all active:scale-98 cursor-pointer"
+              className="w-full sm:w-auto flex items-center justify-center gap-2 bg-[#16a34a] hover:bg-[#15803d] text-white px-5 py-2.5 rounded-lg sm:rounded-xl text-sm font-semibold shadow-sm hover:shadow-md transition-all active:scale-98 cursor-pointer"
             >
               <Plus className="h-4 w-4 stroke-[2.5]" />
               Tambah Petugas
@@ -472,8 +472,8 @@ export default function PetugasPage() {
       {/* Main Table Card */}
       <div className="bg-white rounded-2xl border border-gray-200/80 shadow-xs overflow-hidden">
         {/* Total Summary */}
-        <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-          <p className="text-sm font-semibold text-gray-700">
+        <div className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 border-b border-gray-100 flex items-center justify-between">
+          <p className="text-xs sm:text-sm font-semibold text-gray-700">
             Total {pagination.total || petugasList.length} petugas
           </p>
         </div>
@@ -518,7 +518,7 @@ export default function PetugasPage() {
                 <tr>
                   <td colSpan={7} className="px-6 py-16 text-center text-sm text-gray-400">
                     <div className="flex flex-col items-center justify-center">
-                      <User className="h-10 w-10 text-gray-300 mb-2" />
+                      <User className="h-9 sm:h-10 w-9 sm:w-10 text-gray-300 mb-2" />
                       <p className="font-medium text-gray-500">Tidak ada data petugas ditemukan.</p>
                       <p className="text-xs text-gray-400 mt-1">Coba sesuaikan kata kunci pencarian atau filter.</p>
                     </div>
@@ -536,27 +536,27 @@ export default function PetugasPage() {
                       className="hover:bg-emerald-50/30 transition-colors group"
                     >
                       {/* No. */}
-                      <td className="px-6 py-4 text-sm font-medium text-gray-500">
+                      <td className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 text-sm font-medium text-gray-500">
                         {rowNumber}
                       </td>
 
                       {/* Nama Petugas */}
-                      <td className="px-6 py-4 text-sm font-semibold text-gray-800">
+                      <td className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 text-xs sm:text-sm font-semibold text-gray-800">
                         {petugas.nama_petugas}
                       </td>
 
                       {/* No. Telepon */}
-                      <td className="px-6 py-4 text-sm text-gray-600 font-normal">
+                      <td className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 text-sm text-gray-600 font-normal">
                         {petugas.no_telepon || '-'}
                       </td>
 
                       {/* Area Tugas (stored in alamat) */}
-                      <td className="px-6 py-4 text-sm text-gray-600">
+                      <td className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 text-sm text-gray-600">
                         {petugas.alamat || '-'}
                       </td>
 
                       {/* Status Badge */}
-                      <td className="px-6 py-4">
+                      <td className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4">
                         <span
                           className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${
                             isAktif
@@ -569,12 +569,12 @@ export default function PetugasPage() {
                       </td>
 
                       {/* Tgl. Bergabung */}
-                      <td className="px-6 py-4 text-sm text-gray-600">
+                      <td className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 text-sm text-gray-600">
                         {formatDate(petugas.created_at)}
                       </td>
 
                       {/* Aksi */}
-                      <td className="px-6 py-4">
+                      <td className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4">
                         <div className="flex items-center justify-center gap-1.5 relative">
                           {/* View Detail Button */}
                           <button
@@ -613,7 +613,7 @@ export default function PetugasPage() {
         </div>
 
         {/* Pagination Controls */}
-        <div className="flex flex-col sm:flex-row items-center justify-between px-6 py-4 border-t border-gray-100 gap-4">
+        <div className="flex flex-col sm:flex-row items-center justify-between px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 border-t border-gray-100 gap-4">
           <p className="text-xs text-gray-500">
             Menampilkan{' '}
             {pagination.total === 0
@@ -687,7 +687,7 @@ export default function PetugasPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4 overflow-y-auto">
           <div className="bg-white rounded-2xl w-full max-w-xl shadow-2xl overflow-hidden my-8 animate-in fade-in zoom-in-95 duration-150">
             {/* Modal Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-gray-50/50">
+            <div className="flex items-center justify-between px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 border-b border-gray-100 bg-gray-50/50">
               <div>
                 <h2 className="text-lg font-bold text-gray-900">
                   {editingPetugas ? 'Edit Data Petugas' : 'Tambah Petugas Baru'}
@@ -700,7 +700,7 @@ export default function PetugasPage() {
               </div>
               <button
                 onClick={() => setShowModal(false)}
-                className="p-2 rounded-xl text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+                className="p-2 rounded-lg sm:rounded-xl text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -710,7 +710,7 @@ export default function PetugasPage() {
             <form onSubmit={handleSubmit} className="p-6 space-y-5">
               {/* SECTION: Akun Pengguna (Hanya saat tambah) */}
               {!editingPetugas && (
-                <div className="rounded-xl bg-emerald-50/50 p-4 border border-emerald-100 space-y-3">
+                <div className="rounded-lg sm:rounded-xl bg-emerald-50/50 p-4 border border-emerald-100 space-y-3">
                   <div className="flex items-center gap-2 text-xs font-bold text-emerald-800 uppercase tracking-wider">
                     <Shield className="h-4 w-4 text-[#16a34a]" />
                     Informasi Akun Login (Tabel User)
@@ -863,14 +863,14 @@ export default function PetugasPage() {
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-xl transition-colors cursor-pointer"
+                  className="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg sm:rounded-xl transition-colors cursor-pointer"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="flex items-center gap-2 bg-[#16a34a] hover:bg-[#15803d] text-white px-5 py-2 rounded-xl text-sm font-semibold shadow-sm transition-all disabled:opacity-60 cursor-pointer"
+                  className="flex items-center gap-2 bg-[#16a34a] hover:bg-[#15803d] text-white px-5 py-2 rounded-lg sm:rounded-xl text-sm font-semibold shadow-sm transition-all disabled:opacity-60 cursor-pointer"
                 >
                   {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
                   {editingPetugas ? 'Simpan Perubahan' : 'Simpan Petugas'}
@@ -955,10 +955,10 @@ export default function PetugasPage() {
               </div>
             </div>
 
-            <div className="px-6 py-4 bg-gray-50/70 border-t border-gray-100 flex justify-end">
+            <div className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 bg-gray-50/70 border-t border-gray-100 flex justify-end">
               <button
                 onClick={() => setShowDetailModal(false)}
-                className="px-5 py-2 text-sm font-semibold text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-gray-100 transition-colors cursor-pointer"
+                className="px-5 py-2 text-xs sm:text-sm font-semibold text-gray-700 bg-white border border-gray-200 rounded-lg sm:rounded-xl hover:bg-gray-100 transition-colors cursor-pointer"
               >
                 Tutup
               </button>
@@ -970,7 +970,7 @@ export default function PetugasPage() {
       {/* MODAL: Konfirmasi Hapus Petugas */}
       {showDeleteModal && deletingPetugas && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4">
-          <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl p-6 text-center animate-in fade-in zoom-in-95 duration-150">
+          <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl p-4 sm:p-5 lg:p-6 text-center animate-in fade-in zoom-in-95 duration-150">
             <div className="h-12 w-12 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto mb-4">
               <Trash2 className="h-6 w-6" />
             </div>
@@ -990,7 +990,7 @@ export default function PetugasPage() {
               <button
                 type="button"
                 onClick={() => setShowDeleteModal(false)}
-                className="px-5 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-xl transition-colors cursor-pointer"
+                className="px-5 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg sm:rounded-xl transition-colors cursor-pointer"
               >
                 Batal
               </button>
@@ -998,7 +998,7 @@ export default function PetugasPage() {
                 type="button"
                 onClick={handleDelete}
                 disabled={isSubmitting}
-                className="flex items-center gap-2 bg-rose-600 hover:bg-rose-700 text-white px-5 py-2 rounded-xl text-sm font-semibold transition-all disabled:opacity-60 cursor-pointer"
+                className="flex items-center gap-2 bg-rose-600 hover:bg-rose-700 text-white px-5 py-2 rounded-lg sm:rounded-xl text-sm font-semibold transition-all disabled:opacity-60 cursor-pointer"
               >
                 {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
                 Ya, Hapus

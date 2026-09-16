@@ -11,7 +11,7 @@ export default function LoginPage() {
       <LeafDecorations />
 
       {/* Top Header Logo */}
-      <header className="relative z-10 p-6 sm:p-10 lg:pl-16 lg:pt-12">
+      <header className="relative z-10 p-4 sm:p-5 lg:p-6 sm:p-10 lg:pl-16 lg:pt-12">
         <TrashureLogo size="md" />
       </header>
 

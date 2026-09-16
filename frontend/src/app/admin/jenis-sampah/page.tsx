@@ -220,7 +220,7 @@ export default function JenisSampahPage() {
   };
 
   return (
-    <div className="max-w-[1440px] mx-auto pb-10">
+    <div className="w-full pb-10">
       {/* Top Header with Breadcrumbs */}
       <AdminHeader
         title="Jenis Sampah"
@@ -244,7 +244,7 @@ export default function JenisSampahPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Cari nama jenis sampah..."
-              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white border border-gray-200 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 shadow-2xs transition"
+              className="w-full pl-10 pr-4 py-2.5 rounded-lg sm:rounded-xl bg-white border border-gray-200 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 shadow-2xs transition"
             />
           </div>
 
@@ -253,7 +253,7 @@ export default function JenisSampahPage() {
             <select
               value={selectedUnit}
               onChange={(e) => setSelectedUnit(e.target.value)}
-              className="w-full appearance-none rounded-xl bg-white border border-gray-200 px-3.5 py-2.5 pr-8 text-sm text-gray-700 focus:outline-none focus:border-green-500 shadow-2xs cursor-pointer transition"
+              className="w-full appearance-none rounded-lg sm:rounded-xl bg-white border border-gray-200 px-3.5 py-2.5 pr-8 text-sm text-gray-700 focus:outline-none focus:border-green-500 shadow-2xs cursor-pointer transition"
             >
               <option value="Semua Satuan">Semua Satuan</option>
               <option value="Kg">Kg</option>
@@ -273,7 +273,7 @@ export default function JenisSampahPage() {
             <select
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value)}
-              className="w-full appearance-none rounded-xl bg-white border border-gray-200 px-3.5 py-2.5 pr-8 text-sm text-gray-700 focus:outline-none focus:border-green-500 shadow-2xs cursor-pointer transition"
+              className="w-full appearance-none rounded-lg sm:rounded-xl bg-white border border-gray-200 px-3.5 py-2.5 pr-8 text-sm text-gray-700 focus:outline-none focus:border-green-500 shadow-2xs cursor-pointer transition"
             >
               <option value="Semua Status">Semua Status</option>
               <option value="Aktif">Aktif</option>
@@ -294,7 +294,7 @@ export default function JenisSampahPage() {
             setIsModalAddOpen(true);
             setMessage(null);
           }}
-          className="flex items-center justify-center gap-2 rounded-xl bg-[#16a34a] hover:bg-[#15803d] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition active:scale-[0.98] shrink-0"
+          className="flex items-center justify-center gap-2 rounded-lg sm:rounded-xl bg-[#16a34a] hover:bg-[#15803d] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition active:scale-[0.98] shrink-0"
         >
           <Plus className="h-4 w-4" strokeWidth={2.5} />
           <span>Tambah Jenis Sampah</span>
@@ -303,7 +303,7 @@ export default function JenisSampahPage() {
 
       {/* Flash Message */}
       {message && (
-        <div className={`mb-4 p-3.5 rounded-xl flex items-start gap-2.5 ${message.type === 'success' ? 'bg-green-50 border border-green-200 text-green-700' : 'bg-red-50 border border-red-200 text-red-700'}`}>
+        <div className={`mb-4 p-3.5 rounded-lg sm:rounded-xl flex items-start gap-2.5 ${message.type === 'success' ? 'bg-green-50 border border-green-200 text-green-700' : 'bg-red-50 border border-red-200 text-red-700'}`}>
           {message.type === 'success' ? <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0" /> : <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />}
           <span className="text-sm">{message.text}</span>
           <button onClick={() => setMessage(null)} className="ml-auto"><X className="w-4 h-4" /></button>
@@ -312,13 +312,13 @@ export default function JenisSampahPage() {
 
       {/* Summary Total Count */}
       <div className="flex items-center justify-between mb-3 px-1">
-        <p className="text-sm font-semibold text-gray-700">
+        <p className="text-xs sm:text-sm font-semibold text-gray-700">
           Total {totalItems} jenis sampah
         </p>
       </div>
 
       {/* Data Table */}
-      <div className="rounded-xl bg-white border border-gray-200/80 shadow-sm overflow-hidden">
+      <div className="rounded-lg sm:rounded-xl bg-white border border-gray-200/80 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>

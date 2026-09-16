@@ -172,7 +172,7 @@ export default function StokSampahPage() {
   }, [data]);
 
   return (
-    <div className="max-w-[1440px] mx-auto pb-10">
+    <div className="w-full pb-10">
       <AdminHeader
         title="Stok Sampah"
         subtitle="Pantau jumlah stok sampah yang tersedia beserta harga per jenis sampah."
@@ -183,7 +183,7 @@ export default function StokSampahPage() {
       />
 
       {usingFallback && !loading && (
-        <div className="mb-5 flex items-center gap-2.5 rounded-xl bg-amber-50 border border-amber-200 px-4 py-3 text-sm text-amber-700">
+        <div className="mb-5 flex items-center gap-2.5 rounded-lg sm:rounded-xl bg-amber-50 border border-amber-200 px-4 py-3 text-sm text-amber-700">
           <AlertCircle className="h-4 w-4 flex-shrink-0" />
           <span className="flex-1">
             Tidak dapat terhubung ke server, menampilkan data stok lokal.
@@ -202,33 +202,33 @@ export default function StokSampahPage() {
       )}
 
       {/* Stats */}
-      <div className="grid grid-cols-3 gap-4 mb-6">
-        <div className="bg-white rounded-xl border border-gray-200/80 p-5 shadow-sm">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-4 sm:mb-5 lg:mb-6">
+        <div className="bg-white rounded-lg sm:rounded-xl border border-gray-200/80 p-5 shadow-sm">
           <div className="flex items-center justify-between mb-2">
             <p className="text-sm text-gray-500">Total Stok Tersedia</p>
             <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-green-50">
               <Weight className="h-4.5 w-4.5 text-[#16a34a]" strokeWidth={1.8} />
             </span>
           </div>
-          <p className="text-2xl font-bold text-gray-900">{formatKg(stats.totalBerat)}</p>
+          <p className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">{formatKg(stats.totalBerat)}</p>
         </div>
-        <div className="bg-white rounded-xl border border-gray-200/80 p-5 shadow-sm">
+        <div className="bg-white rounded-lg sm:rounded-xl border border-gray-200/80 p-5 shadow-sm">
           <div className="flex items-center justify-between mb-2">
             <p className="text-sm text-gray-500">Nilai Perkiraan Stok</p>
             <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-green-50">
               <BadgeIndianRupee className="h-4.5 w-4.5 text-[#16a34a]" strokeWidth={1.8} />
             </span>
           </div>
-          <p className="text-2xl font-bold text-[#16a34a]">{formatRupiah(stats.totalNilai)}</p>
+          <p className="text-lg sm:text-xl lg:text-2xl font-bold text-[#16a34a]">{formatRupiah(stats.totalNilai)}</p>
         </div>
-        <div className="bg-white rounded-xl border border-gray-200/80 p-5 shadow-sm">
+        <div className="bg-white rounded-lg sm:rounded-xl border border-gray-200/80 p-5 shadow-sm">
           <div className="flex items-center justify-between mb-2">
             <p className="text-sm text-gray-500">Jenis Sampah</p>
             <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-green-50">
               <Package className="h-4.5 w-4.5 text-[#16a34a]" strokeWidth={1.8} />
             </span>
           </div>
-          <p className="text-2xl font-bold text-gray-900">{stats.totalJenis} jenis</p>
+          <p className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">{stats.totalJenis} jenis</p>
         </div>
       </div>
 
@@ -245,7 +245,7 @@ export default function StokSampahPage() {
                 setCurrentPage(1);
               }}
               placeholder="Cari jenis sampah..."
-              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white border border-gray-200 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 shadow-2xs transition"
+              className="w-full pl-10 pr-4 py-2.5 rounded-lg sm:rounded-xl bg-white border border-gray-200 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 shadow-2xs transition"
             />
           </div>
 
@@ -256,7 +256,7 @@ export default function StokSampahPage() {
                 setSelectedKategori(e.target.value);
                 setCurrentPage(1);
               }}
-              className="w-full appearance-none rounded-xl bg-white border border-gray-200 px-3.5 py-2.5 pr-8 text-sm text-gray-700 focus:outline-none focus:border-green-500 shadow-2xs cursor-pointer transition"
+              className="w-full appearance-none rounded-lg sm:rounded-xl bg-white border border-gray-200 px-3.5 py-2.5 pr-8 text-sm text-gray-700 focus:outline-none focus:border-green-500 shadow-2xs cursor-pointer transition"
             >
               <option value="Semua Kategori">Semua Kategori</option>
               {kategoriOptions.map((k) => (
@@ -274,13 +274,13 @@ export default function StokSampahPage() {
 
       {/* Summary */}
       <div className="flex items-center justify-between mb-3 px-1">
-        <p className="text-sm font-semibold text-gray-700">
+        <p className="text-xs sm:text-sm font-semibold text-gray-700">
           Total {totalItems} jenis stok sampah
         </p>
       </div>
 
       {/* Table */}
-      <div className="rounded-xl bg-white border border-gray-200/80 shadow-sm overflow-hidden">
+      <div className="rounded-lg sm:rounded-xl bg-white border border-gray-200/80 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
@@ -319,7 +319,7 @@ export default function StokSampahPage() {
                       <td className="py-3 px-5">
                         <div className="flex items-center gap-3">
                           <span
-                            className={`relative flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl text-lg ${
+                            className={`relative flex h-9 sm:h-10 w-9 sm:w-10 flex-shrink-0 items-center justify-center rounded-lg sm:rounded-xl text-lg ${
                               iconType === 'botol-plastik' ? 'bg-blue-50' :
                               iconType === 'kardus' || iconType === 'kertas-hvs' || iconType === 'koran' ? 'bg-amber-50' :
                               iconType === 'aluminium' || iconType === 'kaleng' || iconType === 'besi' ? 'bg-slate-100' :

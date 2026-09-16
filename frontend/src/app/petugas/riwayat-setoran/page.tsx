@@ -64,7 +64,7 @@ export default function RiwayatSetoranPage() {
     <div className="max-w-[1400px] mx-auto pb-12">
       <PetugasHeader title="Riwayat Setoran" subtitle="Riwayat transaksi setoran sampah yang telah Anda lakukan." />
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-4 sm:mb-5 lg:mb-6">
         <div className="flex items-center gap-4 bg-white rounded-2xl p-5 border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#f0fdf4] text-[#16a34a] flex-shrink-0"><FileText className="h-6 w-6" /></div>
           <div><p className="text-[11px] font-medium text-gray-500">Total Setoran</p><p className="text-[20px] font-extrabold text-gray-900 leading-none mt-1">{stats.total}</p><p className="text-[11px] text-gray-400">Transaksi</p></div>
@@ -114,7 +114,7 @@ export default function RiwayatSetoranPage() {
                     {s.status_validasi === 'menunggu' && <><span className="inline-flex px-2.5 py-1 rounded-lg bg-[#fffbeb] text-[#92400e] text-[11px] font-semibold border border-amber-100">Menunggu Validasi</span><p className="text-[10px] text-gray-400 mt-1">Menunggu Admin<br />{new Date(s.tanggal_setoran).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}</p></>}
                     {s.status_validasi === 'ditolak' && <><span className="inline-flex px-2.5 py-1 rounded-lg bg-[#fef2f2] text-[#b91c1c] text-[11px] font-semibold border border-red-100">Ditolak</span><p className="text-[10px] text-gray-400 mt-1">Oleh Petugas<br />{new Date(s.tanggal_setoran).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}</p>{s.catatan_penolakan && <p className="text-[10px] text-red-500 mt-1 italic">"{s.catatan_penolakan}"</p>}</>}
                   </td>
-                  <td className="px-5 py-4 align-top"><button onClick={() => { setSelected(s); setShowDetail(true); }} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-gray-200 text-gray-700 bg-white hover:bg-gray-50 text-[12px] font-medium"><Eye size={14} />Lihat Detail</button></td>
+                  <td className="px-5 py-4 align-top"><button onClick={() => { setSelected(s); setShowDetail(true); }} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg sm:rounded-xl border border-gray-200 text-gray-700 bg-white hover:bg-gray-50 text-[12px] font-medium"><Eye size={14} />Lihat Detail</button></td>
                 </tr>
               ))}
             </tbody>
@@ -138,16 +138,16 @@ export default function RiwayatSetoranPage() {
       {showDetail && selected && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-xl">
-            <div className="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center"><h2 className="font-bold">Detail STN-{String(selected.setoran_id).padStart(3, '0')}</h2><button onClick={() => setShowDetail(false)} className="text-gray-400">✕</button></div>
+            <div className="sticky top-0 bg-white border-b px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 flex justify-between items-center"><h2 className="font-bold">Detail STN-{String(selected.setoran_id).padStart(3, '0')}</h2><button onClick={() => setShowDetail(false)} className="text-gray-400">✕</button></div>
             <div className="p-6 space-y-4 text-sm">
-              <div className="grid grid-cols-2 gap-4 bg-gray-50 p-4 rounded-xl"><div><p className="text-gray-500">Warga</p><p className="font-semibold">{selected.warga.nama_warga}</p></div><div><p className="text-gray-500">Tanggal</p><p className="font-semibold">{new Date(selected.tanggal_setoran).toLocaleString('id-ID')}</p></div><div><p className="text-gray-500">Total Berat</p><p className="font-semibold">{selected.total_berat_aktual} kg</p></div><div><p className="text-gray-500">Poin Sementara</p><p className="font-semibold">{selected.total_poin_sementara}</p></div></div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 bg-gray-50 p-4 rounded-lg sm:rounded-xl"><div><p className="text-gray-500">Warga</p><p className="font-semibold">{selected.warga.nama_warga}</p></div><div><p className="text-gray-500">Tanggal</p><p className="font-semibold">{new Date(selected.tanggal_setoran).toLocaleString('id-ID')}</p></div><div><p className="text-gray-500">Total Berat</p><p className="font-semibold">{selected.total_berat_aktual} kg</p></div><div><p className="text-gray-500">Poin Sementara</p><p className="font-semibold">{selected.total_poin_sementara}</p></div></div>
               {selected.status_validasi === 'ditolak' && selected.catatan_penolakan && (
-                <div className="bg-red-50 border border-red-100 rounded-xl p-4">
+                <div className="bg-red-50 border border-red-100 rounded-lg sm:rounded-xl p-4">
                   <p className="text-[11px] font-medium text-red-600 mb-1">Catatan Penolakan (Petugas)</p>
                   <p className="text-sm text-red-700 italic">"{selected.catatan_penolakan}"</p>
                 </div>
               )}
-              <div className="space-y-2">{selected.detail_setoran.map(d => <div key={d.detail_setoran_id} className="flex justify-between border rounded-xl p-3"><span className="flex gap-2 items-center"><WasteIcon type={d.jenis_sampah.nama_jenis_sampah} size={16} />{d.jenis_sampah.nama_jenis_sampah}</span><span>{d.berat_aktual} kg • {d.poin_sementara} poin</span></div>)}</div>
+              <div className="space-y-2">{selected.detail_setoran.map(d => <div key={d.detail_setoran_id} className="flex justify-between border rounded-lg sm:rounded-xl p-3"><span className="flex gap-2 items-center"><WasteIcon type={d.jenis_sampah.nama_jenis_sampah} size={16} />{d.jenis_sampah.nama_jenis_sampah}</span><span>{d.berat_aktual} kg • {d.poin_sementara} poin</span></div>)}</div>
             </div>
           </div>
         </div>

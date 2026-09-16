@@ -290,21 +290,21 @@ export default function RiwayatSetoranPage() {
   };
 
   return (
-    <div className="max-w-[1440px] mx-auto pb-16 font-sans">
+    <div className="w-full pb-16 font-sans">
       {/* Top Header */}
-      <header className="flex items-start justify-between mb-8">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
+      <header className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-8">
+        <div className="min-w-0">
+          <h1 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 tracking-tight">
             Riwayat Setoran
           </h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-xs sm:text-sm text-gray-500 mt-1 line-clamp-2">
             Lihat riwayat setoran sampah yang Anda lakukan dan status validasinya.
           </p>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
           {/* Notification with Badge 5 */}
-          <button className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-white border border-gray-200/90 text-gray-600 hover:bg-gray-50 transition-colors shadow-sm">
+          <button className="relative flex h-9 sm:h-10 w-9 sm:w-10 items-center justify-center rounded-lg sm:rounded-xl bg-white border border-gray-200/90 text-gray-600 hover:bg-gray-50 transition-colors shadow-sm">
             <Bell className="h-[18px] w-[18px]" strokeWidth={2} />
             <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white shadow">
               5
@@ -312,7 +312,7 @@ export default function RiwayatSetoranPage() {
           </button>
 
           {/* User Profile */}
-          <div className="flex items-center gap-3 rounded-xl bg-white border border-gray-200/90 px-3.5 py-1.5 shadow-sm cursor-pointer hover:bg-gray-50 transition-colors">
+          <div className="flex items-center gap-3 rounded-lg sm:rounded-xl bg-white border border-gray-200/90 px-3.5 py-1.5 shadow-sm cursor-pointer hover:bg-gray-50 transition-colors">
             <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-tr from-amber-200 to-rose-200 text-gray-800 font-semibold text-sm shadow-inner overflow-hidden">
               <img
                 src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80"
@@ -324,7 +324,7 @@ export default function RiwayatSetoranPage() {
               />
             </div>
             <div className="text-left">
-              <p className="text-sm font-semibold text-gray-900 leading-tight">
+              <p className="text-xs sm:text-sm font-semibold text-gray-900 leading-tight">
                 {userProfile?.warga?.nama_warga || userProfile?.username || 'Warga'}
               </p>
             </div>
@@ -343,7 +343,7 @@ export default function RiwayatSetoranPage() {
             <div className="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-1 md:pb-0">
               <button
                 onClick={() => setActiveTab('semua')}
-                className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-150 relative ${activeTab === 'semua'
+                className={`px-4 py-2 rounded-lg sm:rounded-xl text-xs font-semibold transition-all duration-150 relative ${activeTab === 'semua'
                   ? 'text-[#16a34a] bg-green-50/70 border-b-2 border-[#16a34a]'
                   : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                   }`}
@@ -352,7 +352,7 @@ export default function RiwayatSetoranPage() {
               </button>
               <button
                 onClick={() => setActiveTab('menunggu')}
-                className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-150 relative ${activeTab === 'menunggu'
+                className={`px-4 py-2 rounded-lg sm:rounded-xl text-xs font-semibold transition-all duration-150 relative ${activeTab === 'menunggu'
                   ? 'text-amber-700 bg-amber-50 border-b-2 border-amber-500'
                   : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                   }`}
@@ -361,7 +361,7 @@ export default function RiwayatSetoranPage() {
               </button>
               <button
                 onClick={() => setActiveTab('disetujui')}
-                className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-150 relative ${activeTab === 'disetujui'
+                className={`px-4 py-2 rounded-lg sm:rounded-xl text-xs font-semibold transition-all duration-150 relative ${activeTab === 'disetujui'
                   ? 'text-[#16a34a] bg-green-50/70 border-b-2 border-[#16a34a]'
                   : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                   }`}
@@ -370,7 +370,7 @@ export default function RiwayatSetoranPage() {
               </button>
               <button
                 onClick={() => setActiveTab('ditolak')}
-                className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-150 relative ${activeTab === 'ditolak'
+                className={`px-4 py-2 rounded-lg sm:rounded-xl text-xs font-semibold transition-all duration-150 relative ${activeTab === 'ditolak'
                   ? 'text-rose-600 bg-rose-50 border-b-2 border-rose-500'
                   : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                   }`}
@@ -386,7 +386,7 @@ export default function RiwayatSetoranPage() {
                 <select
                   value={sortOrder}
                   onChange={(e) => setSortOrder(e.target.value as any)}
-                  className="bg-white border border-gray-200/90 rounded-xl px-3.5 py-1.5 text-xs font-medium text-gray-700 pr-8 focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-[#16a34a] shadow-xs cursor-pointer appearance-none"
+                  className="bg-white border border-gray-200/90 rounded-lg sm:rounded-xl px-3.5 py-1.5 text-xs font-medium text-gray-700 pr-8 focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-[#16a34a] shadow-xs cursor-pointer appearance-none"
                 >
                   <option value="terbaru">Terbaru</option>
                   <option value="terlama">Terlama</option>
@@ -397,7 +397,7 @@ export default function RiwayatSetoranPage() {
               {/* Date filter button */}
               <button
                 onClick={() => setIsDateFilterModalOpen(true)}
-                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border text-xs font-medium transition shadow-xs ${customStartDate || customEndDate
+                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg sm:rounded-xl border text-xs font-medium transition shadow-xs ${customStartDate || customEndDate
                   ? 'bg-green-50 border-[#16a34a] text-[#16a34a]'
                   : 'bg-white border-gray-200/90 text-gray-700 hover:bg-gray-50'
                   }`}
@@ -678,7 +678,7 @@ export default function RiwayatSetoranPage() {
                           <button
                             type="button"
                             onClick={() => handleOpenDetail(item)}
-                            className="w-full flex items-center justify-center gap-1.5 bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 px-3.5 py-2 rounded-xl text-xs font-semibold transition hover:border-gray-300 shadow-xs"
+                            className="w-full flex items-center justify-center gap-1.5 bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 px-3.5 py-2 rounded-lg sm:rounded-xl text-xs font-semibold transition hover:border-gray-300 shadow-xs"
                           >
                             <span>Lihat Detail</span>
                             <ArrowRight className="h-3.5 w-3.5" />
@@ -692,7 +692,7 @@ export default function RiwayatSetoranPage() {
                                 setAlasanPembatalan('');
                                 setCancelError(null);
                               }}
-                              className="w-full flex items-center justify-center gap-1.5 bg-rose-50/70 hover:bg-rose-100/80 border border-rose-200/90 text-rose-700 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition shadow-xs"
+                              className="w-full flex items-center justify-center gap-1.5 bg-rose-50/70 hover:bg-rose-100/80 border border-rose-200/90 text-rose-700 px-3.5 py-1.5 rounded-lg sm:rounded-xl text-xs font-semibold transition shadow-xs"
                             >
                               <XCircle className="h-3.5 w-3.5 text-rose-500" />
                               <span>Batalkan Pengajuan</span>
@@ -718,9 +718,9 @@ export default function RiwayatSetoranPage() {
 
             <div className="space-y-3.5">
               {/* Total Setoran */}
-              <div className="flex items-center justify-between p-3 rounded-xl bg-gray-50/60 border border-gray-100">
+              <div className="flex items-center justify-between p-3 rounded-lg sm:rounded-xl bg-gray-50/60 border border-gray-100">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-[#16a34a] border border-emerald-100">
+                  <div className="flex h-9 sm:h-10 w-9 sm:w-10 items-center justify-center rounded-lg sm:rounded-xl bg-emerald-50 text-[#16a34a] border border-emerald-100">
                     <ShoppingBag className="h-5 w-5 stroke-[2]" />
                   </div>
                   <div>
@@ -736,9 +736,9 @@ export default function RiwayatSetoranPage() {
               </div>
 
               {/* Total Berat Sampah */}
-              <div className="flex items-center justify-between p-3 rounded-xl bg-gray-50/60 border border-gray-100">
+              <div className="flex items-center justify-between p-3 rounded-lg sm:rounded-xl bg-gray-50/60 border border-gray-100">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-50 text-purple-600 border border-purple-100">
+                  <div className="flex h-9 sm:h-10 w-9 sm:w-10 items-center justify-center rounded-lg sm:rounded-xl bg-purple-50 text-purple-600 border border-purple-100">
                     <Scale className="h-5 w-5 stroke-[2]" />
                   </div>
                   <div>
@@ -751,9 +751,9 @@ export default function RiwayatSetoranPage() {
               </div>
 
               {/* Total Poin Diterima */}
-              <div className="flex items-center justify-between p-3 rounded-xl bg-gray-50/60 border border-gray-100">
+              <div className="flex items-center justify-between p-3 rounded-lg sm:rounded-xl bg-gray-50/60 border border-gray-100">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-[#16a34a] border border-emerald-100">
+                  <div className="flex h-9 sm:h-10 w-9 sm:w-10 items-center justify-center rounded-lg sm:rounded-xl bg-emerald-50 text-[#16a34a] border border-emerald-100">
                     <Star className="h-5 w-5 stroke-[2]" />
                   </div>
                   <div>
@@ -766,9 +766,9 @@ export default function RiwayatSetoranPage() {
               </div>
 
               {/* Menunggu Validasi */}
-              <div className="flex items-center justify-between p-3 rounded-xl bg-gray-50/60 border border-gray-100">
+              <div className="flex items-center justify-between p-3 rounded-lg sm:rounded-xl bg-gray-50/60 border border-gray-100">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50 text-amber-600 border border-amber-100">
+                  <div className="flex h-9 sm:h-10 w-9 sm:w-10 items-center justify-center rounded-lg sm:rounded-xl bg-amber-50 text-amber-600 border border-amber-100">
                     <Clock className="h-5 w-5 stroke-[2]" />
                   </div>
                   <div>
@@ -815,7 +815,7 @@ export default function RiwayatSetoranPage() {
               href="https://wa.me/6281234567890?text=Halo%20Trashure,%20saya%20ingin%20bertanya%20tentang%20status%20riwayat%20setoran%20sampah%20saya."
               target="_blank"
               rel="noopener noreferrer"
-              className="flex w-full items-center justify-center gap-2 bg-[#16a34a] hover:bg-[#15803d] text-white rounded-xl py-2.5 px-4 text-xs font-semibold shadow-xs transition"
+              className="flex w-full items-center justify-center gap-2 bg-[#16a34a] hover:bg-[#15803d] text-white rounded-lg sm:rounded-xl py-2.5 px-4 text-xs font-semibold shadow-xs transition"
             >
               <MessageCircle className="h-4 w-4" />
               <span>Hubungi Kami</span>
@@ -827,7 +827,7 @@ export default function RiwayatSetoranPage() {
       {/* MODAL: Filter Tanggal Custom */}
       {isDateFilterModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4">
-          <div className="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-gray-100 space-y-4 animate-in fade-in zoom-in duration-150">
+          <div className="bg-white rounded-2xl max-w-sm w-full p-4 sm:p-5 lg:p-6 shadow-2xl border border-gray-100 space-y-4 animate-in fade-in zoom-in duration-150">
             <div className="flex items-center justify-between pb-2 border-b border-gray-100">
               <h3 className="text-sm font-bold text-gray-900">Filter Rentang Tanggal</h3>
               <button
@@ -847,7 +847,7 @@ export default function RiwayatSetoranPage() {
                   type="date"
                   value={customStartDate}
                   onChange={(e) => setCustomStartDate(e.target.value)}
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs font-medium text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-[#16a34a]"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-lg sm:rounded-xl px-3 py-2 text-xs font-medium text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-[#16a34a]"
                 />
               </div>
 
@@ -859,7 +859,7 @@ export default function RiwayatSetoranPage() {
                   type="date"
                   value={customEndDate}
                   onChange={(e) => setCustomEndDate(e.target.value)}
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs font-medium text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-[#16a34a]"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-lg sm:rounded-xl px-3 py-2 text-xs font-medium text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-[#16a34a]"
                 />
               </div>
             </div>
@@ -872,14 +872,14 @@ export default function RiwayatSetoranPage() {
                   setCustomEndDate('');
                   setIsDateFilterModalOpen(false);
                 }}
-                className="px-3.5 py-2 text-xs font-semibold text-gray-500 hover:bg-gray-100 rounded-xl transition"
+                className="px-3.5 py-2 text-xs font-semibold text-gray-500 hover:bg-gray-100 rounded-lg sm:rounded-xl transition"
               >
                 Reset
               </button>
               <button
                 type="button"
                 onClick={() => setIsDateFilterModalOpen(false)}
-                className="px-5 py-2 bg-[#16a34a] hover:bg-[#15803d] text-white text-xs font-semibold rounded-xl shadow-xs transition"
+                className="px-5 py-2 bg-[#16a34a] hover:bg-[#15803d] text-white text-xs font-semibold rounded-lg sm:rounded-xl shadow-xs transition"
               >
                 Terapkan
               </button>
@@ -891,7 +891,7 @@ export default function RiwayatSetoranPage() {
       {/* MODAL: Detail Setoran Sampah */}
       {isDetailModalOpen && selectedSetoran && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4">
-          <div className="bg-white rounded-2xl max-w-2xl w-full p-6 md:p-7 shadow-2xl border border-gray-100 space-y-5 max-h-[90vh] flex flex-col animate-in fade-in zoom-in duration-200">
+          <div className="bg-white rounded-2xl max-w-2xl w-full p-4 sm:p-5 lg:p-6 md:p-7 shadow-2xl border border-gray-100 space-y-5 max-h-[90vh] flex flex-col animate-in fade-in zoom-in duration-200">
             {/* Header Modal */}
             <div className="flex items-start justify-between pb-3 border-b border-gray-100">
               <div>
@@ -940,7 +940,7 @@ export default function RiwayatSetoranPage() {
             {/* Modal Body (Scrollable) */}
             <div className="flex-1 overflow-y-auto space-y-4 pr-1">
               {/* Info Grid */}
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 bg-gray-50/70 p-3.5 rounded-xl border border-gray-100 text-xs">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 bg-gray-50/70 p-3.5 rounded-lg sm:rounded-xl border border-gray-100 text-xs">
                 <div>
                   <span className="text-gray-400 block font-medium">
                     {selectedSetoran.status_validasi === 'menunggu'
@@ -1003,7 +1003,7 @@ export default function RiwayatSetoranPage() {
               {/* Catatan Validasi / Pembatalan if present */}
               {selectedSetoran.catatan_validasi && (
                 <div
-                  className={`p-3.5 rounded-xl text-xs flex items-start gap-2.5 ${
+                  className={`p-3.5 rounded-lg sm:rounded-xl text-xs flex items-start gap-2.5 ${
                     selectedSetoran.status_pengajuan === 'dibatalkan'
                       ? 'bg-gray-50 border border-gray-200 text-gray-800'
                       : selectedSetoran.status_validasi === 'ditolak'
@@ -1029,7 +1029,7 @@ export default function RiwayatSetoranPage() {
                   Rincian Sampah Terverifikasi
                 </h4>
 
-                <div className="border border-gray-100 rounded-xl overflow-hidden shadow-2xs">
+                <div className="border border-gray-100 rounded-lg sm:rounded-xl overflow-hidden shadow-2xs">
                   <table className="w-full text-left text-xs">
                     <thead className="bg-gray-50/80 text-gray-500 font-semibold border-b border-gray-100">
                       <tr>
@@ -1109,7 +1109,7 @@ export default function RiwayatSetoranPage() {
                     setAlasanPembatalan('');
                     setCancelError(null);
                   }}
-                  className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 border border-rose-200 rounded-xl transition shadow-xs"
+                  className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 border border-rose-200 rounded-lg sm:rounded-xl transition shadow-xs"
                 >
                   <XCircle className="h-4 w-4 text-rose-500" />
                   <span>Batalkan Pengajuan</span>
@@ -1120,7 +1120,7 @@ export default function RiwayatSetoranPage() {
               <button
                 type="button"
                 onClick={() => setIsDetailModalOpen(false)}
-                className="px-5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold rounded-xl transition"
+                className="px-5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold rounded-lg sm:rounded-xl transition"
               >
                 Tutup
               </button>
@@ -1132,7 +1132,7 @@ export default function RiwayatSetoranPage() {
       {/* MODAL: Konfirmasi Batalkan Pengajuan */}
       {cancelModalItem && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4 animate-in fade-in duration-150">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-gray-100 space-y-4 animate-in zoom-in-95 duration-150">
+          <div className="bg-white rounded-2xl max-w-md w-full p-4 sm:p-5 lg:p-6 shadow-2xl border border-gray-100 space-y-4 animate-in zoom-in-95 duration-150">
             <div className="flex items-center gap-3">
               <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-rose-50 text-rose-600 border border-rose-100 flex-shrink-0">
                 <AlertCircle className="h-6 w-6 stroke-[2]" />
@@ -1147,7 +1147,7 @@ export default function RiwayatSetoranPage() {
               </div>
             </div>
 
-            <p className="text-xs text-gray-600 leading-relaxed bg-gray-50 p-3 rounded-xl border border-gray-100">
+            <p className="text-xs text-gray-600 leading-relaxed bg-gray-50 p-3 rounded-lg sm:rounded-xl border border-gray-100">
               Apakah Anda yakin ingin membatalkan pengajuan penjemputan ini? Pengajuan yang sudah dibatalkan tidak dapat diproses lagi oleh admin atau petugas.
             </p>
 
@@ -1164,7 +1164,7 @@ export default function RiwayatSetoranPage() {
                 placeholder="Tuliskan alasan pembatalan (wajib diisi, contoh: Ada keperluan mendadak, ingin menjadwalkan ulang, dll.)"
                 rows={3}
                 maxLength={500}
-                className={`w-full text-xs rounded-xl border p-3 text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 transition resize-none ${
+                className={`w-full text-xs rounded-lg sm:rounded-xl border p-3 text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 transition resize-none ${
                   cancelError
                     ? 'border-rose-300 ring-2 ring-rose-500/20 focus:border-rose-500'
                     : 'border-gray-200 focus:ring-rose-500/20 focus:border-rose-500'
@@ -1187,7 +1187,7 @@ export default function RiwayatSetoranPage() {
                   setAlasanPembatalan('');
                   setCancelError(null);
                 }}
-                className="px-4 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-100 rounded-xl transition disabled:opacity-50"
+                className="px-4 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-100 rounded-lg sm:rounded-xl transition disabled:opacity-50"
               >
                 Kembali
               </button>
@@ -1195,7 +1195,7 @@ export default function RiwayatSetoranPage() {
                 type="button"
                 disabled={cancelling || !alasanPembatalan.trim()}
                 onClick={handleCancelPengajuan}
-                className="flex items-center gap-1.5 px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl shadow-xs transition disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center gap-1.5 px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-lg sm:rounded-xl shadow-xs transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {cancelling ? (
                   <>

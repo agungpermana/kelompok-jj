@@ -202,21 +202,21 @@ export default function WargaPage() {
   };
 
   return (
-    <div className="max-w-[1440px] mx-auto">
+    <div className="w-full">
       <AdminHeader
         title="Data Warga"
         subtitle="Kelola data warga bank sampah."
       />
 
       {message && (
-        <div className={`mb-4 p-3.5 rounded-xl flex items-start gap-2.5 ${message.type === 'success' ? 'bg-green-50 border border-green-200 text-green-700' : 'bg-red-50 border border-red-200 text-red-700'}`}>
+        <div className={`mb-4 p-3.5 rounded-lg sm:rounded-xl flex items-start gap-2.5 ${message.type === 'success' ? 'bg-green-50 border border-green-200 text-green-700' : 'bg-red-50 border border-red-200 text-red-700'}`}>
           {message.type === 'success' ? <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0" /> : <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />}
           <span className="text-sm">{message.text}</span>
           <button onClick={() => setMessage(null)} className="ml-auto"><X className="w-4 h-4" /></button>
         </div>
       )}
 
-      <div className="bg-white rounded-xl border border-gray-200/80 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-lg sm:rounded-xl border border-gray-200/80 shadow-sm overflow-hidden">
         {/* Toolbar */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
           <div className="relative flex-1 max-w-sm">
@@ -349,7 +349,7 @@ export default function WargaPage() {
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
           <div className="bg-white rounded-2xl w-full max-w-lg shadow-xl mx-4">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+            <div className="flex items-center justify-between px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 border-b border-gray-100">
               <h2 className="text-lg font-bold text-gray-900">
                 {editingWarga ? 'Edit Warga' : 'Tambah Warga'}
               </h2>
@@ -357,7 +357,7 @@ export default function WargaPage() {
                 <X className="h-5 w-5" />
               </button>
             </div>
-            <form onSubmit={handleSubmit} className="px-6 py-4 space-y-4 max-h-[70vh] overflow-y-auto">
+            <form onSubmit={handleSubmit} className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 space-y-4 max-h-[70vh] overflow-y-auto">
               {!editingWarga && (
                 <>
                   <div>
@@ -413,7 +413,7 @@ export default function WargaPage() {
                   required
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div>
                   <label className="block text-xs font-semibold text-gray-700 mb-1">Jenis Kelamin</label>
                   <select
@@ -446,7 +446,7 @@ export default function WargaPage() {
                 />
               </div>
             </form>
-            <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100">
+            <div className="flex items-center justify-end gap-3 px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 border-t border-gray-100">
               <button
                 type="button"
                 onClick={() => setShowModal(false)}
@@ -480,7 +480,7 @@ export default function WargaPage() {
                 Data <span className="font-semibold">{deletingWarga.nama_warga}</span> akan dihapus secara permanen.
               </p>
             </div>
-            <div className="flex items-center gap-3 px-6 py-4 border-t border-gray-100">
+            <div className="flex items-center gap-3 px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 border-t border-gray-100">
               <button
                 onClick={() => { setShowDeleteModal(false); setDeletingWarga(null); }}
                 className="flex-1 px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"

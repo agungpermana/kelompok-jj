@@ -102,7 +102,7 @@ export default function PengajuanPenjemputanPage() {
   };
 
   return (
-    <div className="max-w-[1440px] mx-auto pb-12">
+    <div className="w-full pb-12">
       <AdminHeader
         title="Pengajuan Penjemputan"
         subtitle="Kelola semua pengajuan penjemputan sampah dari warga. Jadwalkan penjemputan dan pantau statusnya."
@@ -119,7 +119,7 @@ export default function PengajuanPenjemputanPage() {
       />
 
       {message && (
-        <div className={`mb-4 p-3.5 rounded-xl flex items-start gap-2.5 ${message.type === 'success' ? 'bg-green-50 border border-green-200 text-green-700' : 'bg-red-50 border border-red-200 text-red-700'}`}>
+        <div className={`mb-4 p-3.5 rounded-lg sm:rounded-xl flex items-start gap-2.5 ${message.type === 'success' ? 'bg-green-50 border border-green-200 text-green-700' : 'bg-red-50 border border-red-200 text-red-700'}`}>
           {message.type === 'success' ? <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0" /> : <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />}
           <span className="text-sm">{message.text}</span>
           <button onClick={() => setMessage(null)} className="ml-auto"><X className="w-4 h-4" /></button>
@@ -127,7 +127,7 @@ export default function PengajuanPenjemputanPage() {
       )}
 
       <div className="flex items-center justify-between mb-3">
-        <p className="text-sm font-semibold text-gray-700">Total {filteredItems.length} data pengajuan penjemputan</p>
+        <p className="text-xs sm:text-sm font-semibold text-gray-700">Total {filteredItems.length} data pengajuan penjemputan</p>
       </div>
 
       <PengajuanTable

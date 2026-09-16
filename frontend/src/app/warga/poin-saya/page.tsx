@@ -39,13 +39,13 @@ export default function WargaPoinPage() {
   };
 
   return (
-    <div className="max-w-[1440px] mx-auto">
+    <div className="w-full">
       <AdminHeader
         title="Poin Saya"
         subtitle="Kelola dan pantau riwayat poin sampah Anda."
       />
 
-      <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-200/80 p-6 shadow-sm mb-6">
+      <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg sm:rounded-xl border border-green-200/80 p-4 sm:p-5 lg:p-6 shadow-sm mb-4 sm:mb-5 lg:mb-6">
         <div className="flex items-start justify-between">
           <div>
             <div className="flex items-center gap-3 mb-4">
@@ -70,16 +70,16 @@ export default function WargaPoinPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-6">
-        <div className="col-span-2">
-          <div className="bg-white rounded-xl border border-gray-200/80 shadow-sm overflow-hidden">
-            <div className="px-6 py-4 border-b border-gray-200/80 bg-gray-50">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+          <div className="bg-white rounded-lg sm:rounded-xl border border-gray-200/80 shadow-sm overflow-hidden">
+            <div className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 border-b border-gray-200/80 bg-gray-50">
               <h3 className="text-lg font-semibold text-gray-900">Riwayat Poin</h3>
               <p className="text-sm text-gray-500 mt-1">Daftar perolehan poin dari setoran sampah Anda</p>
             </div>
 
-            <div className="px-6 py-4 border-b border-gray-200/80 bg-white">
-              <div className="grid grid-cols-4 gap-4 items-end">
+            <div className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 border-b border-gray-200/80 bg-white">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 items-end">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Tanggal Mulai</label>
                   <input
@@ -141,19 +141,19 @@ export default function WargaPoinPage() {
                   {poin.riwayat.length > 0 ? (
                     poin.riwayat.map((item, idx) => (
                       <tr key={idx} className="border-b border-gray-200/80 hover:bg-gray-50/50 transition-colors">
-                        <td className="px-6 py-4 text-sm text-gray-900">{idx + 1}</td>
-                        <td className="px-6 py-4 text-sm text-gray-700">
+                        <td className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 text-sm text-gray-900">{idx + 1}</td>
+                        <td className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 text-sm text-gray-700">
                           {new Date(item.tanggal).toLocaleDateString('id-ID', {
                             year: 'numeric',
                             month: '2-digit',
                             day: '2-digit',
                           })}
                         </td>
-                        <td className="px-6 py-4 text-sm text-gray-700">{item.jenis_sampah}</td>
-                        <td className="px-6 py-4 text-sm text-gray-700 text-right">
+                        <td className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 text-sm text-gray-700">{item.jenis_sampah}</td>
+                        <td className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 text-sm text-gray-700 text-right">
                           {item.berat.toLocaleString('id-ID', { maximumFractionDigits: 1 })} {item.satuan}
                         </td>
-                        <td className="px-6 py-4 text-sm font-medium text-center">
+                        <td className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 text-sm font-medium text-center">
                           <div className="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-700 rounded-full">
                             <Star className="w-4 h-4 fill-green-500 text-green-500" />
                             {item.poin}
@@ -174,13 +174,13 @@ export default function WargaPoinPage() {
           </div>
         </div>
 
-        <div className="col-span-1">
-          <div className="bg-white rounded-xl border border-gray-200/80 p-5 sticky top-6 shadow-sm">
+        <div className="lg:col-span-1">
+          <div className="bg-white rounded-lg sm:rounded-xl border border-gray-200/80 p-5 sticky top-6 shadow-sm">
             <h4 className="text-lg font-semibold text-gray-900 mb-4">Cara Mendapatkan Poin</h4>
 
             <div className="space-y-4">
               <div className="flex gap-3">
-                <div className="flex-shrink-0 flex items-center justify-center h-10 w-10 rounded-lg bg-green-100">
+                <div className="flex-shrink-0 flex items-center justify-center h-9 sm:h-10 w-9 sm:w-10 rounded-lg bg-green-100">
                   <Trash2 className="h-5 w-5 text-green-600" />
                 </div>
                 <div>
@@ -190,7 +190,7 @@ export default function WargaPoinPage() {
               </div>
 
               <div className="flex gap-3">
-                <div className="flex-shrink-0 flex items-center justify-center h-10 w-10 rounded-lg bg-green-100">
+                <div className="flex-shrink-0 flex items-center justify-center h-9 sm:h-10 w-9 sm:w-10 rounded-lg bg-green-100">
                   <Users className="h-5 w-5 text-green-600" />
                 </div>
                 <div>
@@ -200,7 +200,7 @@ export default function WargaPoinPage() {
               </div>
 
               <div className="flex gap-3">
-                <div className="flex-shrink-0 flex items-center justify-center h-10 w-10 rounded-lg bg-green-100">
+                <div className="flex-shrink-0 flex items-center justify-center h-9 sm:h-10 w-9 sm:w-10 rounded-lg bg-green-100">
                   <Gift className="h-5 w-5 text-green-600" />
                 </div>
                 <div>

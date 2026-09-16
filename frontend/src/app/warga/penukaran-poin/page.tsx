@@ -628,7 +628,7 @@ export default function PenukaranPoinPage() {
                 INFORMATION BANNER
             ===================================================== */}
 
-            <div className="mb-5 flex items-center gap-3 rounded-xl border border-green-100 bg-green-50 px-5 py-4">
+            <div className="mb-5 flex items-center gap-3 rounded-lg sm:rounded-xl border border-green-100 bg-green-50 px-5 py-4">
 
               <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white">
                 <Gift className="h-5 w-5 text-green-600" />
@@ -647,7 +647,7 @@ export default function PenukaranPoinPage() {
                 REWARD CONTAINER
             ===================================================== */}
 
-            <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+            <div className="overflow-hidden rounded-lg sm:rounded-xl border border-gray-200 bg-white shadow-sm">
 
               {/* =================================================
                   CATEGORY TABS
@@ -798,7 +798,7 @@ export default function PenukaranPoinPage() {
                       (_, index) => (
                         <div
                           key={index}
-                          className="overflow-hidden rounded-xl border border-gray-200 bg-white"
+                          className="overflow-hidden rounded-lg sm:rounded-xl border border-gray-200 bg-white"
                         >
 
                           <div className="h-[120px] animate-pulse bg-gray-100" />
@@ -902,7 +902,7 @@ export default function PenukaranPoinPage() {
                               key={
                                 item.voucher_id
                               }
-                              className="group flex min-h-[295px] cursor-pointer flex-col overflow-hidden rounded-xl border border-gray-200 bg-white transition-all duration-200 hover:-translate-y-0.5 hover:border-green-200 hover:shadow-md"
+                              className="group flex min-h-[295px] cursor-pointer flex-col overflow-hidden rounded-lg sm:rounded-xl border border-gray-200 bg-white transition-all duration-200 hover:-translate-y-0.5 hover:border-green-200 hover:shadow-md"
                               onClick={() =>
                                 openConfirmation(
                                   item
@@ -1134,7 +1134,7 @@ export default function PenukaranPoinPage() {
                 POIN SAYA
             ======================================================= */}
 
-            <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+            <div className="rounded-lg sm:rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
 
               <h3 className="text-base font-semibold text-gray-900">
                 Poin Saya
@@ -1194,7 +1194,7 @@ export default function PenukaranPoinPage() {
                 RIWAYAT PENUKARAN
             ======================================================= */}
 
-            <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+            <div className="rounded-lg sm:rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
 
               <div className="flex items-center justify-between gap-3">
 
@@ -1337,7 +1337,7 @@ export default function PenukaranPoinPage() {
                 TIPS
             ======================================================= */}
 
-            <div className="relative overflow-hidden rounded-xl border border-green-100 bg-green-50 p-5">
+            <div className="relative overflow-hidden rounded-lg sm:rounded-xl border border-green-100 bg-green-50 p-5">
 
               <h3 className="text-base font-semibold text-green-700">
                 Tips Mengumpulkan Poin
@@ -1377,7 +1377,7 @@ export default function PenukaranPoinPage() {
                 HELP
             ======================================================= */}
 
-            <div className="rounded-xl border border-orange-100 bg-orange-50 p-5">
+            <div className="rounded-lg sm:rounded-xl border border-orange-100 bg-orange-50 p-5">
 
               <h3 className="text-base font-semibold text-gray-900">
                 Butuh bantuan?
@@ -1418,7 +1418,7 @@ export default function PenukaranPoinPage() {
 
               {/* Header */}
 
-              <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4">
+              <div className="flex items-center justify-between border-b border-gray-100 px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4">
 
                 <h3 className="text-lg font-semibold text-gray-900">
                   Konfirmasi Penukaran
@@ -1474,7 +1474,7 @@ export default function PenukaranPoinPage() {
 
                 {/* Selected Reward */}
 
-                <div className="rounded-xl bg-gray-50 p-4">
+                <div className="rounded-lg sm:rounded-xl bg-gray-50 p-4">
 
                   <p className="text-xs text-gray-500">
                     Hadiah yang dipilih
@@ -1501,7 +1501,7 @@ export default function PenukaranPoinPage() {
                         Poin yang digunakan
                       </span>
 
-                      <span className="text-sm font-semibold text-gray-900">
+                      <span className="text-xs sm:text-sm font-semibold text-gray-900">
                         {selectedHadiah.poin_dibutuhkan.toLocaleString(
                           'id-ID'
                         )}{' '}
@@ -1516,7 +1516,7 @@ export default function PenukaranPoinPage() {
                         Saldo poin saat ini
                       </span>
 
-                      <span className="text-sm font-semibold text-gray-900">
+                      <span className="text-xs sm:text-sm font-semibold text-gray-900">
                         {saldo.toLocaleString(
                           'id-ID'
                         )}{' '}
@@ -1606,7 +1606,7 @@ export default function PenukaranPoinPage() {
           <div className="fixed bottom-5 right-5 z-[60]">
 
             <div
-              className={`flex max-w-sm items-center gap-3 rounded-xl border bg-white px-4 py-3 shadow-xl ${tukarStatus.type ===
+              className={`flex max-w-sm items-center gap-3 rounded-lg sm:rounded-xl border bg-white px-4 py-3 shadow-xl ${tukarStatus.type ===
                 'success'
                 ? 'border-green-200'
                 : 'border-red-200'

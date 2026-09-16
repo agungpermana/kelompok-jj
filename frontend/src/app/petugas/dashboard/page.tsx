@@ -38,71 +38,71 @@ export default function PetugasDashboardPage() {
   };
 
   return (
-    <div className="max-w-[1440px] mx-auto">
+    <div className="w-full">
       <AdminHeader
         title="Dashboard Petugas"
         subtitle="Ringkasan tugas penjemputan dan setoran hari ini."
       />
 
-      <div className="grid grid-cols-4 gap-4 mb-6">
-        <div className="bg-white rounded-xl border border-gray-200/80 p-5 shadow-sm">
-          <div className="flex items-center justify-between mb-3">
-            <p className="text-sm text-gray-500">Penjemputan Hari Ini</p>
-            <Truck className="w-5 h-5 text-blue-600" />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-5 lg:mb-6">
+        <div className="bg-white rounded-lg sm:rounded-lg sm:rounded-xl border border-gray-200/80 p-3 sm:p-4 lg:p-5 shadow-sm">
+          <div className="flex items-center justify-between mb-2 sm:mb-3">
+            <p className="text-xs sm:text-sm text-gray-500">Penjemputan Hari Ini</p>
+            <Truck className="w-4 sm:w-5 h-4 sm:h-5 text-blue-600" />
           </div>
-          <p className="text-2xl font-bold text-gray-900">
+          <p className="text-xl sm:text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">
             {isLoading ? '-' : dashboard.penjemputan_hari_ini}
           </p>
         </div>
-        <div className="bg-white rounded-xl border border-gray-200/80 p-5 shadow-sm">
-          <div className="flex items-center justify-between mb-3">
-            <p className="text-sm text-gray-500">Selesai</p>
-            <CheckCircle className="w-5 h-5 text-green-600" />
+        <div className="bg-white rounded-lg sm:rounded-lg sm:rounded-xl border border-gray-200/80 p-3 sm:p-4 lg:p-5 shadow-sm">
+          <div className="flex items-center justify-between mb-2 sm:mb-3">
+            <p className="text-xs sm:text-sm text-gray-500">Selesai</p>
+            <CheckCircle className="w-4 sm:w-5 h-4 sm:h-5 text-green-600" />
           </div>
-          <p className="text-2xl font-bold text-[#16a34a]">
+          <p className="text-xl sm:text-lg sm:text-xl lg:text-2xl font-bold text-[#16a34a]">
             {isLoading ? '-' : dashboard.penjemputan_selesai}
           </p>
         </div>
-        <div className="bg-white rounded-xl border border-gray-200/80 p-5 shadow-sm">
-          <div className="flex items-center justify-between mb-3">
-            <p className="text-sm text-gray-500">Menunggu</p>
-            <Clock className="w-5 h-5 text-amber-600" />
+        <div className="bg-white rounded-lg sm:rounded-lg sm:rounded-xl border border-gray-200/80 p-3 sm:p-4 lg:p-5 shadow-sm">
+          <div className="flex items-center justify-between mb-2 sm:mb-3">
+            <p className="text-xs sm:text-sm text-gray-500">Menunggu</p>
+            <Clock className="w-4 sm:w-5 h-4 sm:h-5 text-amber-600" />
           </div>
-          <p className="text-2xl font-bold text-amber-500">
+          <p className="text-xl sm:text-lg sm:text-xl lg:text-2xl font-bold text-amber-500">
             {isLoading ? '-' : dashboard.penjemputan_menunggu}
           </p>
         </div>
-        <div className="bg-white rounded-xl border border-gray-200/80 p-5 shadow-sm">
-          <div className="flex items-center justify-between mb-3">
-            <p className="text-sm text-gray-500">Total Setoran Dikumpul</p>
-            <Weight className="w-5 h-5 text-purple-600" />
+        <div className="bg-white rounded-lg sm:rounded-lg sm:rounded-xl border border-gray-200/80 p-3 sm:p-4 lg:p-5 shadow-sm">
+          <div className="flex items-center justify-between mb-2 sm:mb-3">
+            <p className="text-xs sm:text-sm text-gray-500">Total Setoran</p>
+            <Weight className="w-4 sm:w-5 h-4 sm:h-5 text-purple-600" />
           </div>
-          <p className="text-2xl font-bold text-gray-900">
+          <p className="text-xl sm:text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">
             {isLoading ? '-' : `${dashboard.total_setoran_dikumpul.toLocaleString('id-ID', { maximumFractionDigits: 1 })} kg`}
           </p>
         </div>
       </div>
 
       {dashboard.jadwal_hari_ini.length > 0 && (
-        <div className="bg-white rounded-xl border border-gray-200/80 shadow-sm overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-200/80 bg-gray-50">
-            <h3 className="text-lg font-semibold text-gray-900">Tugas Penjemputan Hari Ini</h3>
-            <p className="text-sm text-gray-500 mt-1">Daftar jadwal penjemputan yang dijadwalkan untuk hari ini</p>
+        <div className="bg-white rounded-lg sm:rounded-lg sm:rounded-xl border border-gray-200/80 shadow-sm overflow-hidden">
+          <div className="px-3 sm:px-4 lg:px-6 py-3 sm:py-4 border-b border-gray-200/80 bg-gray-50">
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900">Tugas Penjemputan Hari Ini</h3>
+            <p className="text-xs sm:text-sm text-gray-500 mt-1">Daftar jadwal penjemputan yang dijadwalkan untuk hari ini</p>
           </div>
 
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr className="border-b border-gray-200/80 bg-gray-50">
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wide">No</th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wide">Waktu</th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wide">Nama Warga</th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wide">Alamat Penjemputan</th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wide">No Telepon</th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wide">Jenis Sampah</th>
-                  <th className="px-6 py-3 text-right text-xs font-semibold text-gray-700 uppercase tracking-wide">Total Berat</th>
-                  <th className="px-6 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wide">Status</th>
-                  <th className="px-6 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wide">Aksi</th>
+                  <th className="px-2 sm:px-3 lg:px-6 py-2 sm:py-3 text-left text-[9px] sm:text-[10px] lg:text-xs font-semibold text-gray-700 uppercase tracking-wide">No</th>
+                  <th className="px-2 sm:px-3 lg:px-6 py-2 sm:py-3 text-left text-[9px] sm:text-[10px] lg:text-xs font-semibold text-gray-700 uppercase tracking-wide">Waktu</th>
+                  <th className="px-2 sm:px-3 lg:px-6 py-2 sm:py-3 text-left text-[9px] sm:text-[10px] lg:text-xs font-semibold text-gray-700 uppercase tracking-wide whitespace-nowrap">Nama Warga</th>
+                  <th className="px-2 sm:px-3 lg:px-6 py-2 sm:py-3 text-left text-[9px] sm:text-[10px] lg:text-xs font-semibold text-gray-700 uppercase tracking-wide whitespace-nowrap">Alamat</th>
+                  <th className="px-2 sm:px-3 lg:px-6 py-2 sm:py-3 text-left text-[9px] sm:text-[10px] lg:text-xs font-semibold text-gray-700 uppercase tracking-wide whitespace-nowrap">Telepon</th>
+                  <th className="px-2 sm:px-3 lg:px-6 py-2 sm:py-3 text-left text-[9px] sm:text-[10px] lg:text-xs font-semibold text-gray-700 uppercase tracking-wide">Sampah</th>
+                  <th className="px-2 sm:px-3 lg:px-6 py-2 sm:py-3 text-right text-[9px] sm:text-[10px] lg:text-xs font-semibold text-gray-700 uppercase tracking-wide whitespace-nowrap">Berat</th>
+                  <th className="px-2 sm:px-3 lg:px-6 py-2 sm:py-3 text-center text-[9px] sm:text-[10px] lg:text-xs font-semibold text-gray-700 uppercase tracking-wide whitespace-nowrap">Status</th>
+                  <th className="px-2 sm:px-3 lg:px-6 py-2 sm:py-3 text-center text-[9px] sm:text-[10px] lg:text-xs font-semibold text-gray-700 uppercase tracking-wide">Aksi</th>
                 </tr>
               </thead>
               <tbody>
@@ -110,32 +110,32 @@ export default function PetugasDashboardPage() {
                   const statusConfig = getStatusBadge(jadwal.status_jadwal);
                   return (
                     <tr key={jadwal.jadwal_id} className="border-b border-gray-200/80 hover:bg-gray-50/50 transition-colors">
-                      <td className="px-6 py-4 text-sm text-gray-900">{idx + 1}</td>
-                      <td className="px-6 py-4 text-sm font-medium text-gray-900">{formatTime(jadwal.waktu_penjemputan)}</td>
-                      <td className="px-6 py-4 text-sm text-gray-700">{jadwal.nama_warga}</td>
-                      <td className="px-6 py-4 text-sm text-gray-700">{jadwal.alamat_penjemputan}</td>
-                      <td className="px-6 py-4 text-sm text-gray-700">{jadwal.no_telepon}</td>
-                      <td className="px-6 py-4 text-sm text-gray-700">
-                        <div className="space-y-1">
+                      <td className="px-2 sm:px-3 lg:px-6 py-2 sm:py-3 sm:py-4 text-[10px] sm:text-sm text-gray-900">{idx + 1}</td>
+                      <td className="px-2 sm:px-3 lg:px-6 py-2 sm:py-3 sm:py-4 text-[10px] sm:text-sm font-medium text-gray-900 whitespace-nowrap">{formatTime(jadwal.waktu_penjemputan)}</td>
+                      <td className="px-2 sm:px-3 lg:px-6 py-2 sm:py-3 sm:py-4 text-[10px] sm:text-sm text-gray-700 truncate">{jadwal.nama_warga}</td>
+                      <td className="px-2 sm:px-3 lg:px-6 py-2 sm:py-3 sm:py-4 text-[10px] sm:text-sm text-gray-700 truncate">{jadwal.alamat_penjemputan}</td>
+                      <td className="px-2 sm:px-3 lg:px-6 py-2 sm:py-3 sm:py-4 text-[10px] sm:text-sm text-gray-700 truncate whitespace-nowrap">{jadwal.no_telepon}</td>
+                      <td className="px-2 sm:px-3 lg:px-6 py-2 sm:py-3 sm:py-4 text-[10px] sm:text-sm text-gray-700">
+                        <div className="space-y-0.5 sm:space-y-1">
                           {jadwal.detail_sampah.map((sampah, sIdx) => (
-                            <div key={sIdx} className="text-xs">
+                            <div key={sIdx} className="text-[9px] sm:text-xs truncate">
                               {sampah.jenis_sampah}
                             </div>
                           ))}
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-sm font-medium text-gray-900 text-right">
+                      <td className="px-2 sm:px-3 lg:px-6 py-2 sm:py-3 sm:py-4 text-[10px] sm:text-sm font-medium text-gray-900 text-right whitespace-nowrap">
                         {jadwal.perkiraan_total_berat.toLocaleString('id-ID', { maximumFractionDigits: 1 })} kg
                       </td>
-                      <td className="px-6 py-4 text-center">
-                        <span className={`inline-block px-3 py-1 text-xs font-medium rounded-full ${statusConfig.bg} ${statusConfig.text}`}>
+                      <td className="px-2 sm:px-3 lg:px-6 py-2 sm:py-3 sm:py-4 text-center">
+                        <span className={`inline-block px-2 sm:px-3 py-1 text-[9px] sm:text-xs font-medium rounded-full whitespace-nowrap ${statusConfig.bg} ${statusConfig.text}`}>
                           {statusConfig.label}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-center">
+                      <td className="px-2 sm:px-3 lg:px-6 py-2 sm:py-3 sm:py-4 text-center">
                         <a
                           href={`/petugas/penjemputan`}
-                          className="inline-block px-3 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded hover:bg-blue-200 transition-colors"
+                          className="inline-block px-2 sm:px-3 py-1 bg-blue-100 text-blue-700 text-[9px] sm:text-xs font-medium rounded hover:bg-blue-200 transition-colors whitespace-nowrap"
                         >
                           Lihat
                         </a>
