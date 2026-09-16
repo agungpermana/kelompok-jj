@@ -163,6 +163,8 @@ Route::middleware('auth:sanctum')->group(function () {
             ]);
         });
 
+        Route::get('/petugas/jenis-sampah', [WargaJenisSampahController::class, 'index']);
+
         Route::get(
             '/petugas/dashboard',
             [PetugasDashboardController::class, 'index']

@@ -5,7 +5,7 @@ import WasteIcon from '@/components/common/WasteIcon';
 import { Search, RotateCcw, FileText, Scale, Star, CheckCircle2, XCircle, Eye } from 'lucide-react';
 
 interface DetailSetoran { detail_setoran_id: number; jenis_sampah_id: number; berat_aktual: number; harga_satuan: number; nilai_poin_per_satuan: number; poin: number; poin_sementara?: number; jenis_sampah: { jenis_sampah_id: number; nama_jenis_sampah: string; }; }
-interface TransaksiSetoran { setoran_id: number; pengajuan_id: number; tanggal_setoran: string; tanggal_validasi?: string | null; status_validasi: string; total_berat_aktual: number; total_poin: number; total_poin_sementara?: number; poin?: number; warga: { warga_id: number; nama_warga: string; no_telepon?: string; alamat?: string; }; detail_setoran: DetailSetoran[]; validator_admin?: { nama_admin: string; }; validatorAdmin?: { nama_admin: string; }; }
+interface TransaksiSetoran { setoran_id: number; pengajuan_id: number; tanggal_setoran: string; tanggal_validasi?: string | null; status_validasi: string; catatan_validasi?: string | null; catatan_penolakan?: string | null; total_berat_aktual: number; total_poin: number; total_poin_sementara?: number; poin?: number; warga: { warga_id: number; nama_warga: string; no_telepon?: string; alamat?: string; }; detail_setoran: DetailSetoran[]; validator_admin?: { nama_admin: string; }; validatorAdmin?: { nama_admin: string; }; }
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 const getToken = () => { if (typeof window === 'undefined') return ''; return localStorage.getItem('trashure_token') || localStorage.getItem('token') || ''; };
@@ -29,10 +29,10 @@ export default function RiwayatSetoranPage() {
   const stats = useMemo(() => {
     const total = list.length;
     const totalBerat = list.reduce((s, x) => s + Number(x.total_berat_aktual || 0), 0);
-    const totalPoin = list.reduce((s, x) => s + Number((x as any).total_poin ?? x.total_poin_sementara ?? 0), 0);
     const valid = list.filter(x => x.status_validasi === 'disetujui').length;
     const tidakValid = list.filter(x => x.status_validasi === 'ditolak').length;
-    return { total, totalBerat, totalPoin, valid, tidakValid };
+    const menunggu = list.filter(x => x.status_validasi === 'menunggu').length;
+    return { total, totalBerat, valid, tidakValid, menunggu };
   }, [list]);
 
   const filtered = useMemo(() => {
@@ -75,15 +75,15 @@ export default function RiwayatSetoranPage() {
         </div>
         <div className="flex items-center gap-4 bg-white rounded-2xl p-5 border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#fffbeb] text-[#d97706] flex-shrink-0"><Star className="h-6 w-6" /></div>
-          <div><p className="text-[11px] font-medium text-gray-500">Total Poin</p><p className="text-[20px] font-extrabold text-gray-900 leading-none mt-1">{stats.totalPoin}</p><p className="text-[11px] text-gray-400">Poin</p></div>
+          <div><p className="text-[11px] font-medium text-gray-500">Menunggu Validasi</p><p className="text-[20px] font-extrabold text-gray-900 leading-none mt-1">{stats.menunggu}</p><p className="text-[11px] text-gray-400">Transaksi</p></div>
         </div>
         <div className="flex items-center gap-4 bg-white rounded-2xl p-5 border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#f5f3ff] text-[#7c3aed] flex-shrink-0"><CheckCircle2 className="h-6 w-6" /></div>
-          <div><p className="text-[11px] font-medium text-gray-500">Setoran Valid</p><p className="text-[20px] font-extrabold text-gray-900 leading-none mt-1">{stats.valid}</p><p className="text-[11px] text-gray-400">Transaksi</p></div>
+          <div><p className="text-[11px] font-medium text-gray-500">Disetujui</p><p className="text-[20px] font-extrabold text-gray-900 leading-none mt-1">{stats.valid}</p><p className="text-[11px] text-gray-400">Transaksi</p></div>
         </div>
         <div className="flex items-center gap-4 bg-white rounded-2xl p-5 border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#fef2f2] text-[#dc2626] flex-shrink-0"><XCircle className="h-6 w-6" /></div>
-          <div><p className="text-[11px] font-medium text-gray-500">Setoran Tidak Valid</p><p className="text-[20px] font-extrabold text-gray-900 leading-none mt-1">{stats.tidakValid}</p><p className="text-[11px] text-gray-400">Transaksi</p></div>
+          <div><p className="text-[11px] font-medium text-gray-500">Ditolak</p><p className="text-[20px] font-extrabold text-gray-900 leading-none mt-1">{stats.tidakValid}</p><p className="text-[11px] text-gray-400">Transaksi</p></div>
         </div>
       </div>
 
@@ -112,7 +112,7 @@ export default function RiwayatSetoranPage() {
                   <td className="px-5 py-4 align-top">
                     {s.status_validasi === 'disetujui' && <><span className="inline-flex px-2.5 py-1 rounded-lg bg-[#f0fdf4] text-[#15803d] text-[11px] font-semibold border border-green-100">Terverifikasi</span><p className="text-[10px] text-gray-400 mt-1">Oleh Admin<br />{s.tanggal_validasi ? new Date(s.tanggal_validasi).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + new Date(s.tanggal_validasi).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : '-'}</p></>}
                     {s.status_validasi === 'menunggu' && <><span className="inline-flex px-2.5 py-1 rounded-lg bg-[#fffbeb] text-[#92400e] text-[11px] font-semibold border border-amber-100">Menunggu Validasi</span><p className="text-[10px] text-gray-400 mt-1">Menunggu Admin<br />{new Date(s.tanggal_setoran).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}</p></>}
-                    {s.status_validasi === 'ditolak' && <><span className="inline-flex px-2.5 py-1 rounded-lg bg-[#fef2f2] text-[#b91c1c] text-[11px] font-semibold border border-red-100">Ditolak</span><p className="text-[10px] text-gray-400 mt-1">Oleh Admin<br />{s.tanggal_validasi ? new Date(s.tanggal_validasi).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) : '-'}</p></>}
+                    {s.status_validasi === 'ditolak' && <><span className="inline-flex px-2.5 py-1 rounded-lg bg-[#fef2f2] text-[#b91c1c] text-[11px] font-semibold border border-red-100">Ditolak</span><p className="text-[10px] text-gray-400 mt-1">Oleh Petugas<br />{new Date(s.tanggal_setoran).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}</p>{s.catatan_penolakan && <p className="text-[10px] text-red-500 mt-1 italic">"{s.catatan_penolakan}"</p>}</>}
                   </td>
                   <td className="px-5 py-4 align-top"><button onClick={() => { setSelected(s); setShowDetail(true); }} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-gray-200 text-gray-700 bg-white hover:bg-gray-50 text-[12px] font-medium"><Eye size={14} />Lihat Detail</button></td>
                 </tr>
@@ -141,6 +141,12 @@ export default function RiwayatSetoranPage() {
             <div className="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center"><h2 className="font-bold">Detail STN-{String(selected.setoran_id).padStart(3, '0')}</h2><button onClick={() => setShowDetail(false)} className="text-gray-400">✕</button></div>
             <div className="p-6 space-y-4 text-sm">
               <div className="grid grid-cols-2 gap-4 bg-gray-50 p-4 rounded-xl"><div><p className="text-gray-500">Warga</p><p className="font-semibold">{selected.warga.nama_warga}</p></div><div><p className="text-gray-500">Tanggal</p><p className="font-semibold">{new Date(selected.tanggal_setoran).toLocaleString('id-ID')}</p></div><div><p className="text-gray-500">Total Berat</p><p className="font-semibold">{selected.total_berat_aktual} kg</p></div><div><p className="text-gray-500">Poin Sementara</p><p className="font-semibold">{selected.total_poin_sementara}</p></div></div>
+              {selected.status_validasi === 'ditolak' && selected.catatan_penolakan && (
+                <div className="bg-red-50 border border-red-100 rounded-xl p-4">
+                  <p className="text-[11px] font-medium text-red-600 mb-1">Catatan Penolakan (Petugas)</p>
+                  <p className="text-sm text-red-700 italic">"{selected.catatan_penolakan}"</p>
+                </div>
+              )}
               <div className="space-y-2">{selected.detail_setoran.map(d => <div key={d.detail_setoran_id} className="flex justify-between border rounded-xl p-3"><span className="flex gap-2 items-center"><WasteIcon type={d.jenis_sampah.nama_jenis_sampah} size={16} />{d.jenis_sampah.nama_jenis_sampah}</span><span>{d.berat_aktual} kg • {d.poin_sementara} poin</span></div>)}</div>
             </div>
           </div>
