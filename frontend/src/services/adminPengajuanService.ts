@@ -39,7 +39,7 @@ export interface PengajuanPenjemputan {
   tanggal_pengajuan: string;
   alamat_penjemputan: string;
   perkiraan_total_berat: number;
-  status_pengajuan: 'diajukan' | 'dijadwalkan' | 'diproses' | 'selesai' | 'dibatalkan';
+  status_pengajuan: 'diajukan' | 'dijadwalkan' | 'diproses' | 'selesai' | 'dibatalkan' | 'ditolak';
   catatan?: string;
   warga?: Warga;
   detailPengajuanSampah?: DetailPengajuan[];

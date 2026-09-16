@@ -74,6 +74,8 @@ class SetoranController extends Controller
                 'konfirmasi_pengambilan' => $request->konfirmasi_pengambilan,
                 'catatan_penolakan' => $request->catatan_penolakan,
                 'status_validasi' => $isBerhasil ? 'menunggu' : 'ditolak',
+                'catatan_validasi' => $isBerhasil ? null : ($request->catatan_penolakan ? 'Pengambilan gagal: ' . $request->catatan_penolakan : 'Penjemputan gagal dilakukan oleh petugas.'),
+                'tanggal_validasi' => $isBerhasil ? null : now(),
                 'total_berat_aktual' => 0,
                 'total_poin' => 0,
             ]);
@@ -122,14 +124,14 @@ class SetoranController extends Controller
                 ]);
             }
             
-            $jadwal->update(['status_jadwal' => 'selesai']);
+            $jadwal->update(['status_jadwal' => $isBerhasil ? 'selesai' : 'batal']);
             if ($jadwal->pengajuanPenjemputan) {
-                $jadwal->pengajuanPenjemputan->update(['status_pengajuan' => 'selesai']);
+                $jadwal->pengajuanPenjemputan->update(['status_pengajuan' => $isBerhasil ? 'selesai' : 'ditolak']);
             }
             
             return $transaksi;
         });
         $transaksi->load(['detailSetoran.jenisSampah','warga','petugas','jadwalPenjemputan','pengajuanPenjemputan']);
-        return response()->json(['message' => 'Transaksi setoran berhasil dibuat.','data' => $transaksi], 201);
+        return response()->json(['message' => $request->konfirmasi_pengambilan === 'ya' ? 'Transaksi setoran berhasil dibuat.' : 'Penolakan penjemputan berhasil dicatat.','data' => $transaksi], 201);
     }
 }

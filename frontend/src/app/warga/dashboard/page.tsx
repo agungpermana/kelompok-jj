@@ -37,6 +37,7 @@ export default function WargaDashboardPage() {
       diproses: { bg: 'bg-yellow-100', text: 'text-yellow-800', label: 'Di Proses' },
       selesai: { bg: 'bg-green-100', text: 'text-green-800', label: 'Selesai' },
       dibatalkan: { bg: 'bg-red-100', text: 'text-red-800', label: 'Dibatalkan' },
+      ditolak: { bg: 'bg-red-100', text: 'text-red-800', label: 'Ditolak' },
     };
 
     const statusConfig = statusMap[status] || { bg: 'bg-gray-100', text: 'text-gray-800', label: status };
