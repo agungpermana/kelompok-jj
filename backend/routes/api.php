@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\Warga\PengajuanPenjemputanController;
 use App\Http\Controllers\Api\Warga\SetoranController as WargaSetoranController;
 use App\Http\Controllers\Api\Warga\DashboardController as WargaDashboardController;
 use App\Http\Controllers\Api\Warga\PoinController as WargaPoinController;
+use App\Http\Controllers\Api\Warga\PenukaranPoinController as WargaPenukaranPoinController;
 use App\Http\Controllers\Api\Petugas\JadwalPenjemputanController;
 use App\Http\Controllers\Api\Petugas\SetoranController;
 use App\Http\Controllers\Api\Petugas\DashboardController as PetugasDashboardController;
@@ -268,6 +269,22 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get(
             '/warga/poin',
             [WargaPoinController::class, 'index']
+        );
+        Route::get(
+            '/warga/penukaran-poin/hadiah',
+            [WargaPenukaranPoinController::class, 'daftarHadiah']
+        );
+        Route::get(
+            '/warga/penukaran-poin/saldo',
+            [WargaPenukaranPoinController::class, 'getSaldo']
+        );
+        Route::post(
+            '/warga/penukaran-poin/tukar',
+            [WargaPenukaranPoinController::class, 'tukarPoin']
+        );
+        Route::get(
+            '/warga/penukaran-poin/riwayat',
+            [WargaPenukaranPoinController::class, 'riwayatPenukaran']
         );
     });
 

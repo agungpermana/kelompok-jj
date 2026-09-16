@@ -5042,7 +5042,7 @@
                     "Warga - Pengajuan"
                 ],
                 "summary": "Batalkan pengajuan penjemputan (Warga)",
-                "description": "Membatalkan pengajuan penjemputan sampah yang masih dalam status 'diajukan'.",
+                "description": "Membatalkan pengajuan penjemputan sampah yang masih dalam status 'diajukan'. Alasan pembatalan wajib diisi.",
                 "operationId": "1ab03b7de8acab1200727b17251e98ab",
                 "parameters": [
                     {
@@ -5056,6 +5056,31 @@
                         }
                     }
                 ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "alasan_pembatalan"
+                                ],
+                                "properties": {
+                                    "alasan_pembatalan": {
+                                        "description": "Alasan wajib pembatalan pengajuan",
+                                        "type": "string",
+                                        "example": "Ada keperluan mendadak"
+                                    },
+                                    "catatan": {
+                                        "description": "Alias catatan alasan pembatalan",
+                                        "type": "string",
+                                        "example": "Ada keperluan mendadak"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
                         "description": "Pengajuan berhasil dibatalkan",
@@ -5109,14 +5134,14 @@
                         }
                     },
                     "422": {
-                        "description": "Pengajuan sudah diproses sehingga tidak dapat dibatalkan",
+                        "description": "Pengajuan sudah diproses atau alasan pembatalan belum diisi",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Pengajuan tidak dapat dibatalkan karena sudah diproses."
+                                            "example": "Alasan pembatalan wajib diisi."
                                         },
                                         "status_pengajuan": {
                                             "type": "string",
@@ -5201,6 +5226,433 @@
                                         "message": {
                                             "type": "string",
                                             "example": "Pengajuan tidak ditemukan."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/warga/penukaran-poin/hadiah": {
+            "get": {
+                "tags": [
+                    "Warga - Penukaran Poin"
+                ],
+                "summary": "Daftar hadiah/voucher untuk ditukar",
+                "description": "Mengambil daftar hadiah/voucher yang tersedia untuk ditukar dengan poin warga.",
+                "operationId": "480ff9fa74df1cbdc0849d9eb3c09b64",
+                "parameters": [
+                    {
+                        "name": "kategori",
+                        "in": "query",
+                        "description": "Filter kategori voucher",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "voucher"
+                        }
+                    },
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Cari berdasarkan nama voucher",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "Voucher"
+                        }
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "description": "Urutkan berdasarkan poin (asc/desc)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "asc",
+                            "enum": [
+                                "asc",
+                                "desc"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Halaman",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Item per halaman",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 12
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Daftar hadiah berhasil diambil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Daftar hadiah berhasil diambil."
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "pagination": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/warga/penukaran-poin/saldo": {
+            "get": {
+                "tags": [
+                    "Warga - Penukaran Poin"
+                ],
+                "summary": "Saldo poin warga",
+                "description": "Mengambil saldo poin warga yang sedang login.",
+                "operationId": "24d7683e7fa62f0b3aee466a10583139",
+                "responses": {
+                    "200": {
+                        "description": "Saldo poin berhasil diambil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Saldo poin berhasil diambil."
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "saldo_poin": {
+                                                    "type": "integer",
+                                                    "example": 1250
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Profil warga tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Profil warga tidak ditemukan."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/warga/penukaran-poin/tukar": {
+            "post": {
+                "tags": [
+                    "Warga - Penukaran Poin"
+                ],
+                "summary": "Tukar poin dengan hadiah",
+                "description": "Menukar poin warga dengan hadiah/voucher yang tersedia.",
+                "operationId": "bc1012af59164debf63fc9ac0cae7c0b",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "voucher_id"
+                                ],
+                                "properties": {
+                                    "voucher_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Penukaran poin berhasil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Penukaran poin berhasil."
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "penukaran_id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "voucher_id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "poin_digunakan": {
+                                                    "type": "integer",
+                                                    "example": 500
+                                                },
+                                                "saldo_sebelum": {
+                                                    "type": "integer",
+                                                    "example": 1250
+                                                },
+                                                "saldo_sesudah": {
+                                                    "type": "integer",
+                                                    "example": 750
+                                                },
+                                                "status_penukaran": {
+                                                    "type": "string",
+                                                    "example": "diajukan"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validasi gagal",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Saldo poin tidak cukup."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Voucher atau warga tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Voucher tidak ditemukan."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/warga/penukaran-poin/riwayat": {
+            "get": {
+                "tags": [
+                    "Warga - Penukaran Poin"
+                ],
+                "summary": "Riwayat penukaran poin warga",
+                "description": "Mengambil riwayat penukaran poin warga yang sedang login.",
+                "operationId": "18a571f41290b7a8842e531f874467e5",
+                "parameters": [
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "description": "Urutkan berdasarkan tanggal (terbaru/terlama)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "terbaru",
+                            "enum": [
+                                "terbaru",
+                                "terlama"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Halaman",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Item per halaman",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Riwayat penukaran berhasil diambil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Riwayat penukaran berhasil diambil."
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "pagination": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Profil warga tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Profil warga tidak ditemukan."
                                         }
                                     },
                                     "type": "object"
@@ -5893,6 +6345,10 @@
         {
             "name": "Warga - Dashboard",
             "description": "Warga - Dashboard"
+        },
+        {
+            "name": "Warga - Penukaran Poin",
+            "description": "Warga - Penukaran Poin"
         },
         {
             "name": "Warga - Poin",
