@@ -160,9 +160,9 @@ export default function WargaProfilPage() {
 
   const memberSince = profile?.created_at
     ? new Date(profile.created_at).toLocaleDateString('id-ID', {
-        month: 'long',
-        year: 'numeric',
-      })
+      month: 'long',
+      year: 'numeric',
+    })
     : '2024';
 
   return (
@@ -179,11 +179,10 @@ export default function WargaProfilPage() {
       {/* Toast Notification */}
       {toast && (
         <div
-          className={`mb-6 flex items-center justify-between rounded-2xl p-4 shadow-sm transition-all duration-300 ${
-            toast.type === 'success'
+          className={`mb-6 flex items-center justify-between rounded-2xl p-4 shadow-sm transition-all duration-300 ${toast.type === 'success'
               ? 'bg-emerald-50 border border-emerald-200 text-emerald-800'
               : 'bg-rose-50 border border-rose-200 text-rose-800'
-          }`}
+            }`}
         >
           <div className="flex items-center gap-3">
             {toast.type === 'success' ? (
@@ -345,11 +344,10 @@ export default function WargaProfilPage() {
                       value={namaWarga}
                       onChange={(e) => setNamaWarga(e.target.value)}
                       placeholder="Masukkan nama lengkap sesuai KTP"
-                      className={`w-full px-3.5 py-2.5 rounded-xl border text-xs text-gray-800 transition-all focus:outline-none focus:ring-2 ${
-                        fieldErrors.nama_warga
+                      className={`w-full px-3.5 py-2.5 rounded-xl border text-xs text-gray-800 transition-all focus:outline-none focus:ring-2 ${fieldErrors.nama_warga
                           ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-100'
                           : 'border-gray-200 focus:border-[#16a34a] focus:ring-green-100'
-                      }`}
+                        }`}
                     />
                     {fieldErrors.nama_warga && (
                       <p className="text-[11px] text-rose-500 mt-1">{fieldErrors.nama_warga}</p>
@@ -367,11 +365,10 @@ export default function WargaProfilPage() {
                       onChange={(e) => setNik(e.target.value.replace(/[^0-9]/g, ''))}
                       maxLength={16}
                       placeholder="16 digit NIK KTP"
-                      className={`w-full px-3.5 py-2.5 rounded-xl border text-xs text-gray-800 transition-all focus:outline-none focus:ring-2 ${
-                        fieldErrors.nik
+                      className={`w-full px-3.5 py-2.5 rounded-xl border text-xs text-gray-800 transition-all focus:outline-none focus:ring-2 ${fieldErrors.nik
                           ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-100'
                           : 'border-gray-200 focus:border-[#16a34a] focus:ring-green-100'
-                      }`}
+                        }`}
                     />
                     {fieldErrors.nik && (
                       <p className="text-[11px] text-rose-500 mt-1">{fieldErrors.nik}</p>
@@ -404,11 +401,10 @@ export default function WargaProfilPage() {
                       value={noTelepon}
                       onChange={(e) => setNoTelepon(e.target.value)}
                       placeholder="Contoh: 081234567890"
-                      className={`w-full px-3.5 py-2.5 rounded-xl border text-xs text-gray-800 transition-all focus:outline-none focus:ring-2 ${
-                        fieldErrors.no_telepon
+                      className={`w-full px-3.5 py-2.5 rounded-xl border text-xs text-gray-800 transition-all focus:outline-none focus:ring-2 ${fieldErrors.no_telepon
                           ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-100'
                           : 'border-gray-200 focus:border-[#16a34a] focus:ring-green-100'
-                      }`}
+                        }`}
                     />
                     {fieldErrors.no_telepon && (
                       <p className="text-[11px] text-rose-500 mt-1">{fieldErrors.no_telepon}</p>
@@ -425,11 +421,10 @@ export default function WargaProfilPage() {
                       value={alamat}
                       onChange={(e) => setAlamat(e.target.value)}
                       placeholder="Tuliskan nama jalan, RT/RW, nomor rumah, dan patokan agar mudah ditemukan petugas"
-                      className={`w-full px-3.5 py-2.5 rounded-xl border text-xs text-gray-800 transition-all focus:outline-none focus:ring-2 resize-none ${
-                        fieldErrors.alamat
+                      className={`w-full px-3.5 py-2.5 rounded-xl border text-xs text-gray-800 transition-all focus:outline-none focus:ring-2 resize-none ${fieldErrors.alamat
                           ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-100'
                           : 'border-gray-200 focus:border-[#16a34a] focus:ring-green-100'
-                      }`}
+                        }`}
                     />
                     {fieldErrors.alamat && (
                       <p className="text-[11px] text-rose-500 mt-1">{fieldErrors.alamat}</p>
@@ -461,11 +456,10 @@ export default function WargaProfilPage() {
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
                       placeholder="Username akun"
-                      className={`w-full px-3.5 py-2.5 rounded-xl border text-xs text-gray-800 transition-all focus:outline-none focus:ring-2 ${
-                        fieldErrors.username
+                      className={`w-full px-3.5 py-2.5 rounded-xl border text-xs text-gray-800 transition-all focus:outline-none focus:ring-2 ${fieldErrors.username
                           ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-100'
                           : 'border-gray-200 focus:border-[#16a34a] focus:ring-green-100'
-                      }`}
+                        }`}
                     />
                     {fieldErrors.username && (
                       <p className="text-[11px] text-rose-500 mt-1">{fieldErrors.username}</p>
@@ -482,11 +476,10 @@ export default function WargaProfilPage() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="nama@email.com"
-                      className={`w-full px-3.5 py-2.5 rounded-xl border text-xs text-gray-800 transition-all focus:outline-none focus:ring-2 ${
-                        fieldErrors.email
+                      className={`w-full px-3.5 py-2.5 rounded-xl border text-xs text-gray-800 transition-all focus:outline-none focus:ring-2 ${fieldErrors.email
                           ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-100'
                           : 'border-gray-200 focus:border-[#16a34a] focus:ring-green-100'
-                      }`}
+                        }`}
                     />
                     {fieldErrors.email && (
                       <p className="text-[11px] text-rose-500 mt-1">{fieldErrors.email}</p>
@@ -503,11 +496,10 @@ export default function WargaProfilPage() {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="Kosongkan jika tidak diubah"
-                      className={`w-full px-3.5 py-2.5 rounded-xl border text-xs text-gray-800 transition-all focus:outline-none focus:ring-2 ${
-                        fieldErrors.password
+                      className={`w-full px-3.5 py-2.5 rounded-xl border text-xs text-gray-800 transition-all focus:outline-none focus:ring-2 ${fieldErrors.password
                           ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-100'
                           : 'border-gray-200 focus:border-[#16a34a] focus:ring-green-100'
-                      }`}
+                        }`}
                     />
                     {fieldErrors.password && (
                       <p className="text-[11px] text-rose-500 mt-1">{fieldErrors.password}</p>
@@ -524,11 +516,10 @@ export default function WargaProfilPage() {
                       value={passwordConfirmation}
                       onChange={(e) => setPasswordConfirmation(e.target.value)}
                       placeholder="Ulangi password baru"
-                      className={`w-full px-3.5 py-2.5 rounded-xl border text-xs text-gray-800 transition-all focus:outline-none focus:ring-2 ${
-                        fieldErrors.password_confirmation
+                      className={`w-full px-3.5 py-2.5 rounded-xl border text-xs text-gray-800 transition-all focus:outline-none focus:ring-2 ${fieldErrors.password_confirmation
                           ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-100'
                           : 'border-gray-200 focus:border-[#16a34a] focus:ring-green-100'
-                      }`}
+                        }`}
                     />
                     {fieldErrors.password_confirmation && (
                       <p className="text-[11px] text-rose-500 mt-1">{fieldErrors.password_confirmation}</p>

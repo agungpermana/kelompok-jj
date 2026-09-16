@@ -303,26 +303,6 @@ export default function PengajuanPenjemputanPage() {
               5
             </span>
           </button>
-
-          {/* User Profile */}
-          <div className="flex items-center gap-3 rounded-lg sm:rounded-xl bg-white border border-gray-200/90 px-3.5 py-1.5 shadow-sm cursor-pointer hover:bg-gray-50 transition-colors">
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-tr from-amber-200 to-rose-200 text-gray-800 font-semibold text-sm shadow-inner overflow-hidden">
-              <img
-                src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80"
-                alt="Warga Avatar"
-                className="h-full w-full object-cover"
-                onError={(e) => {
-                  (e.currentTarget as HTMLElement).style.display = 'none';
-                }}
-              />
-            </div>
-            <div className="text-left">
-              <p className="text-xs sm:text-sm font-semibold text-gray-900 leading-tight">
-                {userProfile?.warga?.nama_warga || userProfile?.username || 'Warga'}
-              </p>
-            </div>
-            <ChevronDown className="h-4 w-4 text-gray-400 ml-1" />
-          </div>
         </div>
       </header>
 

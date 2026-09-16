@@ -309,26 +309,6 @@ export default function RiwayatSetoranPage() {
               5
             </span>
           </button>
-
-          {/* User Profile */}
-          <div className="flex items-center gap-3 rounded-lg sm:rounded-xl bg-white border border-gray-200/90 px-3.5 py-1.5 shadow-sm cursor-pointer hover:bg-gray-50 transition-colors">
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-tr from-amber-200 to-rose-200 text-gray-800 font-semibold text-sm shadow-inner overflow-hidden">
-              <img
-                src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80"
-                alt="Warga Avatar"
-                className="h-full w-full object-cover"
-                onError={(e) => {
-                  (e.currentTarget as HTMLElement).style.display = 'none';
-                }}
-              />
-            </div>
-            <div className="text-left">
-              <p className="text-xs sm:text-sm font-semibold text-gray-900 leading-tight">
-                {userProfile?.warga?.nama_warga || userProfile?.username || 'Warga'}
-              </p>
-            </div>
-            <ChevronDown className="h-4 w-4 text-gray-400 ml-1" />
-          </div>
         </div>
       </header>
 
@@ -498,10 +478,10 @@ export default function RiwayatSetoranPage() {
                         <div className="pt-1">
                           <span
                             className={`text-[11px] font-semibold block mb-0.5 ${isRejectedOverall
-                                ? 'text-rose-600 font-bold'
-                                : isMenunggu
-                                  ? 'text-amber-700 font-bold'
-                                  : 'text-gray-400'
+                              ? 'text-rose-600 font-bold'
+                              : isMenunggu
+                                ? 'text-amber-700 font-bold'
+                                : 'text-gray-400'
                               }`}
                           >
                             {isRejectedOverall
@@ -1002,10 +982,10 @@ export default function RiwayatSetoranPage() {
               {selectedSetoran.catatan_validasi && (
                 <div
                   className={`p-3.5 rounded-lg sm:rounded-xl text-xs flex items-start gap-2.5 ${selectedSetoran.status_pengajuan === 'dibatalkan'
-                      ? 'bg-gray-50 border border-gray-200 text-gray-800'
-                      : selectedSetoran.status_validasi === 'ditolak'
-                        ? 'bg-rose-50 border border-rose-200 text-rose-800'
-                        : 'bg-green-50 border border-green-200 text-emerald-900'
+                    ? 'bg-gray-50 border border-gray-200 text-gray-800'
+                    : selectedSetoran.status_validasi === 'ditolak'
+                      ? 'bg-rose-50 border border-rose-200 text-rose-800'
+                      : 'bg-green-50 border border-green-200 text-emerald-900'
                     }`}
                 >
                   <AlertCircle className="h-4 w-4 flex-shrink-0 mt-0.5" />
@@ -1162,8 +1142,8 @@ export default function RiwayatSetoranPage() {
                 rows={3}
                 maxLength={500}
                 className={`w-full text-xs rounded-lg sm:rounded-xl border p-3 text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 transition resize-none ${cancelError
-                    ? 'border-rose-300 ring-2 ring-rose-500/20 focus:border-rose-500'
-                    : 'border-gray-200 focus:ring-rose-500/20 focus:border-rose-500'
+                  ? 'border-rose-300 ring-2 ring-rose-500/20 focus:border-rose-500'
+                  : 'border-gray-200 focus:ring-rose-500/20 focus:border-rose-500'
                   }`}
               />
               {cancelError && (
@@ -1215,8 +1195,8 @@ export default function RiwayatSetoranPage() {
         <div className="fixed bottom-6 right-6 z-50 animate-in slide-in-from-bottom-5 fade-in duration-200">
           <div
             className={`flex items-center gap-2.5 px-4 py-3 rounded-2xl shadow-lg border text-xs font-semibold ${toastMessage.type === 'success'
-                ? 'bg-emerald-900 text-white border-emerald-800'
-                : 'bg-rose-900 text-white border-rose-800'
+              ? 'bg-emerald-900 text-white border-emerald-800'
+              : 'bg-rose-900 text-white border-rose-800'
               }`}
           >
             {toastMessage.type === 'success' ? (
