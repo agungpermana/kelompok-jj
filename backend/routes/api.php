@@ -21,6 +21,7 @@ use App\Http\Controllers\Api\Admin\VoucherController as AdminVoucherController;
 use App\Http\Controllers\Api\Admin\PengepulController as AdminPengepulController;
 use App\Http\Controllers\Api\Admin\PetugasController as AdminPetugasController;
 use App\Http\Controllers\Api\Admin\SetoranValidasiController;
+use App\Http\Controllers\Api\Admin\PenukaranPoinController as AdminPenukaranPoinController;
 use App\Http\Controllers\Api\Pengepul\StokSampahController as PengepulStokSampahController;
 
 // Default code
@@ -151,6 +152,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/admin/setoran', [SetoranValidasiController::class, 'index']);
         Route::get('/admin/setoran/{id}', [SetoranValidasiController::class, 'show']);
         Route::patch('/admin/setoran/{id}/validasi', [SetoranValidasiController::class, 'validasi']);
+
+        // Penukaran Poin
+        Route::get('/admin/penukaran-poin', [AdminPenukaranPoinController::class, 'index']);
     });
 
 

@@ -1169,25 +1169,6 @@ export default function PenukaranPoinPage() {
 
               </div>
 
-              <p className="mt-5 text-xs text-gray-500">
-                Setara dengan
-              </p>
-
-              <div className="mt-2 flex items-center gap-3 rounded-lg bg-green-50 px-4 py-3">
-
-                <Gift className="h-5 w-5 text-green-600" />
-
-                <span className="text-sm font-bold text-green-700">
-                  Rp
-                  {(
-                    saldo * 100
-                  ).toLocaleString(
-                    'id-ID'
-                  )}
-                </span>
-
-              </div>
-
             </div>
 
             {/* =======================================================
