@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { Truck, CheckCircle, Clock, Weight } from 'lucide-react';
 import AdminHeader from '@/components/layout/header';
 import { fetchPetugasDashboard, DashboardData, DEFAULT_DASHBOARD_DATA } from '@/services/petugasDashboardService';
 
@@ -45,25 +46,37 @@ export default function PetugasDashboardPage() {
 
       <div className="grid grid-cols-4 gap-4 mb-6">
         <div className="bg-white rounded-xl border border-gray-200/80 p-5 shadow-sm">
-          <p className="text-sm text-gray-500 mb-1">Penjemputan Hari Ini</p>
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-sm text-gray-500">Penjemputan Hari Ini</p>
+            <Truck className="w-5 h-5 text-blue-600" />
+          </div>
           <p className="text-2xl font-bold text-gray-900">
             {isLoading ? '-' : dashboard.penjemputan_hari_ini}
           </p>
         </div>
         <div className="bg-white rounded-xl border border-gray-200/80 p-5 shadow-sm">
-          <p className="text-sm text-gray-500 mb-1">Selesai</p>
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-sm text-gray-500">Selesai</p>
+            <CheckCircle className="w-5 h-5 text-green-600" />
+          </div>
           <p className="text-2xl font-bold text-[#16a34a]">
             {isLoading ? '-' : dashboard.penjemputan_selesai}
           </p>
         </div>
         <div className="bg-white rounded-xl border border-gray-200/80 p-5 shadow-sm">
-          <p className="text-sm text-gray-500 mb-1">Menunggu</p>
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-sm text-gray-500">Menunggu</p>
+            <Clock className="w-5 h-5 text-amber-600" />
+          </div>
           <p className="text-2xl font-bold text-amber-500">
             {isLoading ? '-' : dashboard.penjemputan_menunggu}
           </p>
         </div>
         <div className="bg-white rounded-xl border border-gray-200/80 p-5 shadow-sm">
-          <p className="text-sm text-gray-500 mb-1">Total Setoran Dikumpul</p>
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-sm text-gray-500">Total Setoran Dikumpul</p>
+            <Weight className="w-5 h-5 text-purple-600" />
+          </div>
           <p className="text-2xl font-bold text-gray-900">
             {isLoading ? '-' : `${dashboard.total_setoran_dikumpul.toLocaleString('id-ID', { maximumFractionDigits: 1 })} kg`}
           </p>
