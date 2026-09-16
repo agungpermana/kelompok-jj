@@ -10,7 +10,7 @@ export interface MenuItem {
   icon: React.ElementType;
   href?: string;
   badge?: number;
-  children?: { label: string; icon: React.ElementType; href: string }[];
+  children?: { label: string; icon: React.ElementType; href?: string; download?: string }[];
 }
 
 export interface MenuSection {
@@ -131,11 +131,45 @@ export default function Sidebar({ menuSections, logo, profileCard }: SidebarProp
                     {isExpanded && (
                       <div className="ml-4 mt-0.5 space-y-0.5 border-l-2 border-gray-100 pl-3">
                         {item.children!.map((child) => {
-                          const childActive = isActive(child.href);
+                          const childActive = child.href ? isActive(child.href) : false;
+                          const isDownload = !!child.download;
+
+                          if (isDownload) {
+                            return (
+                              <button
+                                key={child.label}
+                                onClick={() => {
+                                  const token = localStorage.getItem('trashure_token') || '';
+                                  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+                                  fetch(child.download!, {
+                                    headers: { Authorization: `Bearer ${token}` },
+                                  })
+                                    .then((res) => res.blob())
+                                    .then((blob) => {
+                                      const url = window.URL.createObjectURL(blob);
+                                      const a = document.createElement('a');
+                                      a.href = url;
+                                      a.download = `${child.label.toLowerCase().replace(/\s+/g, '-')}.pdf`;
+                                      document.body.appendChild(a);
+                                      a.click();
+                                      window.URL.revokeObjectURL(url);
+                                      document.body.removeChild(a);
+                                    })
+                                    .catch((err) => console.error('Download gagal:', err));
+                                }}
+                                className="w-full flex items-center gap-2 rounded-md px-2.5 py-1.5 text-[12.5px] font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-700 transition-all duration-200"
+                              >
+                                <child.icon className="h-[15px] w-[15px] flex-shrink-0 text-gray-400" strokeWidth={1.8} />
+                                <span className="flex-1 text-left">{child.label}</span>
+                                <span className="text-[10px] font-semibold text-[#16a34a] bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200/60">PDF</span>
+                              </button>
+                            );
+                          }
+
                           return (
                             <Link
                               key={child.href}
-                              href={child.href}
+                              href={child.href!}
                               className={`flex items-center gap-2 rounded-md px-2.5 py-1.5 text-[12.5px] font-medium transition-all duration-200 ${
                                 childActive
                                   ? 'text-[#16a34a] bg-green-50'

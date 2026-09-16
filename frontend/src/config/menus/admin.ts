@@ -4,13 +4,10 @@ import {
   UserCheck,
   Truck,
   Recycle,
-  Coins,
   ArrowLeftRight,
   ShieldCheck,
   FileText,
   FileBarChart,
-  FileSpreadsheet,
-  FilePieChart,
   PackageSearch,
   BadgeDollarSign,
   Ticket,
@@ -47,7 +44,6 @@ export const adminMenus: MenuSection[] = [
     items: [
       { label: 'Pengajuan Penjemputan', icon: FileText, href: '/admin/pengajuan-penjemputan' },
       { label: 'Setoran Sampah', icon: Recycle, href: '/admin/setoran-sampah' },
-      { label: 'Poin & Saldo', icon: Coins, href: '/admin/poin-saldo' },
       { label: 'Penukaran Poin', icon: ArrowLeftRight, href: '/admin/penukaran-poin' },
     ],
   },
@@ -60,11 +56,7 @@ export const adminMenus: MenuSection[] = [
   {
     title: 'LAPORAN',
     items: [
-      { label: 'Laporan Setoran', icon: FileBarChart, href: '/admin/laporan-setoran' },
-      { label: 'Laporan Penjemputan', icon: FileText, href: '/admin/laporan-penjemputan' },
-      { label: 'Laporan Keuangan', icon: FileSpreadsheet, href: '/admin/laporan-keuangan' },
-      { label: 'Laporan Stok', icon: FilePieChart, href: '/admin/laporan-stok' },
-      { label: 'Laporan Poin', icon: FileBarChart, href: '/admin/laporan-poin' },
+      { label: 'Laporan', icon: FileBarChart, href: '/admin/laporan' },
     ],
   },
   {
