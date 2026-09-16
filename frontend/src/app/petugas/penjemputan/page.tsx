@@ -19,17 +19,22 @@ import {
   User as UserIcon,
   Play,
   CheckCircle,
+  Plus,
+  Trash2,
 } from 'lucide-react';
+
+interface JenisSampah {
+  jenis_sampah_id: number;
+  nama_jenis_sampah: string;
+  satuan?: string;
+  keterangan?: string;
+}
 
 interface DetailPengajuan {
   detail_pengajuan_id: number;
   jenis_sampah_id: number;
   perkiraan_berat: number;
-  jenis_sampah: {
-    jenis_sampah_id: number;
-    nama_jenis_sampah: string;
-    satuan?: string;
-  };
+  jenis_sampah: JenisSampah;
 }
 
 interface Warga {
@@ -252,10 +257,13 @@ export default function TugasSayaPage() {
     Array<{ jenis_sampah_id: number; berat_aktual: number }>
   >([]);
   const [konfirmasiPengambilan, setKonfirmasiPengambilan] = useState('ya');
+  const [catatanPenolakan, setCatatanPenolakan] = useState('');
   const [loadingSetoran, setLoadingSetoran] = useState(false);
+  const [jenisSampahList, setJenisSampahList] = useState<JenisSampah[]>([]);
 
   useEffect(() => {
     fetchJadwalList();
+    fetchJenisSampah();
   }, []);
 
   const fetchJadwalList = async () => {
@@ -318,6 +326,34 @@ export default function TugasSayaPage() {
       setJadwalList([]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchJenisSampah = async () => {
+    try {
+      let token =
+        typeof window !== 'undefined'
+          ? localStorage.getItem('trashure_token') || localStorage.getItem('token')
+          : null;
+
+      const headers: HeadersInit = {
+        Accept: 'application/json',
+      };
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      const response = await fetch(`${API_BASE_URL}/petugas/jenis-sampah`, { headers });
+      if (response.ok) {
+        const result = await response.json();
+        if (Array.isArray(result.data)) {
+          setJenisSampahList(result.data);
+        } else if (Array.isArray(result)) {
+          setJenisSampahList(result);
+        }
+      }
+    } catch (error) {
+      console.warn('Gagal memuat jenis sampah:', error);
     }
   };
 
@@ -445,18 +481,33 @@ export default function TugasSayaPage() {
       jenis_sampah_id: d.jenis_sampah_id,
       berat_aktual: d.perkiraan_berat || 0,
     }));
-    setDetailSampah(
-      initialDetail.length > 0 ? initialDetail : [{ jenis_sampah_id: 1, berat_aktual: 0 }]
-    );
+    if (initialDetail.length === 0) {
+      initialDetail.push({ jenis_sampah_id: 0, berat_aktual: 0 });
+    }
+    setDetailSampah(initialDetail);
     setKonfirmasiPengambilan('ya');
+    setCatatanPenolakan('');
     setShowSetoranModal(true);
     setShowDetailModal(false);
   };
 
   const submitSetoran = async () => {
     if (!selectedJadwal) return;
-    if (detailSampah.length === 0) {
+    
+    // Validasi jika gagal diambil, catatan wajib diisi
+    if (konfirmasiPengambilan === 'tidak' && !catatanPenolakan.trim()) {
+      alert('Catatan penolakan wajib diisi jika gagal diambil');
+      return;
+    }
+    
+    if (konfirmasiPengambilan === 'ya' && detailSampah.length === 0) {
       alert('Tambahkan minimal 1 jenis sampah');
+      return;
+    }
+
+    const invalidItem = detailSampah.find((d) => d.jenis_sampah_id === 0);
+    if (konfirmasiPengambilan === 'ya' && invalidItem) {
+      alert('Pilih jenis sampah terlebih dahulu');
       return;
     }
 
@@ -472,7 +523,8 @@ export default function TugasSayaPage() {
         },
         body: JSON.stringify({
           konfirmasi_pengambilan: konfirmasiPengambilan,
-          detail_sampah: detailSampah,
+          catatan_penolakan: konfirmasiPengambilan === 'tidak' ? catatanPenolakan : null,
+          detail_sampah: konfirmasiPengambilan === 'ya' ? detailSampah : [],
         }),
       });
 
@@ -484,10 +536,14 @@ export default function TugasSayaPage() {
           )
         );
         setShowSetoranModal(false);
-      } else {
-        const data = await response.json();
-        alert(data.message || 'Gagal membuat setoran');
-      }
+        } else {
+          const data = await response.json();
+          const detail = data.errors
+            ? Object.values(data.errors).flat().join('\n')
+            : data.message || 'Gagal membuat setoran';
+          alert(detail);
+          console.error('Setoran error:', data);
+        }
     } catch {
       alert('Transaksi setoran berhasil disimpan.');
       setJadwalList((prev) =>
@@ -1008,10 +1064,12 @@ export default function TugasSayaPage() {
                         }}
                         className="flex-1 px-3 py-2 border border-gray-200 rounded-xl bg-white font-medium"
                       >
-                        <option value={1}>Plastik</option>
-                        <option value={2}>Kertas</option>
-                        <option value={3}>Logam</option>
-                        <option value={4}>Kaca</option>
+                        <option value={0}>Pilih Jenis Sampah</option>
+                        {jenisSampahList.map((item) => (
+                          <option key={item.jenis_sampah_id} value={item.jenis_sampah_id}>
+                            {item.nama_jenis_sampah}
+                          </option>
+                        ))}
                       </select>
                       <input
                         type="number"
@@ -1027,9 +1085,31 @@ export default function TugasSayaPage() {
                         placeholder="Berat (kg)"
                         className="w-32 px-3 py-2 border border-gray-200 rounded-xl bg-white font-bold text-gray-900"
                       />
+                      {detailSampah.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const updated = detailSampah.filter((_, i) => i !== index);
+                            setDetailSampah(updated);
+                          }}
+                          className="h-9 w-9 flex items-center justify-center rounded-xl bg-red-50 text-red-500 hover:bg-red-100 transition-colors flex-shrink-0"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      )}
                     </div>
                   ))}
                 </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setDetailSampah([...detailSampah, { jenis_sampah_id: 0, berat_aktual: 0 }]);
+                  }}
+                  className="mt-3 flex items-center gap-1.5 text-xs font-semibold text-[#16a34a] hover:text-[#15803d] transition-colors"
+                >
+                  <Plus className="h-4 w-4" />
+                  Tambah Jenis Sampah
+                </button>
               </div>
 
               <div>
@@ -1059,6 +1139,21 @@ export default function TugasSayaPage() {
                   </label>
                 </div>
               </div>
+
+              {konfirmasiPengambilan === 'tidak' && (
+                <div>
+                  <label className="block font-bold text-gray-700 mb-2">
+                    Catatan Penolakan <span className="text-red-500">*</span>
+                  </label>
+                  <textarea
+                    value={catatanPenolakan}
+                    onChange={(e) => setCatatanPenolakan(e.target.value)}
+                    placeholder="Contoh: Tidak ada orang di rumah, alamat tidak ditemukan, dll."
+                    rows={3}
+                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#16a34a] focus:ring-2 focus:ring-green-100 resize-none"
+                  />
+                </div>
+              )}
             </div>
 
             <div className="border-t border-gray-100 px-6 py-4 flex justify-end gap-2 bg-gray-50/50">
