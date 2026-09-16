@@ -15,6 +15,7 @@ import {
   PackageSearch,
   BadgeDollarSign,
   Ticket,
+  FileCheck
 } from 'lucide-react';
 import type { MenuSection } from '@/components/layout/sidebar';
 
@@ -46,7 +47,7 @@ export const adminMenus: MenuSection[] = [
     title: 'TRANSAKSI',
     items: [
       { label: 'Pengajuan Penjemputan', icon: FileText, href: '/admin/pengajuan-penjemputan' },
-      { label: 'Penjemputan', icon: Truck, href: '/admin/penjemputan' },
+      // { label: 'Penjemputan', icon: Truck, href: '/admin/penjemputan' },
       { label: 'Setoran Sampah', icon: Recycle, href: '/admin/setoran-sampah' },
       { label: 'Poin & Saldo', icon: Coins, href: '/admin/poin-saldo' },
       { label: 'Penukaran Poin', icon: ArrowLeftRight, href: '/admin/penukaran-poin' },
@@ -55,7 +56,8 @@ export const adminMenus: MenuSection[] = [
   {
     title: 'VALIDASI',
     items: [
-      { label: 'Validasi Poin & Stok', icon: ShieldCheck, href: '/admin/validasi-poin-stok', badge: 12 },
+      { label: 'Validasi Setoran', icon: ShieldCheck, href: '/admin/validasi-setoran' },
+      { label: 'Validasi Transaksi', icon: FileCheck, href: '/admin/validasi-transaksi' },
     ],
   },
   {

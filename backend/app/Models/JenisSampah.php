@@ -43,11 +43,6 @@ class JenisSampah extends Model
         return $this->hasMany(DetailSetoran::class, 'jenis_sampah_id', 'jenis_sampah_id');
     }
 
-    public function stokSementara()
-    {
-        return $this->hasMany(StokSementara::class, 'jenis_sampah_id', 'jenis_sampah_id');
-    }
-
     public function stokSampah()
     {
         return $this->hasOne(StokSampah::class, 'jenis_sampah_id', 'jenis_sampah_id');

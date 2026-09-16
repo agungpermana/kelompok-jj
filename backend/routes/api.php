@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\Warga\JenisSampahController as WargaJenisSampahController;
 use App\Http\Controllers\Api\Warga\PengajuanPenjemputanController;
 use App\Http\Controllers\Api\Warga\SetoranController as WargaSetoranController;
+use App\Http\Controllers\Api\Warga\DashboardController as WargaDashboardController;
 use App\Http\Controllers\Api\Petugas\JadwalPenjemputanController;
 use App\Http\Controllers\Api\Petugas\SetoranController;
 use App\Http\Controllers\Api\Admin\PengajuanPenjemputanController as AdminPengajuanPenjemputanController;
@@ -16,6 +17,7 @@ use App\Http\Controllers\Api\Admin\HargaSampahController as AdminHargaSampahCont
 use App\Http\Controllers\Api\Admin\VoucherController as AdminVoucherController;
 use App\Http\Controllers\Api\Admin\PengepulController as AdminPengepulController;
 use App\Http\Controllers\Api\Admin\PetugasController as AdminPetugasController;
+use App\Http\Controllers\Api\Admin\SetoranValidasiController;
 use App\Http\Controllers\Api\Pengepul\StokSampahController as PengepulStokSampahController;
 
 // Default code
@@ -138,6 +140,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/admin/pengepul/{id}', [AdminPengepulController::class, 'show']);
         Route::put('/admin/pengepul/{id}', [AdminPengepulController::class, 'update']);
         Route::delete('/admin/pengepul/{id}', [AdminPengepulController::class, 'destroy']);
+
+        Route::get('/admin/setoran', [SetoranValidasiController::class, 'index']);
+        Route::get('/admin/setoran/{id}', [SetoranValidasiController::class, 'show']);
+        Route::patch('/admin/setoran/{id}/validasi', [SetoranValidasiController::class, 'validasi']);
     });
 
 
@@ -190,11 +196,6 @@ Route::middleware('auth:sanctum')->group(function () {
             '/petugas/setoran',
             [SetoranController::class, 'index']
         );
-
-        Route::patch(
-            '/petugas/setoran/{setoranId}/validasi',
-            [SetoranController::class, 'validasi']
-        );
     });
 
 
@@ -212,6 +213,11 @@ Route::middleware('auth:sanctum')->group(function () {
                 'user' => $request->user(),
             ]);
         });
+
+        Route::get(
+            '/warga/dashboard',
+            [WargaDashboardController::class, 'index']
+        );
 
         Route::get(
             '/warga/jenis-sampah',

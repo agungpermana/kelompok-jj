@@ -18,7 +18,7 @@ class DetailSetoran extends Model
         'berat_aktual',
         'harga_satuan',
         'nilai_poin_per_satuan',
-        'poin_sementara',
+        'poin',
     ];
 
     protected function casts(): array

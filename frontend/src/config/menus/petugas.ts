@@ -2,7 +2,6 @@ import {
   LayoutDashboard,
   Truck,
   Clock,
-  Recycle,
   FileText,
   FileBarChart,
   Settings,
@@ -32,14 +31,7 @@ export const petugasMenus: MenuSection[] = [
   {
     title: 'SETORAN',
     items: [
-      {
-        label: 'Setoran',
-        icon: Recycle,
-        children: [
-          { label: 'Validasi Setoran', icon: Recycle, href: '/petugas/validasi-setoran' },
-          { label: 'Riwayat Setoran', icon: FileText, href: '/petugas/riwayat-setoran' },
-        ],
-      },
+      { label: 'Riwayat Setoran', icon: FileText, href: '/petugas/riwayat-setoran' },
     ],
   },
   {
