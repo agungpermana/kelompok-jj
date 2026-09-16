@@ -300,7 +300,7 @@ class PengajuanPenjemputanController extends Controller
     #[OA\Patch(
         path: "/warga/pengajuan/{id}/cancel",
         summary: "Batalkan pengajuan penjemputan (Warga)",
-        description: "Membatalkan pengajuan penjemputan sampah yang masih dalam status 'diajukan'.",
+        description: "Membatalkan pengajuan penjemputan sampah yang masih dalam status 'diajukan'. Alasan pembatalan wajib diisi.",
         tags: ["Warga - Pengajuan"],
         security: [["bearerAuth" => []]],
         parameters: [
@@ -312,6 +312,16 @@ class PengajuanPenjemputanController extends Controller
                 schema: new OA\Schema(type: "integer", example: 1)
             )
         ],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ["alasan_pembatalan"],
+                properties: [
+                    new OA\Property(property: "alasan_pembatalan", type: "string", example: "Ada keperluan mendadak", description: "Alasan wajib pembatalan pengajuan"),
+                    new OA\Property(property: "catatan", type: "string", example: "Ada keperluan mendadak", description: "Alias catatan alasan pembatalan")
+                ]
+            )
+        ),
         responses: [
             new OA\Response(
                 response: 200,
@@ -343,10 +353,10 @@ class PengajuanPenjemputanController extends Controller
             ),
             new OA\Response(
                 response: 422,
-                description: "Pengajuan sudah diproses sehingga tidak dapat dibatalkan",
+                description: "Pengajuan sudah diproses atau alasan pembatalan belum diisi",
                 content: new OA\JsonContent(
                     properties: [
-                        new OA\Property(property: "message", type: "string", example: "Pengajuan tidak dapat dibatalkan karena sudah diproses."),
+                        new OA\Property(property: "message", type: "string", example: "Alasan pembatalan wajib diisi."),
                         new OA\Property(property: "status_pengajuan", type: "string", example: "dijadwalkan")
                     ]
                 )
@@ -386,9 +396,36 @@ class PengajuanPenjemputanController extends Controller
             ], 422);
         }
 
-        $pengajuan->update([
-            'status_pengajuan' => 'dibatalkan',
+        $request->validate([
+            'alasan_pembatalan' => 'required_without:catatan|nullable|string|min:3|max:500',
+            'catatan' => 'required_without:alasan_pembatalan|nullable|string|min:3|max:500',
+        ], [
+            'alasan_pembatalan.required_without' => 'Alasan pembatalan wajib diisi.',
+            'catatan.required_without' => 'Alasan pembatalan wajib diisi.',
+            'alasan_pembatalan.min' => 'Alasan pembatalan minimal 3 karakter.',
+            'catatan.min' => 'Alasan pembatalan minimal 3 karakter.',
         ]);
+
+        $alasan = trim((string)($request->input('alasan_pembatalan') ?? $request->input('catatan')));
+
+        if (empty($alasan)) {
+            return response()->json([
+                'message' => 'Alasan pembatalan wajib diisi.',
+                'errors' => [
+                    'alasan_pembatalan' => ['Alasan pembatalan wajib diisi.']
+                ]
+            ], 422);
+        }
+
+        $catatanExisting = $pengajuan->catatan;
+        $updateData = [
+            'status_pengajuan' => 'dibatalkan',
+            'catatan' => $catatanExisting
+                ? ($catatanExisting . " | Pembatalan: " . $alasan)
+                : ("Pembatalan: " . $alasan),
+        ];
+
+        $pengajuan->update($updateData);
 
         return response()->json([
             'message' => 'Pengajuan berhasil dibatalkan.',

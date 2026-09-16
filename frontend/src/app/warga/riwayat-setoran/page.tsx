@@ -34,7 +34,7 @@ import {
   RingkasanSetoran,
   DEFAULT_RINGKASAN,
 } from '@/services/wargaSetoranService';
-import { fetchCurrentUser, UserProfile } from '@/services/wargaPengajuanService';
+import { fetchCurrentUser, UserProfile, cancelPengajuan } from '@/services/wargaPengajuanService';
 
 // Format helper for formatted currency or numbers
 function formatNumber(val: number | string): string {
@@ -44,9 +44,17 @@ function formatNumber(val: number | string): string {
 }
 
 // Generate code STYYMMDD-XXX from date and ID
-function formatSetoranCode(setoranId: number, dateStr: string): string {
+function formatSetoranCode(setoranId: number, dateStr?: string | null): string {
   try {
-    const d = new Date(dateStr);
+    if (!dateStr) return `ST-${String(setoranId).padStart(4, '0')}`;
+    const d = new Date(dateStr.replace(' ', 'T'));
+    if (isNaN(d.getTime())) {
+      const m = String(dateStr).match(/(\d{4})-(\d{2})-(\d{2})/);
+      if (m) {
+        return `ST${m[1].slice(-2)}${m[2]}${m[3]}-${String(setoranId).padStart(3, '0')}`;
+      }
+      return `ST-${String(setoranId).padStart(4, '0')}`;
+    }
     const yy = String(d.getFullYear()).slice(-2);
     const mm = String(d.getMonth() + 1).padStart(2, '0');
     const dd = String(d.getDate()).padStart(2, '0');
@@ -58,22 +66,37 @@ function formatSetoranCode(setoranId: number, dateStr: string): string {
 }
 
 // Format date to Indonesian localized date
-function formatIndoDate(dateStr: string): string {
+function formatIndoDate(dateStr?: string | null): string {
+  if (!dateStr) return '-';
   try {
     const months = [
       'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
       'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
     ];
-    const d = new Date(dateStr);
+    const d = new Date(dateStr.replace(' ', 'T'));
+    if (isNaN(d.getTime())) {
+      const m = String(dateStr).match(/(\d{4})-(\d{2})-(\d{2})/);
+      if (m) {
+        const monthIdx = parseInt(m[2], 10) - 1;
+        return `${parseInt(m[3], 10)} ${months[monthIdx] || m[2]} ${m[1]}`;
+      }
+      return dateStr;
+    }
     return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
   } catch {
     return dateStr;
   }
 }
 
-function formatIndoTime(dateStr: string): string {
+function formatIndoTime(dateStr?: string | null): string {
+  if (!dateStr) return '';
   try {
-    const d = new Date(dateStr);
+    const d = new Date(dateStr.replace(' ', 'T'));
+    if (isNaN(d.getTime())) {
+      const m = String(dateStr).match(/(\d{2}):(\d{2})/);
+      if (m) return `${m[1]}:${m[2]}`;
+      return '';
+    }
     const hh = String(d.getHours()).padStart(2, '0');
     const mm = String(d.getMinutes()).padStart(2, '0');
     return `${hh}:${mm}`;
@@ -137,6 +160,20 @@ export default function RiwayatSetoranPage() {
   const [selectedSetoran, setSelectedSetoran] = useState<SetoranItem | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
+  // Cancel Modal & Toast
+  const [cancelModalItem, setCancelModalItem] = useState<SetoranItem | null>(null);
+  const [alasanPembatalan, setAlasanPembatalan] = useState('');
+  const [cancelError, setCancelError] = useState<string | null>(null);
+  const [cancelling, setCancelling] = useState(false);
+  const [toastMessage, setToastMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  useEffect(() => {
+    if (toastMessage) {
+      const timer = setTimeout(() => setToastMessage(null), 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [toastMessage]);
+
   // Fetch data
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -171,9 +208,12 @@ export default function RiwayatSetoranPage() {
       // Tab filter
       if (activeTab !== 'semua') {
         const status = item.status_validasi?.toLowerCase();
-        if (activeTab === 'menunggu' && status !== 'menunggu') return false;
+        const statusPengajuan = item.status_pengajuan?.toLowerCase();
+        const isItemDitolak = status === 'ditolak' || statusPengajuan === 'ditolak' || statusPengajuan === 'dibatalkan';
+
+        if (activeTab === 'menunggu' && (status !== 'menunggu' || isItemDitolak)) return false;
         if (activeTab === 'disetujui' && status !== 'disetujui') return false;
-        if (activeTab === 'ditolak' && status !== 'ditolak') return false;
+        if (activeTab === 'ditolak' && !isItemDitolak) return false;
       }
 
       // Custom date filter
@@ -199,6 +239,54 @@ export default function RiwayatSetoranPage() {
     // Optionally fetch freshest detail from API
     const fresh = await fetchDetailSetoran(item.setoran_id);
     if (fresh) setSelectedSetoran(fresh);
+  };
+
+  const handleCancelPengajuan = async () => {
+    if (!cancelModalItem) return;
+
+    const trimmedAlasan = alasanPembatalan.trim();
+    if (!trimmedAlasan) {
+      setCancelError('Alasan pembatalan wajib diisi.');
+      return;
+    }
+    if (trimmedAlasan.length < 3) {
+      setCancelError('Alasan pembatalan minimal 3 karakter.');
+      return;
+    }
+
+    setCancelling(true);
+    setCancelError(null);
+    try {
+      const idToCancel = cancelModalItem.pengajuan_id || cancelModalItem.setoran_id;
+      const res = await cancelPengajuan(idToCancel, trimmedAlasan);
+      if (res.success) {
+        setToastMessage({
+          type: 'success',
+          text: res.message || 'Pengajuan penjemputan berhasil dibatalkan.',
+        });
+        setCancelModalItem(null);
+        setAlasanPembatalan('');
+        setCancelError(null);
+        if (isDetailModalOpen && selectedSetoran?.setoran_id === cancelModalItem.setoran_id) {
+          setIsDetailModalOpen(false);
+        }
+        await loadData();
+      } else {
+        setCancelError(res.message || 'Gagal membatalkan pengajuan.');
+        setToastMessage({
+          type: 'error',
+          text: res.message || 'Gagal membatalkan pengajuan.',
+        });
+      }
+    } catch {
+      setCancelError('Terjadi kesalahan saat membatalkan pengajuan.');
+      setToastMessage({
+        type: 'error',
+        text: 'Terjadi kesalahan saat membatalkan pengajuan.',
+      });
+    } finally {
+      setCancelling(false);
+    }
   };
 
   return (
@@ -351,7 +439,11 @@ export default function RiwayatSetoranPage() {
 
                 const isDiajukan = item.status_pengajuan === 'diajukan';
                 const isDijadwalkan = item.status_pengajuan === 'dijadwalkan';
+                const isDiproses = item.status_pengajuan === 'diproses' || item.status_pengajuan === 'di proses' || item.status_pengajuan === 'proses';
                 const isSelesai = item.status_pengajuan === 'selesai';
+                const isDibatalkan = item.status_pengajuan === 'dibatalkan';
+                const isDitolakPengajuan = item.status_pengajuan === 'ditolak' || isDibatalkan;
+                const isRejectedOverall = isDitolak || isDitolakPengajuan;
 
                 const totalBeratVal = typeof item.total_berat_aktual === 'string'
                   ? parseFloat(item.total_berat_aktual)
@@ -363,7 +455,7 @@ export default function RiwayatSetoranPage() {
 
                 return (
                   <div
-                    key={item.setoran_id}
+                    key={`card-${item.pengajuan_id || 's'}-${item.setoran_id}`}
                     className="bg-white rounded-2xl border border-gray-200/80 p-5 md:p-6 shadow-sm hover:border-gray-300 hover:shadow transition duration-150"
                   >
                     <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-center">
@@ -381,9 +473,24 @@ export default function RiwayatSetoranPage() {
                               Dijadwalkan
                             </span>
                           )}
+                          {isDiproses && (
+                            <span className="inline-flex items-center gap-1.5 bg-yellow-50 text-amber-800 border border-amber-300 px-3 py-1 rounded-full text-xs font-semibold">
+                              Di Proses
+                            </span>
+                          )}
                           {isSelesai && (
                             <span className="inline-flex items-center gap-1.5 bg-[#f0fdf4] text-[#16a34a] border border-[#bbf7d0] px-3 py-1 rounded-full text-xs font-semibold">
                               Selesai
+                            </span>
+                          )}
+                          {isDitolakPengajuan && (
+                            <span className="inline-flex items-center gap-1.5 bg-rose-50 text-rose-700 border border-rose-200 px-3 py-1 rounded-full text-xs font-semibold">
+                              {item.status_pengajuan === 'dibatalkan' ? 'Dibatalkan' : 'Ditolak'}
+                            </span>
+                          )}
+                          {!isDiajukan && !isDijadwalkan && !isDiproses && !isSelesai && !isDitolakPengajuan && item.status_pengajuan && (
+                            <span className="inline-flex items-center gap-1.5 bg-gray-50 text-gray-700 border border-gray-200 px-3 py-1 rounded-full text-xs font-semibold capitalize">
+                              {item.status_pengajuan}
                             </span>
                           )}
                         </div>
@@ -391,10 +498,19 @@ export default function RiwayatSetoranPage() {
                         {/* Date & Time */}
                         <div className="pt-1">
                           <span
-                            className={`text-[11px] font-semibold block mb-0.5 ${isMenunggu ? 'text-amber-700 font-bold' : 'text-gray-400'
-                              }`}
+                            className={`text-[11px] font-semibold block mb-0.5 ${
+                              isRejectedOverall
+                                ? 'text-rose-600 font-bold'
+                                : isMenunggu
+                                ? 'text-amber-700 font-bold'
+                                : 'text-gray-400'
+                            }`}
                           >
-                            {isMenunggu ? 'Perkiraan Penjemputan' : 'Waktu Pengambilan'}
+                            {isRejectedOverall
+                              ? 'Status Penjemputan'
+                              : isMenunggu
+                              ? 'Perkiraan Penjemputan'
+                              : 'Waktu Pengambilan'}
                           </span>
                           <div className="flex items-center gap-1.5 text-sm font-bold text-gray-900">
                             <Calendar className="h-4 w-4 text-gray-400" />
@@ -488,7 +604,7 @@ export default function RiwayatSetoranPage() {
                       <div className="md:col-span-3 space-y-3 flex flex-col justify-between h-full">
                         <div>
                           <p className="text-[11px] text-gray-400 font-medium mb-1">
-                            Validasi oleh Admin
+                            {isDibatalkan ? 'Status Pengajuan' : 'Validasi oleh Admin'}
                           </p>
                           {isDisetujui && (
                             <div className="space-y-0.5">
@@ -505,7 +621,7 @@ export default function RiwayatSetoranPage() {
                             </div>
                           )}
 
-                          {isMenunggu && (
+                          {isMenunggu && !isRejectedOverall && (
                             <div className="space-y-0.5">
                               <div className="flex items-center gap-1.5 text-xs font-bold text-amber-600">
                                 <Clock className="h-4 w-4" />
@@ -515,24 +631,50 @@ export default function RiwayatSetoranPage() {
                             </div>
                           )}
 
-                          {isDitolak && (
+                          {isDibatalkan && (
+                            <div className="space-y-0.5">
+                              <div className="flex items-center gap-1.5 text-xs font-bold text-rose-600">
+                                <XCircle className="h-4 w-4" />
+                                <span>Dibatalkan oleh Warga</span>
+                              </div>
+                              {item.catatan_validasi ? (
+                                <p className="text-[11px] text-gray-500 pl-5.5 line-clamp-2" title={item.catatan_validasi}>
+                                  {item.catatan_validasi}
+                                </p>
+                              ) : (
+                                <p className="text-[11px] text-gray-400 pl-5.5">
+                                  Dibatalkan sebelum dijadwalkan
+                                </p>
+                              )}
+                            </div>
+                          )}
+
+                          {!isDibatalkan && isRejectedOverall && (
                             <div className="space-y-0.5">
                               <div className="flex items-center gap-1.5 text-xs font-bold text-rose-600">
                                 <XCircle className="h-4 w-4" />
                                 <span>Ditolak</span>
                               </div>
+                              {item.catatan_validasi ? (
+                                <p className="text-[11px] text-rose-600 pl-5.5 line-clamp-2" title={item.catatan_validasi}>
+                                  {item.catatan_validasi}
+                                </p>
+                              ) : (
+                                <p className="text-[11px] text-gray-400 pl-5.5">
+                                  {item.status_pengajuan === 'ditolak' ? 'Penjemputan ditolak' : 'Oleh Admin'}
+                                </p>
+                              )}
                               {item.tanggal_validasi && (
-                                <p className="text-[11px] text-gray-500 pl-5.5">
-                                  {formatIndoDate(item.tanggal_validasi)}{' '}
-                                  {formatIndoTime(item.tanggal_validasi)}
+                                <p className="text-[10px] text-gray-400 pl-5.5">
+                                  {formatIndoDate(item.tanggal_validasi)}
                                 </p>
                               )}
                             </div>
                           )}
                         </div>
 
-                        {/* Button Lihat Detail */}
-                        <div className="pt-2">
+                        {/* Button Actions */}
+                        <div className="pt-2 space-y-2">
                           <button
                             type="button"
                             onClick={() => handleOpenDetail(item)}
@@ -541,6 +683,21 @@ export default function RiwayatSetoranPage() {
                             <span>Lihat Detail</span>
                             <ArrowRight className="h-3.5 w-3.5" />
                           </button>
+
+                          {isDiajukan && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setCancelModalItem(item);
+                                setAlasanPembatalan('');
+                                setCancelError(null);
+                              }}
+                              className="w-full flex items-center justify-center gap-1.5 bg-rose-50/70 hover:bg-rose-100/80 border border-rose-200/90 text-rose-700 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition shadow-xs"
+                            >
+                              <XCircle className="h-3.5 w-3.5 text-rose-500" />
+                              <span>Batalkan Pengajuan</span>
+                            </button>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -747,14 +904,23 @@ export default function RiwayatSetoranPage() {
                       Disetujui
                     </span>
                   )}
-                  {selectedSetoran.status_validasi === 'menunggu' && (
+                  {selectedSetoran.status_validasi === 'menunggu' && selectedSetoran.status_pengajuan !== 'ditolak' && selectedSetoran.status_pengajuan !== 'dibatalkan' && (
                     <span className="bg-amber-50 text-amber-700 border border-amber-200 px-2.5 py-0.5 rounded-full text-[11px] font-bold">
                       Menunggu Validasi
                     </span>
                   )}
-                  {selectedSetoran.status_validasi === 'ditolak' && (
+                  {selectedSetoran.status_pengajuan === 'dibatalkan' ? (
+                    <span className="bg-rose-50 text-rose-700 border border-rose-200 px-2.5 py-0.5 rounded-full text-[11px] font-bold">
+                      Dibatalkan
+                    </span>
+                  ) : (selectedSetoran.status_validasi === 'ditolak' || selectedSetoran.status_pengajuan === 'ditolak') ? (
                     <span className="bg-rose-50 text-rose-700 border border-rose-200 px-2.5 py-0.5 rounded-full text-[11px] font-bold">
                       Ditolak
+                    </span>
+                  ) : null}
+                  {selectedSetoran.status_pengajuan && (
+                    <span className="bg-gray-100 text-gray-700 border border-gray-200 px-2 py-0.5 rounded-full text-[10px] font-medium capitalize">
+                      Pengajuan: {selectedSetoran.status_pengajuan === 'diproses' ? 'Di Proses' : selectedSetoran.status_pengajuan}
                     </span>
                   )}
                 </div>
@@ -834,17 +1000,24 @@ export default function RiwayatSetoranPage() {
                 </div>
               </div>
 
-              {/* Catatan Validasi if present */}
+              {/* Catatan Validasi / Pembatalan if present */}
               {selectedSetoran.catatan_validasi && (
                 <div
-                  className={`p-3.5 rounded-xl text-xs flex items-start gap-2.5 ${selectedSetoran.status_validasi === 'ditolak'
-                    ? 'bg-rose-50 border border-rose-200 text-rose-800'
-                    : 'bg-green-50 border border-green-200 text-emerald-900'
-                    }`}
+                  className={`p-3.5 rounded-xl text-xs flex items-start gap-2.5 ${
+                    selectedSetoran.status_pengajuan === 'dibatalkan'
+                      ? 'bg-gray-50 border border-gray-200 text-gray-800'
+                      : selectedSetoran.status_validasi === 'ditolak'
+                      ? 'bg-rose-50 border border-rose-200 text-rose-800'
+                      : 'bg-green-50 border border-green-200 text-emerald-900'
+                  }`}
                 >
                   <AlertCircle className="h-4 w-4 flex-shrink-0 mt-0.5" />
                   <div>
-                    <span className="font-bold block">Catatan Validasi Admin:</span>
+                    <span className="font-bold block">
+                      {selectedSetoran.status_pengajuan === 'dibatalkan'
+                        ? 'Catatan Pembatalan:'
+                        : 'Catatan Validasi Admin:'}
+                    </span>
                     <span>{selectedSetoran.catatan_validasi}</span>
                   </div>
                 </div>
@@ -927,7 +1100,23 @@ export default function RiwayatSetoranPage() {
             </div>
 
             {/* Modal Footer */}
-            <div className="pt-2 border-t border-gray-100 flex justify-end">
+            <div className="pt-2 border-t border-gray-100 flex items-center justify-between">
+              {selectedSetoran.status_pengajuan === 'diajukan' ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCancelModalItem(selectedSetoran);
+                    setAlasanPembatalan('');
+                    setCancelError(null);
+                  }}
+                  className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 border border-rose-200 rounded-xl transition shadow-xs"
+                >
+                  <XCircle className="h-4 w-4 text-rose-500" />
+                  <span>Batalkan Pengajuan</span>
+                </button>
+              ) : (
+                <div />
+              )}
               <button
                 type="button"
                 onClick={() => setIsDetailModalOpen(false)}
@@ -936,6 +1125,117 @@ export default function RiwayatSetoranPage() {
                 Tutup
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: Konfirmasi Batalkan Pengajuan */}
+      {cancelModalItem && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4 animate-in fade-in duration-150">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-gray-100 space-y-4 animate-in zoom-in-95 duration-150">
+            <div className="flex items-center gap-3">
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-rose-50 text-rose-600 border border-rose-100 flex-shrink-0">
+                <AlertCircle className="h-6 w-6 stroke-[2]" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-gray-900">
+                  Batalkan Pengajuan?
+                </h3>
+                <p className="text-xs text-gray-500">
+                  ID: {formatSetoranCode(cancelModalItem.setoran_id, cancelModalItem.tanggal_setoran)}
+                </p>
+              </div>
+            </div>
+
+            <p className="text-xs text-gray-600 leading-relaxed bg-gray-50 p-3 rounded-xl border border-gray-100">
+              Apakah Anda yakin ingin membatalkan pengajuan penjemputan ini? Pengajuan yang sudah dibatalkan tidak dapat diproses lagi oleh admin atau petugas.
+            </p>
+
+            <div>
+              <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+                Alasan Pembatalan <span className="text-rose-600 font-bold">*</span>
+              </label>
+              <textarea
+                value={alasanPembatalan}
+                onChange={(e) => {
+                  setAlasanPembatalan(e.target.value);
+                  if (cancelError) setCancelError(null);
+                }}
+                placeholder="Tuliskan alasan pembatalan (wajib diisi, contoh: Ada keperluan mendadak, ingin menjadwalkan ulang, dll.)"
+                rows={3}
+                maxLength={500}
+                className={`w-full text-xs rounded-xl border p-3 text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 transition resize-none ${
+                  cancelError
+                    ? 'border-rose-300 ring-2 ring-rose-500/20 focus:border-rose-500'
+                    : 'border-gray-200 focus:ring-rose-500/20 focus:border-rose-500'
+                }`}
+              />
+              {cancelError && (
+                <p className="text-[11px] font-medium text-rose-600 mt-1.5 flex items-center gap-1">
+                  <AlertCircle className="h-3.5 w-3.5 flex-shrink-0" />
+                  <span>{cancelError}</span>
+                </p>
+              )}
+            </div>
+
+            <div className="flex items-center justify-end gap-2.5 pt-2">
+              <button
+                type="button"
+                disabled={cancelling}
+                onClick={() => {
+                  setCancelModalItem(null);
+                  setAlasanPembatalan('');
+                  setCancelError(null);
+                }}
+                className="px-4 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-100 rounded-xl transition disabled:opacity-50"
+              >
+                Kembali
+              </button>
+              <button
+                type="button"
+                disabled={cancelling || !alasanPembatalan.trim()}
+                onClick={handleCancelPengajuan}
+                className="flex items-center gap-1.5 px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl shadow-xs transition disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {cancelling ? (
+                  <>
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    <span>Membatalkan...</span>
+                  </>
+                ) : (
+                  <>
+                    <XCircle className="h-3.5 w-3.5" />
+                    <span>Ya, Batalkan</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div className="fixed bottom-6 right-6 z-50 animate-in slide-in-from-bottom-5 fade-in duration-200">
+          <div
+            className={`flex items-center gap-2.5 px-4 py-3 rounded-2xl shadow-lg border text-xs font-semibold ${
+              toastMessage.type === 'success'
+                ? 'bg-emerald-900 text-white border-emerald-800'
+                : 'bg-rose-900 text-white border-rose-800'
+            }`}
+          >
+            {toastMessage.type === 'success' ? (
+              <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+            ) : (
+              <AlertCircle className="h-4 w-4 text-rose-400" />
+            )}
+            <span>{toastMessage.text}</span>
+            <button
+              onClick={() => setToastMessage(null)}
+              className="ml-2 text-white/70 hover:text-white"
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
           </div>
         </div>
       )}

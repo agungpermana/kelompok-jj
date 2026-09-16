@@ -21,11 +21,19 @@ class SetoranController extends Controller
         $items = collect();
         foreach ($pengajuanList as $p) $items->push($this->formatPengajuanToSetoran($p));
         foreach ($standaloneSetoran as $s) $items->push($this->formatTransaksiSetoran($s));
-        $totalSetoran = $items->count(); $totalBerat = round((float)$items->sum('total_berat_aktual'), 2); $totalPoin = (int)$items->where('status_validasi','disetujui')->sum('total_poin'); $menungguValidasi = (int)$items->where('status_validasi','menunggu')->count();
+        $totalSetoran = $items->count();
+        $totalBerat = round((float)$items->sum('total_berat_aktual'), 2);
+        $totalPoin = (int)$items->where('status_validasi','disetujui')->sum('total_poin');
+        $menungguValidasi = (int)$items->where('status_validasi','menunggu')->whereNotIn('status_pengajuan', ['ditolak', 'dibatalkan'])->count();
         $status = $request->query('status','semua');
         if ($status && $status !== 'semua') {
-            if ($status === 'menunggu_validasi' || $status === 'menunggu') $items = $items->where('status_validasi','menunggu');
-            elseif (in_array($status, ['disetujui','ditolak'])) $items = $items->where('status_validasi',$status);
+            if ($status === 'menunggu_validasi' || $status === 'menunggu') {
+                $items = $items->filter(fn($it) => $it['status_validasi'] === 'menunggu' && !in_array($it['status_pengajuan'] ?? '', ['ditolak', 'dibatalkan']));
+            } elseif ($status === 'ditolak') {
+                $items = $items->filter(fn($it) => $it['status_validasi'] === 'ditolak' || in_array($it['status_pengajuan'] ?? '', ['ditolak', 'dibatalkan']));
+            } elseif ($status === 'disetujui') {
+                $items = $items->where('status_validasi', 'disetujui');
+            }
         }
         if ($request->filled('bulan')) { $bulan = $request->query('bulan'); $items = $items->filter(fn($item) => isset($item['tanggal_setoran']) && str_starts_with($item['tanggal_setoran'], $bulan)); }
         $sort = $request->query('sort','terbaru');
@@ -47,11 +55,22 @@ class SetoranController extends Controller
 
     private function extractPreferensiJadwal($pengajuan): array
     {
-        if (!$pengajuan) return ['tanggal' => null,'waktu' => null];
-        if ($pengajuan->jadwalPenjemputan) return ['tanggal' => $pengajuan->jadwalPenjemputan->tanggal_penjemputan,'waktu' => substr((string)$pengajuan->jadwalPenjemputan->waktu_penjemputan,0,5).' WIB'];
-        if ($pengajuan->catatan && preg_match('/Preferensi Jadwal:\s*([0-9]{4}-[0-9]{2}-[0-9]{2})(?:\s*\((.*?)\))?(?:\s*\||$)/is', $pengajuan->catatan, $m)) return ['tanggal' => $m[1],'waktu' => trim($m[2]??'') ?: '08:00 - 11:00 (Pagi)'];
+        if (!$pengajuan) return ['tanggal' => null, 'waktu' => null];
+        if ($pengajuan->jadwalPenjemputan) {
+            $tgl = substr((string)$pengajuan->jadwalPenjemputan->tanggal_penjemputan, 0, 10);
+            return [
+                'tanggal' => $tgl,
+                'waktu' => substr((string)$pengajuan->jadwalPenjemputan->waktu_penjemputan, 0, 5) . ' WIB'
+            ];
+        }
+        if ($pengajuan->catatan && preg_match('/Preferensi Jadwal:\s*([0-9]{4}-[0-9]{2}-[0-9]{2})(?:\s*\((.*?)\))?(?:\s*\||$)/is', $pengajuan->catatan, $m)) {
+            return [
+                'tanggal' => $m[1],
+                'waktu' => trim($m[2] ?? '') ?: '08:00 - 11:00 (Pagi)'
+            ];
+        }
         $tgl = $pengajuan->tanggal_pengajuan ? $pengajuan->tanggal_pengajuan->copy()->addDay()->format('Y-m-d') : now()->addDay()->format('Y-m-d');
-        return ['tanggal' => $tgl,'waktu' => '08:00 - 11:00 (Pagi)'];
+        return ['tanggal' => $tgl, 'waktu' => '08:00 - 11:00 (Pagi)'];
     }
 
     private function formatPengajuanToSetoran(PengajuanPenjemputan $pengajuan): array
@@ -59,14 +78,109 @@ class SetoranController extends Controller
         if ($pengajuan->transaksiSetoran) return $this->formatTransaksiSetoran($pengajuan->transaksiSetoran);
         $pref = $this->extractPreferensiJadwal($pengajuan);
         $waktuStr = $pref['tanggal'] ? "{$pref['tanggal']} 08:00:00" : null;
-        $detailSetoran = $pengajuan->detailPengajuanSampah->map(fn($d) => ['detail_setoran_id'=>$d->detail_pengajuan_id,'setoran_id'=>$d->pengajuan_id,'jenis_sampah_id'=>$d->jenis_sampah_id,'berat_aktual'=>(float)$d->perkiraan_berat,'harga_satuan'=>0,'nilai_poin_per_satuan'=>0,'poin'=>0,'jenis_sampah'=>$d->jenisSampah ? ['jenis_sampah_id'=>$d->jenisSampah->jenis_sampah_id,'nama_jenis_sampah'=>$d->jenisSampah->nama_jenis_sampah,'satuan'=>$d->jenisSampah->satuan,'keterangan'=>$d->jenisSampah->keterangan]:null])->values()->all();
-        return ['setoran_id'=>$pengajuan->pengajuan_id,'pengajuan_id'=>$pengajuan->pengajuan_id,'jadwal_id'=>$pengajuan->jadwalPenjemputan?->jadwal_id,'warga_id'=>$pengajuan->warga_id,'petugas_id'=>$pengajuan->jadwalPenjemputan?->petugas_id,'validator_admin_id'=>null,'tanggal_setoran'=>$waktuStr ?? ($pengajuan->tanggal_pengajuan?->format('Y-m-d H:i:s') ?? now()->format('Y-m-d H:i:s')),'perkiraan_tanggal_jemput'=>$pref['tanggal'],'perkiraan_waktu_jemput'=>$pref['waktu'],'tanggal_diajukan'=>$pengajuan->tanggal_pengajuan?->format('Y-m-d H:i:s') ?? $pengajuan->created_at?->format('Y-m-d H:i:s'),'konfirmasi_pengambilan'=>'0','status_validasi'=>($pengajuan->status_pengajuan==='dibatalkan'?'ditolak':'menunggu'),'catatan_validasi'=>$pengajuan->catatan ? 'Catatan Pengajuan: '.$pengajuan->catatan : null,'tanggal_validasi'=>null,'total_berat_aktual'=>(float)$pengajuan->perkiraan_total_berat,'total_poin'=>0,'poin'=>0,'detail_setoran'=>$detailSetoran,'petugas'=>$pengajuan->jadwalPenjemputan?->petugas ? ['petugas_id'=>$pengajuan->jadwalPenjemputan->petugas->petugas_id,'nama_petugas'=>$pengajuan->jadwalPenjemputan->petugas->nama_petugas,'no_telepon'=>$pengajuan->jadwalPenjemputan->petugas->no_telepon]:null,'validator_admin'=>null,'alamat_penjemputan'=>$pengajuan->alamat_penjemputan,'status_pengajuan'=>$pengajuan->status_pengajuan,'catatan_pengajuan'=>$pengajuan->catatan];
+        $detailSetoran = $pengajuan->detailPengajuanSampah->map(fn($d) => [
+            'detail_setoran_id' => $d->detail_pengajuan_id,
+            'setoran_id' => $d->pengajuan_id,
+            'jenis_sampah_id' => $d->jenis_sampah_id,
+            'berat_aktual' => (float)$d->perkiraan_berat,
+            'harga_satuan' => 0,
+            'nilai_poin_per_satuan' => 0,
+            'poin' => 0,
+            'jenis_sampah' => $d->jenisSampah ? [
+                'jenis_sampah_id' => $d->jenisSampah->jenis_sampah_id,
+                'nama_jenis_sampah' => $d->jenisSampah->nama_jenis_sampah,
+                'satuan' => $d->jenisSampah->satuan,
+                'keterangan' => $d->jenisSampah->keterangan
+            ] : null
+        ])->values()->all();
+
+        $isDitolak = in_array($pengajuan->status_pengajuan, ['dibatalkan', 'ditolak']);
+
+        $catatanValidasi = null;
+        if ($pengajuan->status_pengajuan === 'dibatalkan') {
+            $catatanValidasi = 'Pengajuan dibatalkan oleh warga';
+            if ($pengajuan->catatan && preg_match('/Pembatalan:\s*(.+)$/i', $pengajuan->catatan, $cm)) {
+                $catatanValidasi .= ' (Alasan: ' . trim($cm[1]) . ')';
+            }
+        } elseif ($pengajuan->catatan) {
+            $catatanValidasi = 'Catatan Pengajuan: ' . $pengajuan->catatan;
+        }
+
+        return [
+            'setoran_id' => $pengajuan->pengajuan_id,
+            'pengajuan_id' => $pengajuan->pengajuan_id,
+            'jadwal_id' => $pengajuan->jadwalPenjemputan?->jadwal_id,
+            'warga_id' => $pengajuan->warga_id,
+            'petugas_id' => $pengajuan->jadwalPenjemputan?->petugas_id,
+            'validator_admin_id' => null,
+            'tanggal_setoran' => $waktuStr ?? ($pengajuan->tanggal_pengajuan?->format('Y-m-d H:i:s') ?? now()->format('Y-m-d H:i:s')),
+            'perkiraan_tanggal_jemput' => $pref['tanggal'],
+            'perkiraan_waktu_jemput' => $pref['waktu'],
+            'tanggal_diajukan' => $pengajuan->tanggal_pengajuan?->format('Y-m-d H:i:s') ?? $pengajuan->created_at?->format('Y-m-d H:i:s'),
+            'konfirmasi_pengambilan' => '0',
+            'status_validasi' => ($isDitolak ? 'ditolak' : 'menunggu'),
+            'catatan_validasi' => $catatanValidasi,
+            'tanggal_validasi' => null,
+            'total_berat_aktual' => (float)$pengajuan->perkiraan_total_berat,
+            'total_poin' => 0,
+            'poin' => 0,
+            'detail_setoran' => $detailSetoran,
+            'petugas' => $pengajuan->jadwalPenjemputan?->petugas ? [
+                'petugas_id' => $pengajuan->jadwalPenjemputan->petugas->petugas_id,
+                'nama_petugas' => $pengajuan->jadwalPenjemputan->petugas->nama_petugas,
+                'no_telepon' => $pengajuan->jadwalPenjemputan->petugas->no_telepon
+            ] : null,
+            'validator_admin' => null,
+            'alamat_penjemputan' => $pengajuan->alamat_penjemputan,
+            'status_pengajuan' => $pengajuan->status_pengajuan,
+            'catatan_pengajuan' => $pengajuan->catatan
+        ];
     }
 
     private function formatTransaksiSetoran(TransaksiSetoran $t): array
     {
         $pref = $this->extractPreferensiJadwal($t->pengajuanPenjemputan);
         $isMenunggu = $t->status_validasi === 'menunggu';
-        return ['setoran_id'=>$t->setoran_id,'pengajuan_id'=>$t->pengajuan_id,'jadwal_id'=>$t->jadwal_id,'warga_id'=>$t->warga_id,'petugas_id'=>$t->petugas_id,'validator_admin_id'=>$t->validator_admin_id,'tanggal_setoran'=>($isMenunggu && $pref['tanggal']) ? "{$pref['tanggal']} 08:00:00" : ($t->tanggal_setoran?->format('Y-m-d H:i:s') ?? now()->format('Y-m-d H:i:s')),'perkiraan_tanggal_jemput'=>$pref['tanggal'],'perkiraan_waktu_jemput'=>$pref['waktu'],'tanggal_diajukan'=>$t->pengajuanPenjemputan?->tanggal_pengajuan?->format('Y-m-d H:i:s'),'konfirmasi_pengambilan'=>(string)($t->konfirmasi_pengambilan??'1'),'status_validasi'=>$t->status_validasi,'catatan_validasi'=>$t->catatan_validasi,'tanggal_validasi'=>$t->tanggal_validasi?->format('Y-m-d H:i:s'),'total_berat_aktual'=>(float)$t->total_berat_aktual,'total_poin'=>(int)$t->total_poin,'poin'=>(int)$t->total_poin,'total_poin_sementara'=>(int)$t->total_poin,'detail_setoran'=>$t->detailSetoran,'petugas'=>$t->petugas,'validator_admin'=>$t->validatorAdmin,'alamat_penjemputan'=>$t->pengajuanPenjemputan?->alamat_penjemputan,'status_pengajuan'=>$t->pengajuanPenjemputan?->status_pengajuan ?? 'selesai','catatan_pengajuan'=>$t->pengajuanPenjemputan?->catatan];
+        $statusPengajuan = $t->pengajuanPenjemputan?->status_pengajuan;
+        if (!$statusPengajuan) {
+            $statusPengajuan = ($t->status_validasi === 'ditolak' || $t->konfirmasi_pengambilan === 'tidak') ? 'ditolak' : 'selesai';
+        }
+        $statusValidasi = $t->status_validasi;
+        if ($t->konfirmasi_pengambilan === 'tidak' || $statusPengajuan === 'ditolak') {
+            $statusValidasi = 'ditolak';
+        }
+        $catatanValidasi = $t->catatan_validasi ?? ($t->catatan_penolakan ? 'Pengambilan gagal: ' . $t->catatan_penolakan : null);
+
+        $tglSetoran = ($isMenunggu && $pref['tanggal'])
+            ? "{$pref['tanggal']} 08:00:00"
+            : ($t->tanggal_setoran?->format('Y-m-d H:i:s') ?? now()->format('Y-m-d H:i:s'));
+
+        return [
+            'setoran_id' => $t->setoran_id,
+            'pengajuan_id' => $t->pengajuan_id,
+            'jadwal_id' => $t->jadwal_id,
+            'warga_id' => $t->warga_id,
+            'petugas_id' => $t->petugas_id,
+            'validator_admin_id' => $t->validator_admin_id,
+            'tanggal_setoran' => $tglSetoran,
+            'perkiraan_tanggal_jemput' => $pref['tanggal'],
+            'perkiraan_waktu_jemput' => $pref['waktu'],
+            'tanggal_diajukan' => $t->pengajuanPenjemputan?->tanggal_pengajuan?->format('Y-m-d H:i:s'),
+            'konfirmasi_pengambilan' => (string)($t->konfirmasi_pengambilan ?? '1'),
+            'status_validasi' => $statusValidasi,
+            'catatan_validasi' => $catatanValidasi,
+            'catatan_penolakan' => $t->catatan_penolakan,
+            'tanggal_validasi' => $t->tanggal_validasi?->format('Y-m-d H:i:s'),
+            'total_berat_aktual' => (float)$t->total_berat_aktual,
+            'total_poin' => (int)$t->total_poin,
+            'poin' => (int)$t->total_poin,
+            'total_poin_sementara' => (int)$t->total_poin,
+            'detail_setoran' => $t->detailSetoran,
+            'petugas' => $t->petugas,
+            'validator_admin' => $t->validatorAdmin,
+            'alamat_penjemputan' => $t->pengajuanPenjemputan?->alamat_penjemputan,
+            'status_pengajuan' => $statusPengajuan,
+            'catatan_pengajuan' => $t->pengajuanPenjemputan?->catatan
+        ];
     }
 }

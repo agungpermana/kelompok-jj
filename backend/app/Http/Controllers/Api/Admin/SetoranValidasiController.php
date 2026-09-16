@@ -49,6 +49,10 @@ class SetoranValidasiController extends Controller
                     $stok->increment('jumlah_stok', (float)$detail->berat_aktual);
                     $stok->update(['terakhir_diperbarui' => now()]);
                 }
+            } elseif ($request->status_validasi === 'ditolak') {
+                if ($setoran->pengajuanPenjemputan) {
+                    $setoran->pengajuanPenjemputan->update(['status_pengajuan' => 'ditolak']);
+                }
             }
         });
 

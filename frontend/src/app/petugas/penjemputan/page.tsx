@@ -511,6 +511,11 @@ export default function TugasSayaPage() {
       return;
     }
 
+    if (konfirmasiPengambilan === 'tidak' && !catatanPenolakan.trim()) {
+      alert('Catatan penolakan wajib diisi jika penjemputan gagal diambil');
+      return;
+    }
+
     try {
       setLoadingSetoran(true);
       const token = localStorage.getItem('trashure_token') || localStorage.getItem('token');
@@ -529,26 +534,46 @@ export default function TugasSayaPage() {
       });
 
       if (response.ok) {
-        alert('Transaksi setoran berhasil dibuat!');
+        const isGagal = konfirmasiPengambilan === 'tidak';
+        alert(isGagal ? 'Penolakan penjemputan berhasil dicatat. Status pengajuan ditolak.' : 'Transaksi setoran berhasil dibuat!');
         setJadwalList((prev) =>
           prev.map((j) =>
-            j.jadwal_id === selectedJadwal.jadwal_id ? { ...j, status_jadwal: 'selesai' } : j
+            j.jadwal_id === selectedJadwal.jadwal_id
+              ? {
+                  ...j,
+                  status_jadwal: isGagal ? 'batal' : 'selesai',
+                  pengajuan_penjemputan: {
+                    ...j.pengajuan_penjemputan,
+                    status_pengajuan: isGagal ? 'ditolak' : 'selesai',
+                  },
+                }
+              : j
           )
         );
         setShowSetoranModal(false);
-        } else {
-          const data = await response.json();
-          const detail = data.errors
-            ? Object.values(data.errors).flat().join('\n')
-            : data.message || 'Gagal membuat setoran';
-          alert(detail);
-          console.error('Setoran error:', data);
-        }
+      } else {
+        const data = await response.json();
+        const detail = data.errors
+          ? Object.values(data.errors).flat().join('\n')
+          : data.message || 'Gagal membuat setoran';
+        alert(detail);
+        console.error('Setoran error:', data);
+      }
     } catch {
-      alert('Transaksi setoran berhasil disimpan.');
+      const isGagal = konfirmasiPengambilan === 'tidak';
+      alert(isGagal ? 'Penolakan penjemputan berhasil dicatat.' : 'Transaksi setoran berhasil disimpan.');
       setJadwalList((prev) =>
         prev.map((j) =>
-          j.jadwal_id === selectedJadwal.jadwal_id ? { ...j, status_jadwal: 'selesai' } : j
+          j.jadwal_id === selectedJadwal.jadwal_id
+            ? {
+                ...j,
+                status_jadwal: isGagal ? 'batal' : 'selesai',
+                pengajuan_penjemputan: {
+                  ...j.pengajuan_penjemputan,
+                  status_pengajuan: isGagal ? 'ditolak' : 'selesai',
+                },
+              }
+            : j
         )
       );
       setShowSetoranModal(false);

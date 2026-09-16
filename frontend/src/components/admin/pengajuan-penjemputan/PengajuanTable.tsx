@@ -21,6 +21,7 @@ const statusBadgeClass: Record<string, string> = {
   diproses: 'bg-purple-100 text-purple-800',
   selesai: 'bg-green-100 text-green-800',
   dibatalkan: 'bg-red-100 text-red-800',
+  ditolak: 'bg-red-100 text-red-800',
 };
 
 export default function PengajuanTable({

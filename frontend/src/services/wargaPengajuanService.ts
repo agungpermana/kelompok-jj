@@ -48,7 +48,7 @@ export interface PengajuanItem {
   alamat_penjemputan: string;
   perkiraan_total_berat: number;
   catatan?: string | null;
-  status_pengajuan: 'diajukan' | 'dijadwalkan' | 'diproses' | 'selesai' | 'dibatalkan';
+  status_pengajuan: 'diajukan' | 'dijadwalkan' | 'diproses' | 'selesai' | 'dibatalkan' | 'ditolak';
   detail_pengajuan_sampah?: {
     detail_pengajuan_id: number;
     jenis_sampah_id: number;
@@ -201,5 +201,46 @@ export async function fetchRiwayatPengajuan(): Promise<PengajuanItem[]> {
   } catch (err) {
     console.error('Error fetching riwayat pengajuan:', err);
     return [];
+  }
+}
+
+export async function cancelPengajuan(
+  id: number,
+  alasan?: string
+): Promise<{ success: boolean; data?: any; message?: string }> {
+  try {
+    const res = await fetch(`${getApiUrl()}/warga/pengajuan/${id}/cancel`, {
+      method: 'PATCH',
+      headers: {
+        ...getAuthHeaders(),
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        alasan_pembatalan: alasan?.trim() || undefined,
+        catatan: alasan?.trim() || undefined,
+      }),
+    });
+    const json = await res.json();
+    if (!res.ok) {
+      const errorMsg =
+        json.errors?.alasan_pembatalan?.[0] ||
+        json.errors?.catatan?.[0] ||
+        json.message ||
+        'Gagal membatalkan pengajuan.';
+      return {
+        success: false,
+        message: errorMsg,
+      };
+    }
+    return {
+      success: true,
+      data: json.data,
+      message: json.message || 'Pengajuan penjemputan berhasil dibatalkan.',
+    };
+  } catch (err: any) {
+    return {
+      success: false,
+      message: err.message || 'Terjadi kendala jaringan saat membatalkan pengajuan.',
+    };
   }
 }
