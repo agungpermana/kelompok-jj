@@ -78,28 +78,43 @@ export default function WargaDashboardPage() {
         </div>
       </div>
 
-      {dashboard.pengajuan_terbaru.length > 0 && (
-        <div className="bg-white rounded-lg sm:rounded-xl border border-gray-200/80 shadow-sm overflow-hidden">
-          <div className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 border-b border-gray-200/80 bg-gray-50">
-            <h3 className="text-lg font-semibold text-gray-900">Pengajuan Penjemputan Terbaru</h3>
-            <p className="text-sm text-gray-500 mt-1">Pengajuan yang belum diproses oleh admin maupun petugas</p>
-          </div>
+      <div className="bg-white rounded-lg sm:rounded-xl border border-gray-200/80 shadow-sm overflow-hidden">
+        <div className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 border-b border-gray-200/80 bg-gray-50">
+          <h3 className="text-lg font-semibold text-gray-900">Pengajuan Penjemputan Terbaru</h3>
+          <p className="text-sm text-gray-500 mt-1">Pengajuan yang belum diproses oleh admin maupun petugas</p>
+        </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-gray-200/80 bg-gray-50">
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wide">No</th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wide">Tanggal Dibuat</th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wide">Alamat Penjemputan</th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wide">Jenis Sampah</th>
-                  <th className="px-6 py-3 text-right text-xs font-semibold text-gray-700 uppercase tracking-wide">Total Berat</th>
-                  <th className="px-6 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wide">Status</th>
-                  <th className="px-6 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wide">Aksi</th>
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-gray-200/80 bg-gray-50">
+                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wide">No</th>
+                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wide">Tanggal Dibuat</th>
+                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wide">Alamat Penjemputan</th>
+                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wide">Jenis Sampah</th>
+                <th className="px-6 py-3 text-right text-xs font-semibold text-gray-700 uppercase tracking-wide">Total Berat</th>
+                <th className="px-6 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wide">Status</th>
+                <th className="px-6 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wide">Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              {isLoading ? (
+                <tr>
+                  <td colSpan={7} className="px-6 py-12 text-center">
+                    <div className="flex flex-col items-center gap-2">
+                      <div className="w-6 h-6 border-2 border-[#16a34a] border-t-transparent rounded-full animate-spin" />
+                      <p className="text-sm text-gray-500">Memuat data...</p>
+                    </div>
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {dashboard.pengajuan_terbaru.map((pengajuan, idx) => {
+              ) : dashboard.pengajuan_terbaru.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="px-6 py-12 text-center text-sm text-gray-400">
+                    Tidak ada pengajuan penjemputan terbaru.
+                  </td>
+                </tr>
+              ) : (
+                dashboard.pengajuan_terbaru.map((pengajuan, idx) => {
                   const statusConfig = getStatusBadge(pengajuan.status_pengajuan);
                   return (
                     <tr key={pengajuan.pengajuan_id} className="border-b border-gray-200/80 hover:bg-gray-50/50 transition-colors">
@@ -133,12 +148,12 @@ export default function WargaDashboardPage() {
                       </td>
                     </tr>
                   );
-                })}
-              </tbody>
-            </table>
-          </div>
+                })
+              )}
+            </tbody>
+          </table>
         </div>
-      )}
+      </div>
     </div>
   );
 }

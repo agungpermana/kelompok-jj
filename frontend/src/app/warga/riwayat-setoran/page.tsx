@@ -23,7 +23,6 @@ import {
   Leaf,
   Layers,
   Search,
-  User,
   Loader2,
   FileSpreadsheet,
 } from 'lucide-react';
@@ -498,19 +497,18 @@ export default function RiwayatSetoranPage() {
                         {/* Date & Time */}
                         <div className="pt-1">
                           <span
-                            className={`text-[11px] font-semibold block mb-0.5 ${
-                              isRejectedOverall
+                            className={`text-[11px] font-semibold block mb-0.5 ${isRejectedOverall
                                 ? 'text-rose-600 font-bold'
                                 : isMenunggu
-                                ? 'text-amber-700 font-bold'
-                                : 'text-gray-400'
-                            }`}
+                                  ? 'text-amber-700 font-bold'
+                                  : 'text-gray-400'
+                              }`}
                           >
                             {isRejectedOverall
                               ? 'Status Penjemputan'
                               : isMenunggu
-                              ? 'Perkiraan Penjemputan'
-                              : 'Waktu Pengambilan'}
+                                ? 'Perkiraan Penjemputan'
+                                : 'Waktu Pengambilan'}
                           </span>
                           <div className="flex items-center gap-1.5 text-sm font-bold text-gray-900">
                             <Calendar className="h-4 w-4 text-gray-400" />
@@ -1003,13 +1001,12 @@ export default function RiwayatSetoranPage() {
               {/* Catatan Validasi / Pembatalan if present */}
               {selectedSetoran.catatan_validasi && (
                 <div
-                  className={`p-3.5 rounded-lg sm:rounded-xl text-xs flex items-start gap-2.5 ${
-                    selectedSetoran.status_pengajuan === 'dibatalkan'
+                  className={`p-3.5 rounded-lg sm:rounded-xl text-xs flex items-start gap-2.5 ${selectedSetoran.status_pengajuan === 'dibatalkan'
                       ? 'bg-gray-50 border border-gray-200 text-gray-800'
                       : selectedSetoran.status_validasi === 'ditolak'
-                      ? 'bg-rose-50 border border-rose-200 text-rose-800'
-                      : 'bg-green-50 border border-green-200 text-emerald-900'
-                  }`}
+                        ? 'bg-rose-50 border border-rose-200 text-rose-800'
+                        : 'bg-green-50 border border-green-200 text-emerald-900'
+                    }`}
                 >
                   <AlertCircle className="h-4 w-4 flex-shrink-0 mt-0.5" />
                   <div>
@@ -1164,11 +1161,10 @@ export default function RiwayatSetoranPage() {
                 placeholder="Tuliskan alasan pembatalan (wajib diisi, contoh: Ada keperluan mendadak, ingin menjadwalkan ulang, dll.)"
                 rows={3}
                 maxLength={500}
-                className={`w-full text-xs rounded-lg sm:rounded-xl border p-3 text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 transition resize-none ${
-                  cancelError
+                className={`w-full text-xs rounded-lg sm:rounded-xl border p-3 text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 transition resize-none ${cancelError
                     ? 'border-rose-300 ring-2 ring-rose-500/20 focus:border-rose-500'
                     : 'border-gray-200 focus:ring-rose-500/20 focus:border-rose-500'
-                }`}
+                  }`}
               />
               {cancelError && (
                 <p className="text-[11px] font-medium text-rose-600 mt-1.5 flex items-center gap-1">
@@ -1218,11 +1214,10 @@ export default function RiwayatSetoranPage() {
       {toastMessage && (
         <div className="fixed bottom-6 right-6 z-50 animate-in slide-in-from-bottom-5 fade-in duration-200">
           <div
-            className={`flex items-center gap-2.5 px-4 py-3 rounded-2xl shadow-lg border text-xs font-semibold ${
-              toastMessage.type === 'success'
+            className={`flex items-center gap-2.5 px-4 py-3 rounded-2xl shadow-lg border text-xs font-semibold ${toastMessage.type === 'success'
                 ? 'bg-emerald-900 text-white border-emerald-800'
                 : 'bg-rose-900 text-white border-rose-800'
-            }`}
+              }`}
           >
             {toastMessage.type === 'success' ? (
               <CheckCircle2 className="h-4 w-4 text-emerald-400" />

@@ -3,8 +3,7 @@ import {
   Truck,
   Clock,
   FileText,
-  FileBarChart,
-  Settings,
+  User,
 } from 'lucide-react';
 import type { MenuSection } from '@/components/layout/sidebar';
 
@@ -35,15 +34,9 @@ export const petugasMenus: MenuSection[] = [
     ],
   },
   {
-    title: 'LAPORAN',
+    title: 'PROFIL',
     items: [
-      { label: 'Laporan', icon: FileBarChart, href: '/petugas/laporan' },
-    ],
-  },
-  {
-    title: 'PENGATURAN',
-    items: [
-      { label: 'Pengaturan', icon: Settings, href: '/petugas/pengaturan' },
+      { label: 'Profil Saya', icon: User, href: '/petugas/profil' },
     ],
   },
 ];
