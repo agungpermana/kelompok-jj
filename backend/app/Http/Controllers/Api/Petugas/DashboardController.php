@@ -110,7 +110,7 @@ class DashboardController extends Controller
 
         $penjemputanMenunggu = JadwalPenjemputan::where('petugas_id', $petugas->petugas_id)
             ->where('tanggal_penjemputan', $today)
-            ->whereIn('status_jadwal', ['dijadwalkan', 'sedang_diproses'])
+            ->whereIn('status_jadwal', ['dijadwalkan', 'terjadwal'])
             ->count();
 
         $totalSetoran = TransaksiSetoran::where('petugas_id', $petugas->petugas_id)

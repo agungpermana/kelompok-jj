@@ -5216,6 +5216,148 @@
                 ]
             }
         },
+        "/warga/poin": {
+            "get": {
+                "tags": [
+                    "Warga - Poin"
+                ],
+                "summary": "Riwayat poin warga",
+                "description": "Mengambil riwayat poin yang diterima warga dari setoran sampah yang sudah divalidasi.",
+                "operationId": "4aefa1cc30c79798ed06c9004360afb8",
+                "parameters": [
+                    {
+                        "name": "tanggal_mulai",
+                        "in": "query",
+                        "description": "Filter tanggal mulai format YYYY-MM-DD",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "2026-09-01"
+                        }
+                    },
+                    {
+                        "name": "tanggal_akhir",
+                        "in": "query",
+                        "description": "Filter tanggal akhir format YYYY-MM-DD",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "2026-09-30"
+                        }
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "description": "Urutan data berdasarkan tanggal (terbaru, terlama)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "terbaru",
+                            "enum": [
+                                "terbaru",
+                                "terlama"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Riwayat poin berhasil diambil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Riwayat poin berhasil diambil."
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "total_poin": {
+                                                    "description": "Total poin yang sudah diterima",
+                                                    "type": "integer",
+                                                    "example": 1250
+                                                },
+                                                "riwayat": {
+                                                    "description": "Daftar riwayat poin",
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "tanggal": {
+                                                                "type": "string",
+                                                                "format": "date",
+                                                                "example": "2026-09-15"
+                                                            },
+                                                            "jenis_sampah": {
+                                                                "type": "string",
+                                                                "example": "Plastik"
+                                                            },
+                                                            "berat": {
+                                                                "type": "number",
+                                                                "format": "float",
+                                                                "example": 5.2
+                                                            },
+                                                            "satuan": {
+                                                                "type": "string",
+                                                                "example": "kg"
+                                                            },
+                                                            "poin": {
+                                                                "type": "integer",
+                                                                "example": 100
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Profil warga tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Profil warga tidak ditemukan."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/warga/setoran": {
             "get": {
                 "tags": [
@@ -5751,6 +5893,10 @@
         {
             "name": "Warga - Dashboard",
             "description": "Warga - Dashboard"
+        },
+        {
+            "name": "Warga - Poin",
+            "description": "Warga - Poin"
         }
     ]
 }

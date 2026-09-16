@@ -41,7 +41,7 @@ class SetoranValidasiController extends Controller
         DB::transaction(function () use ($setoran, $admin, $request) {
             $setoran->update(['validator_admin_id' => $admin->admin_id,'status_validasi' => $request->status_validasi,'catatan_validasi' => $request->catatan_validasi,'tanggal_validasi' => now()]);
             if ($request->status_validasi === 'disetujui') {
-                $saldo = SaldoPoin::firstOrCreate(['warga_id' => $setoran->warga_id], ['saldo_poin' => 0,'terakhir_diperbarui' => now()]);
+                $saldo = SaldoPoin::firstOrCreate(['warga_id' => $setoran->warga_id], ['saldo_poin' => $setoran->saldo_poin,'terakhir_diperbarui' => now()]);
                 $saldo->increment('saldo_poin', (int)$setoran->total_poin);
                 $saldo->update(['terakhir_diperbarui' => now()]);
                 foreach ($setoran->detailSetoran as $detail) {

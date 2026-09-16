@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\Warga\JenisSampahController as WargaJenisSampahCont
 use App\Http\Controllers\Api\Warga\PengajuanPenjemputanController;
 use App\Http\Controllers\Api\Warga\SetoranController as WargaSetoranController;
 use App\Http\Controllers\Api\Warga\DashboardController as WargaDashboardController;
+use App\Http\Controllers\Api\Warga\PoinController as WargaPoinController;
 use App\Http\Controllers\Api\Petugas\JadwalPenjemputanController;
 use App\Http\Controllers\Api\Petugas\SetoranController;
 use App\Http\Controllers\Api\Petugas\DashboardController as PetugasDashboardController;
@@ -263,6 +264,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get(
             '/warga/setoran/{id}',
             [WargaSetoranController::class, 'show']
+        );
+        Route::get(
+            '/warga/poin',
+            [WargaPoinController::class, 'index']
         );
     });
 

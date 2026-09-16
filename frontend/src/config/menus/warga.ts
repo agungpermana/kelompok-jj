@@ -16,7 +16,7 @@ export const wargaMenus: MenuSection[] = [
       { label: 'Beranda', icon: Home, href: '/warga/dashboard' },
       { label: 'Pengajuan Penjemputan', icon: Truck, href: '/warga/ajukan-penjemputan' },
       { label: 'Riwayat Setoran', icon: History, href: '/warga/riwayat-setoran' },
-      { label: 'Poin Saya', icon: Star, href: '/warga/poin-saldo' },
+      { label: 'Poin Saya', icon: Star, href: '/warga/poin-saya' },
       { label: 'Penukaran Poin', icon: Gift, href: '/warga/voucher' },
       { label: 'Profil Saya', icon: User, href: '/warga/profil' },
       { label: 'Pengaturan', icon: Settings, href: '/warga/pengaturan' },
