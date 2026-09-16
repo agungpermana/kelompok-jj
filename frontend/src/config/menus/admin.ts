@@ -6,6 +6,7 @@ import {
   Recycle,
   Coins,
   ArrowLeftRight,
+  ShieldCheck,
   FileText,
   FileBarChart,
   FileSpreadsheet,
@@ -13,7 +14,6 @@ import {
   PackageSearch,
   BadgeDollarSign,
   Ticket,
-  FileCheck,
   User,
 } from 'lucide-react';
 import type { MenuSection } from '@/components/layout/sidebar';
@@ -54,7 +54,7 @@ export const adminMenus: MenuSection[] = [
   {
     title: 'VALIDASI',
     items: [
-      { label: 'Validasi Transaksi', icon: FileCheck, href: '/admin/validasi-transaksi' },
+      { label: 'Validasi Setoran', icon: ShieldCheck, href: '/admin/validasi-setoran' },
     ],
   },
   {
