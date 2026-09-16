@@ -16,7 +16,44 @@ class SetoranValidasiController extends Controller
     public function index(Request $request)
     {
         $q = TransaksiSetoran::with(['detailSetoran.jenisSampah','warga','petugas','validatorAdmin','pengajuanPenjemputan'])->orderByDesc('setoran_id');
-        if ($request->has('status') && $request->status !== 'semua') $q->where('status_validasi', $request->status);
+
+        // Filter status
+        if ($request->has('status') && $request->status !== 'semua') {
+            $q->where('status_validasi', $request->status);
+        }
+
+        // Filter tanggal
+        if ($request->has('dari') && $request->dari) {
+            $q->whereDate('tanggal_setoran', '>=', $request->dari);
+        }
+        if ($request->has('sampai') && $request->sampai) {
+            $q->whereDate('tanggal_setoran', '<=', $request->sampai);
+        }
+
+        // Filter petugas
+        if ($request->has('petugas_id') && $request->petugas_id) {
+            $q->where('petugas_id', $request->petugas_id);
+        }
+
+        // Filter jenis sampah
+        if ($request->has('jenis_sampah_id') && $request->jenis_sampah_id) {
+            $q->whereHas('detailSetoran', function ($subQuery) use ($request) {
+                $subQuery->where('jenis_sampah_id', $request->jenis_sampah_id);
+            });
+        }
+
+        // Search (nama warga atau nama petugas)
+        if ($request->has('search') && $request->search) {
+            $search = $request->search;
+            $q->where(function ($subQuery) use ($search) {
+                $subQuery->whereHas('warga', function ($wq) use ($search) {
+                    $wq->where('nama_warga', 'like', "%{$search}%");
+                })->orWhereHas('petugas', function ($pq) use ($search) {
+                    $pq->where('nama_petugas', 'like', "%{$search}%");
+                });
+            });
+        }
+
         return response()->json(['message' => 'Daftar setoran berhasil diambil.','data' => $q->get()]);
     }
 
