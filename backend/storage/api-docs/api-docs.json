@@ -2236,6 +2236,109 @@
                 ]
             }
         },
+        "/admin/setoran": {
+            "get": {
+                "tags": [
+                    "Admin - Validasi"
+                ],
+                "summary": "Daftar setoran menunggu validasi (Admin)",
+                "operationId": "2b621614a1a81350f8c43fe097356e81",
+                "responses": {
+                    "200": {
+                        "description": "Daftar setoran berhasil diambil"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/admin/setoran/{id}": {
+            "get": {
+                "tags": [
+                    "Admin - Validasi"
+                ],
+                "summary": "Detail setoran (Admin)",
+                "operationId": "2c26a00fef1c62ee59f9a9c60d1daf79",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detail setoran berhasil diambil"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/admin/setoran/{id}/validasi": {
+            "patch": {
+                "tags": [
+                    "Admin - Validasi"
+                ],
+                "summary": "Validasi setoran (Admin) - langsung update poin & stok",
+                "operationId": "303d45d27786c4363e0d2d638cebc815",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "status_validasi"
+                                ],
+                                "properties": {
+                                    "status_validasi": {
+                                        "type": "string",
+                                        "enum": [
+                                            "disetujui",
+                                            "ditolak"
+                                        ]
+                                    },
+                                    "catatan_validasi": {
+                                        "type": "string",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Validasi berhasil"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/admin/voucher": {
             "get": {
                 "tags": [
@@ -3652,6 +3755,161 @@
                 ]
             }
         },
+        "/petugas/dashboard": {
+            "get": {
+                "tags": [
+                    "Petugas - Dashboard"
+                ],
+                "summary": "Dashboard ringkasan petugas",
+                "description": "Mengambil ringkasan statistik tugas penjemputan dan setoran petugas hari ini.",
+                "operationId": "dd21e8ef74ca85d7ee325d4ff207bead",
+                "responses": {
+                    "200": {
+                        "description": "Dashboard berhasil diambil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Dashboard berhasil diambil."
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "penjemputan_hari_ini": {
+                                                    "description": "Total penjemputan yang dijadwalkan hari ini",
+                                                    "type": "integer",
+                                                    "example": 5
+                                                },
+                                                "penjemputan_selesai": {
+                                                    "description": "Penjemputan yang sudah selesai",
+                                                    "type": "integer",
+                                                    "example": 3
+                                                },
+                                                "penjemputan_menunggu": {
+                                                    "description": "Penjemputan yang masih menunggu/belum selesai",
+                                                    "type": "integer",
+                                                    "example": 2
+                                                },
+                                                "total_setoran_dikumpul": {
+                                                    "description": "Total berat setoran yang dikumpul hari ini dalam kg",
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 78.5
+                                                },
+                                                "jadwal_hari_ini": {
+                                                    "description": "Daftar jadwal penjemputan hari ini",
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "jadwal_id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "tanggal_penjemputan": {
+                                                                "type": "string",
+                                                                "format": "date",
+                                                                "example": "2026-09-16"
+                                                            },
+                                                            "waktu_penjemputan": {
+                                                                "type": "string",
+                                                                "example": "08:00:00"
+                                                            },
+                                                            "status_jadwal": {
+                                                                "type": "string",
+                                                                "example": "dijadwalkan"
+                                                            },
+                                                            "nama_warga": {
+                                                                "type": "string",
+                                                                "example": "John Doe"
+                                                            },
+                                                            "alamat_penjemputan": {
+                                                                "type": "string",
+                                                                "example": "Jl. Merdeka No. 45"
+                                                            },
+                                                            "no_telepon": {
+                                                                "type": "string",
+                                                                "example": "081234567890"
+                                                            },
+                                                            "perkiraan_total_berat": {
+                                                                "type": "number",
+                                                                "format": "float",
+                                                                "example": 10.5
+                                                            },
+                                                            "detail_sampah": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "properties": {
+                                                                        "jenis_sampah": {
+                                                                            "type": "string",
+                                                                            "example": "Plastik"
+                                                                        },
+                                                                        "perkiraan_berat": {
+                                                                            "type": "number",
+                                                                            "format": "float",
+                                                                            "example": 5.2
+                                                                        },
+                                                                        "satuan": {
+                                                                            "type": "string",
+                                                                            "example": "kg"
+                                                                        }
+                                                                    },
+                                                                    "type": "object"
+                                                                }
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Profil petugas tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Profil petugas tidak ditemukan."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/petugas/jadwal": {
             "get": {
                 "tags": [
@@ -4012,54 +4270,6 @@
                                 }
                             }
                         }
-                    },
-                    "401": {
-                        "description": "Unauthenticated",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Unauthenticated."
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Jadwal atau Profil Petugas tidak ditemukan",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Jadwal penjemputan tidak ditemukan."
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validasi gagal",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "The jenis sampah field is required."
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
                     }
                 },
                 "security": [
@@ -4112,7 +4322,6 @@
                                                     "example": 1
                                                 },
                                                 "berat_aktual": {
-                                                    "description": "Berat aktual dalam kilogram",
                                                     "type": "number",
                                                     "format": "float",
                                                     "example": 5.5
@@ -4146,54 +4355,6 @@
                                 }
                             }
                         }
-                    },
-                    "401": {
-                        "description": "Unauthenticated",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Unauthenticated."
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Jadwal atau Profil Petugas tidak ditemukan",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Jadwal penjemputan tidak ditemukan."
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validasi gagal",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "The detail sampah field is required."
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
                     }
                 },
                 "security": [
@@ -4209,7 +4370,7 @@
                     "Petugas - Setoran"
                 ],
                 "summary": "Simpan transaksi setoran sampah (Petugas)",
-                "description": "Menyimpan seluruh transaksi setoran penjemputan sampah, menghitung akumulasi berat dan poin sementara berdasarkan harga aktif.",
+                "description": "Menyimpan transaksi setoran penjemputan sampah, menghitung akumulasi berat dan poin berdasarkan harga aktif.",
                 "operationId": "499cb2173f1fc99155862ffb1a53127e",
                 "parameters": [
                     {
@@ -4234,7 +4395,6 @@
                                 ],
                                 "properties": {
                                     "konfirmasi_pengambilan": {
-                                        "description": "Konfirmasi apakah sampah berhasil diambil",
                                         "type": "string",
                                         "example": "ya",
                                         "enum": [
@@ -4243,7 +4403,6 @@
                                         ]
                                     },
                                     "detail_sampah": {
-                                        "description": "Daftar jenis dan berat aktual sampah",
                                         "type": "array",
                                         "items": {
                                             "required": [
@@ -4283,180 +4442,6 @@
                                         },
                                         "data": {
                                             "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthenticated",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Unauthenticated."
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Jadwal, Pengajuan, atau Profil Petugas tidak ditemukan",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Jadwal penjemputan tidak ditemukan."
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validasi form gagal",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "The detail sampah field is required."
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            }
-        },
-        "/petugas/setoran/{setoranId}/validasi": {
-            "patch": {
-                "tags": [
-                    "Petugas - Setoran"
-                ],
-                "summary": "Validasi transaksi setoran (Petugas)",
-                "description": "Melakukan verifikasi/validasi terhadap transaksi setoran sampah dengan status 'disetujui' atau 'ditolak'.",
-                "operationId": "7255a8eb6c688d4b175e786a9be70a34",
-                "parameters": [
-                    {
-                        "name": "setoranId",
-                        "in": "path",
-                        "description": "ID Transaksi Setoran",
-                        "required": true,
-                        "schema": {
-                            "type": "integer",
-                            "example": 1
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "status_validasi"
-                                ],
-                                "properties": {
-                                    "status_validasi": {
-                                        "description": "Keputusan validasi setoran",
-                                        "type": "string",
-                                        "example": "disetujui",
-                                        "enum": [
-                                            "disetujui",
-                                            "ditolak"
-                                        ]
-                                    },
-                                    "catatan_validasi": {
-                                        "description": "Catatan hasil validasi",
-                                        "type": "string",
-                                        "example": "Data dan berat sampah telah sesuai",
-                                        "nullable": true
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Setoran berhasil divalidasi",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Setoran berhasil divalidasi."
-                                        },
-                                        "data": {
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthenticated",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Unauthenticated."
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Transaksi Setoran atau Profil Petugas tidak ditemukan",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Transaksi setoran tidak ditemukan."
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Transaksi sudah divalidasi sebelumnya atau validasi gagal",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Transaksi setoran sudah divalidasi sebelumnya."
                                         }
                                     },
                                     "type": "object"
@@ -5237,17 +5222,14 @@
                     "Warga - Setoran"
                 ],
                 "summary": "Daftar riwayat setoran sampah (Warga)",
-                "description": "Mengambil riwayat seluruh transaksi setoran sampah dan pengajuan penjemputan milik warga yang sedang login beserta ringkasan statistik dan filter status.",
                 "operationId": "0ae9e753046cb3d9e0b31b13b01f6ed7",
                 "parameters": [
                     {
                         "name": "status",
                         "in": "query",
-                        "description": "Filter status validasi (semua, menunggu, disetujui, ditolak)",
                         "required": false,
                         "schema": {
                             "type": "string",
-                            "example": "semua",
                             "enum": [
                                 "semua",
                                 "menunggu",
@@ -5259,21 +5241,17 @@
                     {
                         "name": "bulan",
                         "in": "query",
-                        "description": "Filter bulan setoran format YYYY-MM (contoh: 2026-09)",
                         "required": false,
                         "schema": {
-                            "type": "string",
-                            "example": "2026-09"
+                            "type": "string"
                         }
                     },
                     {
                         "name": "sort",
                         "in": "query",
-                        "description": "Urutan data berdasarkan tanggal (terbaru, terlama)",
                         "required": false,
                         "schema": {
                             "type": "string",
-                            "example": "terbaru",
                             "enum": [
                                 "terbaru",
                                 "terlama"
@@ -5283,80 +5261,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Riwayat setoran berhasil diambil",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Riwayat setoran berhasil diambil."
-                                        },
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object"
-                                            }
-                                        },
-                                        "ringkasan": {
-                                            "properties": {
-                                                "total_setoran": {
-                                                    "type": "integer",
-                                                    "example": 1
-                                                },
-                                                "total_berat_sampah": {
-                                                    "type": "number",
-                                                    "format": "float",
-                                                    "example": 5.2
-                                                },
-                                                "total_poin_diterima": {
-                                                    "type": "integer",
-                                                    "example": 100
-                                                },
-                                                "menunggu_validasi": {
-                                                    "type": "integer",
-                                                    "example": 1
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthenticated",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Unauthenticated."
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Profil warga tidak ditemukan",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Profil warga tidak ditemukan."
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
+                        "description": "Riwayat setoran berhasil diambil"
                     }
                 },
                 "security": [
@@ -5372,71 +5277,20 @@
                     "Warga - Setoran"
                 ],
                 "summary": "Detail riwayat setoran sampah (Warga)",
-                "description": "Mengambil rincian informasi satu transaksi setoran sampah milik warga berdasarkan ID setoran atau ID pengajuan.",
                 "operationId": "cc5dcdbe197b82fb2d9ddf55d88e7964",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
-                        "description": "ID Transaksi Setoran atau Pengajuan",
                         "required": true,
                         "schema": {
-                            "type": "integer",
-                            "example": 1
+                            "type": "integer"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Detail setoran berhasil diambil",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Detail setoran berhasil diambil."
-                                        },
-                                        "data": {
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthenticated",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Unauthenticated."
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Setoran atau profil warga tidak ditemukan",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Setoran tidak ditemukan."
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
+                        "description": "Detail setoran berhasil diambil"
                     }
                 },
                 "security": [
@@ -5885,6 +5739,14 @@
         {
             "name": "Pengepul - Stok Sampah",
             "description": "Katalog & Detail Stok Sampah Tersedia untuk Pengepul"
+        },
+        {
+            "name": "Admin - Validasi",
+            "description": "Admin - Validasi"
+        },
+        {
+            "name": "Petugas - Dashboard",
+            "description": "Petugas - Dashboard"
         },
         {
             "name": "Warga - Dashboard",

@@ -8,6 +8,7 @@ export interface DetailSetoranItem {
   harga_satuan?: number | string;
   nilai_poin_per_satuan?: number;
   poin: number;
+  poin_sementara?: number;
   jenis_sampah?: {
     jenis_sampah_id: number;
     nama_jenis_sampah: string;
@@ -36,6 +37,7 @@ export interface SetoranItem {
   tanggal_validasi?: string | null;
   total_berat_aktual: number | string;
   total_poin: number;
+  total_poin_sementara: number;
   poin: number;
   detail_setoran?: DetailSetoranItem[];
   petugas?: { petugas_id: number; nama_petugas: string; no_telepon?: string; };
