@@ -421,62 +421,155 @@ export default function SetoranSampahPage() {
 
       {/* Modal Detail */}
       {showDetail && selected && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-xl">
-            <div className="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center">
-              <h2 className="font-bold text-gray-900">Detail STN-{String(selected.setoran_id).padStart(4, '0')}</h2>
-              <button onClick={() => setShowDetail(false)} className="text-gray-400 hover:text-gray-600">
-                <X size={20} />
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
+          <div className="bg-white rounded-3xl max-w-2xl w-full shadow-2xl border border-gray-100 overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-150">
+            {/* Modal Header */}
+            <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-2xl flex items-center justify-center flex-shrink-0 border bg-blue-50 text-blue-600 border-blue-100">
+                  <Eye className="h-5 w-5" />
+                </div>
+                <div>
+                  <h2 className="text-base font-bold text-gray-900 tracking-tight">Detail Rekap Setoran Sampah</h2>
+                  <p className="text-xs text-gray-500 font-mono mt-0.5">
+                    STN-{String(selected.setoran_id).padStart(4, '0')} • Warga:{' '}
+                    <span className="font-sans font-semibold text-gray-700">
+                      {selected.warga?.nama_warga || '-'}
+                    </span>
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowDetail(false)}
+                className="h-8 w-8 rounded-xl flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition"
+              >
+                <X className="h-4 w-4" />
               </button>
             </div>
-            <div className="p-6 space-y-4 text-sm">
-              <div className="grid grid-cols-2 gap-4 bg-gray-50 p-4 rounded-xl">
+
+            {/* Modal Body */}
+            <div className="overflow-y-auto p-6 space-y-5 flex-1 text-xs">
+              {/* Summary Metadata Card */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 p-3.5 bg-gray-50/70 rounded-2xl border border-gray-100">
                 <div>
-                  <p className="text-gray-500 text-[11px]">Warga</p>
-                  <p className="font-semibold">{selected.warga?.nama_warga || '-'}</p>
-                  <p className="text-[11px] text-gray-400">{selected.warga?.no_telepon || '-'}</p>
+                  <p className="text-[11px] text-gray-400 font-medium">Nama Warga</p>
+                  <p className="font-bold text-gray-900 mt-0.5 truncate">{selected.warga?.nama_warga || '-'}</p>
+                  <p className="text-[10px] text-gray-500">{selected.warga?.no_telepon || '-'}</p>
                 </div>
                 <div>
-                  <p className="text-gray-500 text-[11px]">Petugas</p>
-                  <p className="font-semibold">{selected.petugas?.nama_petugas || '-'}</p>
+                  <p className="text-[11px] text-gray-400 font-medium">Petugas Pengambil</p>
+                  <p className="font-bold text-gray-900 mt-0.5 truncate">{selected.petugas?.nama_petugas || '-'}</p>
                 </div>
                 <div>
-                  <p className="text-gray-500 text-[11px]">Tanggal Setoran</p>
-                  <p className="font-semibold">{new Date(selected.tanggal_setoran).toLocaleString('id-ID')}</p>
+                  <p className="text-[11px] text-gray-400 font-medium">Waktu Pengambilan</p>
+                  <p className="font-bold text-gray-900 mt-0.5">
+                    {new Date(selected.tanggal_setoran).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}
+                    <br />
+                    <span className="text-[10px] text-gray-500">
+                      {new Date(selected.tanggal_setoran).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                  </p>
                 </div>
                 <div>
-                  <p className="text-gray-500 text-[11px]">Status</p>
-                  {getStatusBadge(selected.status_validasi)}
+                  <p className="text-[11px] text-gray-400 font-medium">Status Saat Ini</p>
+                  <span
+                    className={`inline-block mt-0.5 px-2 py-0.5 rounded-md text-[10px] font-bold capitalize ${
+                      selected.status_validasi === 'disetujui'
+                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                        : selected.status_validasi === 'ditolak'
+                        ? 'bg-rose-50 text-rose-700 border border-rose-200'
+                        : 'bg-amber-50 text-amber-700 border border-amber-200'
+                    }`}
+                  >
+                    {selected.status_validasi}
+                  </span>
                 </div>
               </div>
 
-              {selected.status_validasi === 'ditolak' && selected.catatan_penolakan && (
-                <div className="bg-red-50 border border-red-100 rounded-xl p-4">
-                  <p className="text-[11px] font-medium text-red-600 mb-1">Catatan Penolakan (Petugas)</p>
-                  <p className="text-sm text-red-700 italic">&quot;{selected.catatan_penolakan}&quot;</p>
+              {/* Catatan Penolakan dari Petugas */}
+              {selected.catatan_penolakan && (
+                <div className="p-3.5 rounded-2xl border flex items-start gap-2.5 bg-rose-50/70 border-rose-200 text-rose-900">
+                  <FileText className="h-4 w-4 flex-shrink-0 mt-0.5 text-rose-600" />
+                  <div className="space-y-0.5">
+                    <p className="font-bold">Catatan Pengambilan dari Petugas:</p>
+                    <p className="leading-relaxed font-normal">{selected.catatan_penolakan}</p>
+                  </div>
                 </div>
               )}
 
-              {selected.status_validasi === 'ditolak' && selected.catatan_validasi && (
-                <div className="bg-red-50 border border-red-100 rounded-xl p-4">
-                  <p className="text-[11px] font-medium text-red-600 mb-1">Catatan Validasi (Admin)</p>
-                  <p className="text-sm text-red-700 italic">&quot;{selected.catatan_validasi}&quot;</p>
+              {/* Catatan Validasi dari Admin */}
+              {selected.catatan_validasi && (
+                <div className="p-3.5 rounded-2xl border flex items-start gap-2.5 bg-amber-50/70 border-amber-200/80 text-amber-900">
+                  <FileText className="h-4 w-4 flex-shrink-0 mt-0.5 text-amber-600" />
+                  <div className="space-y-0.5">
+                    <p className="font-bold">Catatan Validasi dari Admin:</p>
+                    <p className="leading-relaxed font-normal">{selected.catatan_validasi}</p>
+                  </div>
                 </div>
               )}
 
-              <div>
-                <p className="text-[11px] font-medium text-gray-500 mb-2">Detail Setoran</p>
-                <div className="space-y-2">
-                  {selected.detail_setoran?.map(d => (
-                    <div key={d.detail_setoran_id} className="flex justify-between items-center border rounded-xl p-3">
-                      <span className="text-gray-700">{d.jenis_sampah?.nama_jenis_sampah}</span>
-                      <span className="font-medium">{d.berat_aktual} kg • {d.poin} poin</span>
-                    </div>
-                  ))}
+              {/* Rincian Rekap Sampah Table */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-gray-500">Rekap Rincian Sampah & Berat</h4>
+                  <span className="text-[11px] text-gray-400 font-medium">{selected.detail_setoran?.length || 0} Jenis Sampah</span>
                 </div>
-                <div className="flex justify-between items-center border-t border-gray-200 mt-3 pt-3 font-bold">
-                  <span>Total</span>
-                  <span>{selected.total_berat_aktual} kg • {selected.total_poin} poin</span>
+
+                <div className="border border-gray-100 rounded-2xl overflow-hidden shadow-xs">
+                  <table className="w-full text-left text-xs">
+                    <thead className="bg-gray-50/80 text-gray-500 font-semibold border-b border-gray-100">
+                      <tr>
+                        <th className="py-2.5 px-3.5">Jenis Sampah</th>
+                        <th className="py-2.5 px-3.5 text-right">Berat Aktual</th>
+                        <th className="py-2.5 px-3.5 text-right">Poin per Satuan</th>
+                        <th className="py-2.5 px-3.5 text-right">Subtotal Poin</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100">
+                      {selected.detail_setoran && selected.detail_setoran.length > 0 ? (
+                        selected.detail_setoran.map((d) => (
+                          <tr key={d.detail_setoran_id} className="hover:bg-gray-50/50">
+                            <td className="py-3 px-3.5">
+                              <p className="font-bold text-gray-800">{d.jenis_sampah?.nama_jenis_sampah || '-'}</p>
+                            </td>
+                            <td className="py-3 px-3.5 text-right font-bold text-gray-900">{Number(d.berat_aktual).toFixed(2)} kg</td>
+                            <td className="py-3 px-3.5 text-right text-gray-500 font-medium">{d.nilai_poin_per_satuan ? `${d.nilai_poin_per_satuan} poin/kg` : '-'}</td>
+                            <td className="py-3 px-3.5 text-right font-extrabold text-emerald-700">+{d.poin} poin</td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan={4} className="py-4 text-center text-gray-400">Tidak ada rincian sampah (Pengambilan gagal)</td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Highlight Rekap Total */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 pt-1">
+                <div className="p-4 rounded-2xl bg-gray-50 border border-gray-200/80 flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <p className="text-[11px] font-semibold text-gray-500 uppercase tracking-wide">Total Berat Sampah</p>
+                    <p className="text-xl font-extrabold text-gray-900">
+                      {Number(selected.total_berat_aktual).toFixed(2)} <span className="text-sm font-semibold text-gray-500">kg</span>
+                    </p>
+                  </div>
+                  <div className="h-10 w-10 rounded-2xl bg-white border border-gray-200 text-gray-700 flex items-center justify-center shadow-xs">
+                    <Scale className="h-5 w-5 text-gray-600" />
+                  </div>
+                </div>
+
+                <div className="p-4 rounded-2xl bg-emerald-50/80 border border-emerald-200 flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <p className="text-[11px] font-semibold text-emerald-700 uppercase tracking-wide">Total Poin yang Diterima Warga</p>
+                    <p className="text-xl font-black text-emerald-700">+{selected.total_poin} Poin</p>
+                  </div>
+                  <div className="h-10 w-10 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center shadow-xs border border-emerald-200">
+                    <FileText className="h-5 w-5" />
+                  </div>
                 </div>
               </div>
             </div>
