@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\Warga\SetoranController as WargaSetoranController;
 use App\Http\Controllers\Api\Warga\DashboardController as WargaDashboardController;
 use App\Http\Controllers\Api\Petugas\JadwalPenjemputanController;
 use App\Http\Controllers\Api\Petugas\SetoranController;
+use App\Http\Controllers\Api\Petugas\DashboardController as PetugasDashboardController;
 use App\Http\Controllers\Api\Admin\PengajuanPenjemputanController as AdminPengajuanPenjemputanController;
 use App\Http\Controllers\Api\Admin\JadwalPenjemputanController as AdminJadwalPenjemputanController;
 use App\Http\Controllers\Api\Admin\WargaController as AdminWargaController;
@@ -163,6 +164,11 @@ Route::middleware('auth:sanctum')->group(function () {
         });
 
         Route::get('/petugas/jenis-sampah', [WargaJenisSampahController::class, 'index']);
+
+        Route::get(
+            '/petugas/dashboard',
+            [PetugasDashboardController::class, 'index']
+        );
 
         Route::get(
             '/petugas/jadwal',
