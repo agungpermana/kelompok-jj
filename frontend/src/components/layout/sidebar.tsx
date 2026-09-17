@@ -80,17 +80,15 @@ export default function Sidebar({ menuSections, logo }: SidebarProps) {
 
   return (
     <>
-      {/* Hamburger Button - Mobile Only */}
-      <button
-        onClick={() => setSidebarOpen(!sidebarOpen)}
-        className="fixed top-4 left-4 z-50 lg:hidden flex h-10 w-10 items-center justify-center rounded-lg bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors shadow-md"
-      >
-        {sidebarOpen ? (
-          <X className="h-5 w-5" strokeWidth={2} />
-        ) : (
+      {/* Hamburger Button - Mobile Only - hanya tampil saat sidebar tertutup */}
+      {!sidebarOpen && (
+        <button
+          onClick={() => setSidebarOpen(true)}
+          className="fixed top-4 left-4 z-50 lg:hidden flex h-10 w-10 items-center justify-center rounded-lg bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors shadow-md"
+        >
           <Menu className="h-5 w-5" strokeWidth={2} />
-        )}
-      </button>
+        </button>
+      )}
 
       {/* Backdrop - Mobile Only */}
       {sidebarOpen && (
@@ -107,22 +105,39 @@ export default function Sidebar({ menuSections, logo }: SidebarProps) {
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         } lg:static lg:translate-x-0 ${sidebarWidth}`}
       >
-        {/* Logo */}
+        {/* Logo dengan Close Button untuk Mobile */}
         <div className={`flex items-center border-b border-gray-100 transition-all duration-300 ${
           collapsed ? 'justify-center px-2 py-3' : 'gap-2.5 px-4 sm:px-5 py-3 sm:py-4'
         }`}>
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#22c55e] to-[#16a34a] shadow-md shadow-green-200 flex-shrink-0">
             <Leaf className="h-5 w-5 text-white" strokeWidth={2.5} />
           </div>
-          {!collapsed && (
-            <div className="transition-opacity duration-200">
-              <h1 className="text-sm sm:text-base font-extrabold tracking-tight text-[#16a34a]">
-                {logo?.label || 'TRASHURE'}
-              </h1>
-              <p className="text-[9px] sm:text-[10px] font-medium text-gray-400 -mt-0.5">
-                {logo?.subtitle || 'Bank Sampah'}
-              </p>
-            </div>
+          {!collapsed ? (
+            <>
+              <div className="flex-1 transition-opacity duration-200">
+                <h1 className="text-sm sm:text-base font-extrabold tracking-tight text-[#16a34a]">
+                  {logo?.label || 'TRASHURE'}
+                </h1>
+                <p className="text-[9px] sm:text-[10px] font-medium text-gray-400 -mt-0.5">
+                  {logo?.subtitle || 'Bank Sampah'}
+                </p>
+              </div>
+              {/* Close Button - Mobile Only - di dalam sidebar */}
+              <button
+                onClick={() => setSidebarOpen(false)}
+                className="lg:hidden flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+              >
+                <X className="h-4 w-4" strokeWidth={2} />
+              </button>
+            </>
+          ) : (
+            /* Close Button untuk collapsed mode di mobile */
+            <button
+              onClick={() => setSidebarOpen(false)}
+              className="lg:hidden absolute top-2 right-2 flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors z-10"
+            >
+              <X className="h-4 w-4" strokeWidth={2} />
+            </button>
           )}
         </div>
 
