@@ -265,8 +265,7 @@ export default function WargaPage() {
         </div>
 
         {/* Desktop Table & Mobile Cards */}
-        {/* Desktop Table - hidden on mobile */}
-        <div className="hidden lg:block overflow-x-auto">
+        <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="bg-gray-50/80">
@@ -333,70 +332,6 @@ export default function WargaPage() {
               )}
             </tbody>
           </table>
-        </div>
-
-        {/* Mobile Cards - visible only on mobile */}
-        <div className="lg:hidden space-y-4 px-2">
-          {isLoading ? (
-            <div className="text-center py-12 text-sm text-gray-400">
-              <Loader2 className="h-6 w-6 animate-spin mx-auto mb-2 text-gray-300" />
-              Memuat data...
-            </div>
-          ) : wargaList.length === 0 ? (
-            <div className="text-center py-12 text-sm text-gray-400">
-              Tidak ada data warga ditemukan.
-            </div>
-          ) : (
-            wargaList.map((warga, idx) => (
-              <div key={warga.warga_id} className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-gray-900 text-sm truncate">{warga.nama_warga}</h3>
-                    <p className="text-xs text-gray-500 mt-0.5">#{(pagination.current_page - 1) * pagination.per_page + idx + 1}</p>
-                  </div>
-                  <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold flex-shrink-0 ml-3 ${warga.user?.status === 'aktif' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                    {warga.user?.status === 'aktif' ? 'Aktif' : 'Nonaktif'}
-                  </span>
-                </div>
-                
-                <div className="space-y-2 text-xs">
-                  <div className="flex justify-between">
-                    <span className="text-gray-500">NIK:</span>
-                    <span className="font-medium text-gray-900">{warga.nik}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-500">Jenis Kelamin:</span>
-                    <span className="text-gray-700">{warga.jenis_kelamin}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-500">No. Telepon:</span>
-                    <span className="text-gray-700">{warga.no_telepon || '-'}</span>
-                  </div>
-                  <div className="pt-1">
-                    <div className="text-gray-500 mb-1">Alamat:</div>
-                    <div className="text-gray-700 text-xs leading-relaxed">{warga.alamat}</div>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-end gap-2 mt-4 pt-3 border-t border-gray-100">
-                  <button
-                    onClick={() => openEditModal(warga)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
-                  >
-                    <Edit2 className="h-3.5 w-3.5" />
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => openDeleteModal(warga)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors"
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                    Hapus
-                  </button>
-                </div>
-              </div>
-            ))
-          )}
         </div>
 
         {/* Pagination */}

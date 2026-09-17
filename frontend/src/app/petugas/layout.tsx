@@ -12,8 +12,10 @@ function PetugasLayoutInner({ children }: { children: React.ReactNode }) {
       <div style={{ '--sidebar-w': collapsed ? '72px' : '260px' } as React.CSSProperties}>
         <Sidebar menuSections={petugasMenus} />
       </div>
-      <main className="flex-1 p-4 sm:p-5 lg:p-6 mt-12 lg:mt-0 min-w-0">
-        {children}
+      <main className="flex-1 p-3 sm:p-4 lg:p-5 xl:p-6 mt-12 lg:mt-0 min-w-0 overflow-x-hidden">
+        <div className="max-w-full mx-auto">
+          {children}
+        </div>
       </main>
     </div>
   );

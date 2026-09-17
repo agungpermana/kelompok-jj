@@ -44,52 +44,53 @@ export default function PetugasDashboardPage() {
         subtitle="Ringkasan tugas penjemputan dan setoran hari ini."
       />
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-5 lg:mb-6">
-        <div className="bg-white rounded-lg sm:rounded-lg sm:rounded-xl border border-gray-200/80 p-3 sm:p-4 lg:p-5 shadow-sm">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-5 lg:mb-6 px-1 sm:px-0">
+        <div className="bg-white rounded-lg sm:rounded-xl border border-gray-200/80 p-4 sm:p-5 shadow-sm">
           <div className="flex items-center justify-between mb-2 sm:mb-3">
             <p className="text-xs sm:text-sm text-gray-500">Penjemputan Hari Ini</p>
             <Truck className="w-4 sm:w-5 h-4 sm:h-5 text-blue-600" />
           </div>
-          <p className="text-xl sm:text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">
+          <p className="text-xl sm:text-2xl font-bold text-gray-900">
             {isLoading ? '-' : dashboard.penjemputan_hari_ini}
           </p>
         </div>
-        <div className="bg-white rounded-lg sm:rounded-lg sm:rounded-xl border border-gray-200/80 p-3 sm:p-4 lg:p-5 shadow-sm">
+        <div className="bg-white rounded-lg sm:rounded-xl border border-gray-200/80 p-4 sm:p-5 shadow-sm">
           <div className="flex items-center justify-between mb-2 sm:mb-3">
             <p className="text-xs sm:text-sm text-gray-500">Selesai</p>
             <CheckCircle className="w-4 sm:w-5 h-4 sm:h-5 text-green-600" />
           </div>
-          <p className="text-xl sm:text-lg sm:text-xl lg:text-2xl font-bold text-[#16a34a]">
+          <p className="text-xl sm:text-2xl font-bold text-[#16a34a]">
             {isLoading ? '-' : dashboard.penjemputan_selesai}
           </p>
         </div>
-        <div className="bg-white rounded-lg sm:rounded-lg sm:rounded-xl border border-gray-200/80 p-3 sm:p-4 lg:p-5 shadow-sm">
+        <div className="bg-white rounded-lg sm:rounded-xl border border-gray-200/80 p-4 sm:p-5 shadow-sm">
           <div className="flex items-center justify-between mb-2 sm:mb-3">
             <p className="text-xs sm:text-sm text-gray-500">Menunggu</p>
             <Clock className="w-4 sm:w-5 h-4 sm:h-5 text-amber-600" />
           </div>
-          <p className="text-xl sm:text-lg sm:text-xl lg:text-2xl font-bold text-amber-500">
+          <p className="text-xl sm:text-2xl font-bold text-amber-500">
             {isLoading ? '-' : dashboard.penjemputan_menunggu}
           </p>
         </div>
-        <div className="bg-white rounded-lg sm:rounded-lg sm:rounded-xl border border-gray-200/80 p-3 sm:p-4 lg:p-5 shadow-sm">
+        <div className="bg-white rounded-lg sm:rounded-xl border border-gray-200/80 p-4 sm:p-5 shadow-sm">
           <div className="flex items-center justify-between mb-2 sm:mb-3">
             <p className="text-xs sm:text-sm text-gray-500">Total Setoran</p>
             <Weight className="w-4 sm:w-5 h-4 sm:h-5 text-purple-600" />
           </div>
-          <p className="text-xl sm:text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">
+          <p className="text-xl sm:text-2xl font-bold text-gray-900">
             {isLoading ? '-' : `${dashboard.total_setoran_dikumpul.toLocaleString('id-ID', { maximumFractionDigits: 1 })} kg`}
           </p>
         </div>
       </div>
 
-      <div className="bg-white rounded-lg sm:rounded-lg sm:rounded-xl border border-gray-200/80 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-lg sm:rounded-xl border border-gray-200/80 shadow-sm overflow-hidden">
         <div className="px-3 sm:px-4 lg:px-6 py-3 sm:py-4 border-b border-gray-200/80 bg-gray-50">
           <h3 className="text-base sm:text-lg font-semibold text-gray-900">Tugas Penjemputan Hari Ini</h3>
           <p className="text-xs sm:text-sm text-gray-500 mt-1">Daftar jadwal penjemputan yang dijadwalkan untuk hari ini</p>
         </div>
 
-        <div className="overflow-x-auto">
+        {/* Desktop Table - hidden on mobile */}
+        <div className="hidden lg:block overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="border-b border-gray-200/80 bg-gray-50">
@@ -161,6 +162,83 @@ export default function PetugasDashboardPage() {
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile Cards - visible only on mobile */}
+        <div className="lg:hidden">
+          {isLoading ? (
+            <div className="p-8 text-center">
+              <div className="flex flex-col items-center gap-2">
+                <div className="w-6 h-6 border-2 border-[#16a34a] border-t-transparent rounded-full animate-spin" />
+                <p className="text-sm text-gray-500">Memuat data...</p>
+              </div>
+            </div>
+          ) : dashboard.jadwal_hari_ini.length === 0 ? (
+            <div className="p-8 text-center text-sm text-gray-400">
+              Tidak ada jadwal penjemputan terbaru hari ini.
+            </div>
+          ) : (
+            <div className="space-y-4 p-4">
+              {dashboard.jadwal_hari_ini.map((jadwal, idx) => {
+                const statusConfig = getStatusBadge(jadwal.status_jadwal);
+                return (
+                  <div key={jadwal.jadwal_id} className="border border-gray-200 rounded-lg p-4 bg-gray-50/30">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-semibold text-gray-900 text-sm">Tugas #{idx + 1}</h4>
+                        <p className="text-xs text-gray-500 mt-0.5">Penjemputan {formatTime(jadwal.waktu_penjemputan)} WIB</p>
+                      </div>
+                      <span className={`inline-block px-2.5 py-1 text-xs font-medium rounded-full flex-shrink-0 ml-3 ${statusConfig.bg} ${statusConfig.text}`}>
+                        {statusConfig.label}
+                      </span>
+                    </div>
+                    
+                    <div className="space-y-2 text-xs mb-3">
+                      <div>
+                        <span className="text-gray-500 block mb-1">Warga:</span>
+                        <span className="text-gray-900 font-medium">{jadwal.nama_warga}</span>
+                      </div>
+                      <div>
+                        <span className="text-gray-500 block mb-1">Alamat:</span>
+                        <span className="text-gray-700 leading-relaxed">{jadwal.alamat_penjemputan}</span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <span className="text-gray-500 block mb-1">Telepon:</span>
+                          <span className="text-gray-700">{jadwal.no_telepon}</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-500 block mb-1">Est. Berat:</span>
+                          <span className="text-gray-900 font-semibold">
+                            {jadwal.perkiraan_total_berat.toLocaleString('id-ID', { maximumFractionDigits: 1 })} kg
+                          </span>
+                        </div>
+                      </div>
+                      <div>
+                        <span className="text-gray-500 block mb-1">Jenis Sampah:</span>
+                        <div className="space-y-0.5">
+                          {jadwal.detail_sampah.map((sampah, sIdx) => (
+                            <div key={sIdx} className="text-gray-700 text-xs">
+                              • {sampah.jenis_sampah}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex justify-end pt-3 border-t border-gray-200">
+                      <a
+                        href={`/petugas/penjemputan`}
+                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
+                      >
+                        Lihat Detail
+                      </a>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -835,7 +835,8 @@ export default function TugasSayaPage() {
         </div>
       ) : (
       <div className="bg-white rounded-2xl border border-gray-200/80 shadow-[0_2px_12px_rgba(0,0,0,0.02)] overflow-hidden mb-5">
-        <div className="overflow-x-auto">
+        {/* Desktop Table - hidden on mobile */}
+        <div className="hidden lg:block overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="border-b border-gray-100 bg-[#fafafa]/80 text-[13px] font-bold text-gray-700">
@@ -977,6 +978,106 @@ export default function TugasSayaPage() {
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile Cards - visible only on mobile */}
+        <div className="lg:hidden">
+          {filteredList.length === 0 ? (
+            <div className="px-6 py-12 text-center text-gray-400 font-medium">
+              Tidak ada tugas penjemputan yang sesuai.
+            </div>
+          ) : (
+            <div className="space-y-4 p-4">
+              {filteredList.map((item) => {
+                const isDiproses =
+                  item.status_jadwal.toLowerCase() === 'diproses' ||
+                  item.status_jadwal.toLowerCase() === 'dalam proses';
+                const timeStr = formatTime(item.waktu_penjemputan);
+                const dateStr = formatDateShort(item.tanggal_penjemputan);
+                const warga = item.pengajuan_penjemputan?.warga;
+                const alamat = item.pengajuan_penjemputan?.alamat_penjemputan || '-';
+                const sampahDisplay = getSampahDisplay(item);
+                const adaAktual = sampahDisplay.some((s) => s.isAktual);
+
+                return (
+                  <div 
+                    key={item.jadwal_id} 
+                    className={`border border-gray-200 rounded-lg p-4 transition-colors duration-150 ${
+                      isDiproses ? 'bg-[#fffdf7]' : 'bg-gray-50/30'
+                    }`}
+                  >
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-center gap-3 flex-1 min-w-0">
+                        <div
+                          className={`flex h-8 w-8 items-center justify-center rounded-lg flex-shrink-0 ${
+                            isDiproses
+                              ? 'bg-[#fffbeb] text-[#d97706]'
+                              : 'bg-[#eff6ff] text-[#2563eb]'
+                          }`}
+                        >
+                          {isDiproses ? (
+                            <Clock className="h-4 w-4" strokeWidth={1.8} />
+                          ) : (
+                            <Calendar className="h-4 w-4" strokeWidth={1.8} />
+                          )}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-bold text-gray-900">{timeStr}</p>
+                          <p className="text-xs text-gray-500">{dateStr}</p>
+                        </div>
+                      </div>
+                      <div className="flex-shrink-0 ml-3">
+                        {renderStatusBadge(item.status_jadwal)}
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2.5 text-xs mb-3">
+                      <div>
+                        <span className="text-gray-500 block mb-1">Warga:</span>
+                        <p className="text-gray-900 font-semibold">{warga?.nama_warga || 'Warga'}</p>
+                        <p className="text-gray-600">{warga?.no_telepon || '-'}</p>
+                      </div>
+                      <div>
+                        <span className="text-gray-500 block mb-1">Alamat:</span>
+                        <p className="text-gray-700 leading-relaxed">{renderFormattedAddress(alamat)}</p>
+                      </div>
+                      <div>
+                        <span className="text-gray-500 block mb-1">Jenis Sampah:</span>
+                        <div className="space-y-1">
+                          {sampahDisplay.map((sampah, idx) => (
+                            <div key={idx} className="flex items-center gap-2 text-xs">
+                              <WasteIcon type={sampah.nama} size={12} />
+                              <span className="text-gray-700">{sampah.nama}</span>
+                              {sampah.isAktual && (
+                                <span className="text-[9px] font-semibold text-emerald-600 bg-emerald-50 border border-emerald-100 rounded-full px-1.5 py-px">
+                                  aktual
+                                </span>
+                              )}
+                            </div>
+                          ))}
+                          {adaAktual && (
+                            <p className="text-[10px] text-gray-400 mt-1">
+                              Termasuk tambahan jenis sampah oleh petugas
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex justify-end pt-3 border-t border-gray-200">
+                      <button
+                        type="button"
+                        onClick={() => handleViewDetail(item)}
+                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-[#16a34a] bg-green-50 rounded-lg hover:bg-green-100 transition-colors border border-green-200"
+                      >
+                        Detail
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         {/* Table Footer / Pagination */}

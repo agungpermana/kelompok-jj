@@ -84,7 +84,8 @@ export default function WargaDashboardPage() {
           <p className="text-sm text-gray-500 mt-1">Pengajuan yang belum diproses oleh admin maupun petugas</p>
         </div>
 
-        <div className="overflow-x-auto">
+        {/* Desktop Table - hidden on mobile */}
+        <div className="hidden lg:block overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="border-b border-gray-200/80 bg-gray-50">
@@ -152,6 +153,75 @@ export default function WargaDashboardPage() {
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile Cards - visible only on mobile */}
+        <div className="lg:hidden">
+          {isLoading ? (
+            <div className="p-8 text-center">
+              <div className="flex flex-col items-center gap-2">
+                <div className="w-6 h-6 border-2 border-[#16a34a] border-t-transparent rounded-full animate-spin" />
+                <p className="text-sm text-gray-500">Memuat data...</p>
+              </div>
+            </div>
+          ) : dashboard.pengajuan_terbaru.length === 0 ? (
+            <div className="p-8 text-center text-sm text-gray-400">
+              Tidak ada pengajuan penjemputan terbaru.
+            </div>
+          ) : (
+            <div className="space-y-4 p-4">
+              {dashboard.pengajuan_terbaru.map((pengajuan, idx) => {
+                const statusConfig = getStatusBadge(pengajuan.status_pengajuan);
+                return (
+                  <div key={pengajuan.pengajuan_id} className="border border-gray-200 rounded-lg p-4 bg-gray-50/30">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-semibold text-gray-900 text-sm">Pengajuan #{idx + 1}</h4>
+                        <p className="text-xs text-gray-500 mt-0.5">{formatDate(pengajuan.created_at)}</p>
+                      </div>
+                      <span className={`inline-block px-2.5 py-1 text-xs font-medium rounded-full flex-shrink-0 ml-3 ${statusConfig.bg} ${statusConfig.text}`}>
+                        {statusConfig.label}
+                      </span>
+                    </div>
+                    
+                    <div className="space-y-2 text-xs mb-3">
+                      <div>
+                        <span className="text-gray-500 block mb-1">Alamat Penjemputan:</span>
+                        <span className="text-gray-700 leading-relaxed">{pengajuan.alamat_penjemputan}</span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <span className="text-gray-500 block mb-1">Jenis Sampah:</span>
+                          <div className="space-y-0.5">
+                            {pengajuan.detail_sampah.map((sampah, sIdx) => (
+                              <div key={sIdx} className="text-gray-700 text-xs">
+                                {sampah.jenis_sampah}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                        <div>
+                          <span className="text-gray-500 block mb-1">Total Berat:</span>
+                          <span className="text-gray-900 font-semibold">
+                            {pengajuan.perkiraan_total_berat.toLocaleString('id-ID', { maximumFractionDigits: 1 })} kg
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex justify-end pt-3 border-t border-gray-200">
+                      <a
+                        href={`/warga/riwayat-setoran`}
+                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
+                      >
+                        Lihat Detail
+                      </a>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
     </div>

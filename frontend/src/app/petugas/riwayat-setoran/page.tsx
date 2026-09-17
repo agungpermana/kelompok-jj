@@ -125,7 +125,8 @@ export default function RiwayatSetoranPage() {
         </div>
       ) : (
       <div className="bg-white rounded-2xl border border-gray-200/80 shadow-[0_2px_12px_rgba(0,0,0,0.02)] overflow-hidden mb-5">
-        <div className="overflow-x-auto">
+        {/* Desktop Table - hidden on mobile */}
+        <div className="hidden lg:block overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead><tr className="border-b border-gray-100 bg-[#fafafa]/80 text-[12px] font-bold text-gray-600"><th className="px-5 py-4">No. Transaksi</th><th className="px-5 py-4">Warga</th><th className="px-5 py-4">Tanggal Setoran</th><th className="px-5 py-4">Jenis Sampah & Berat</th><th className="px-5 py-4">Total Berat</th><th className="px-5 py-4">Poin</th><th className="px-5 py-4">Status Validasi</th><th className="px-5 py-4">Aksi</th></tr></thead>
             <tbody className="divide-y divide-gray-100">
@@ -148,6 +149,91 @@ export default function RiwayatSetoranPage() {
             </tbody>
           </table>
         </div>
+
+        {/* Mobile Cards - visible only on mobile */}
+        <div className="lg:hidden">
+          {paginated.length === 0 ? (
+            <div className="py-10 text-center text-sm text-gray-400">Tidak ada riwayat setoran</div>
+          ) : (
+            <div className="space-y-4 p-4">
+              {paginated.map(s => (
+                <div key={s.setoran_id} className="border border-gray-200 rounded-lg p-4 bg-gray-50/30">
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="min-w-0 flex-1">
+                      <h4 className="text-sm font-bold text-gray-900">STN-2024-0822-{String(s.setoran_id).padStart(3, '0')}</h4>
+                      <p className="text-xs text-gray-500 mt-0.5">Dari PGJ-2024-0822-{String(s.pengajuan_id).padStart(3, '0')}</p>
+                    </div>
+                    <div className="flex-shrink-0 ml-3">
+                      {s.status_validasi === 'disetujui' && (
+                        <span className="inline-flex px-2.5 py-1 rounded-lg bg-[#f0fdf4] text-[#15803d] text-xs font-semibold border border-green-100">Terverifikasi</span>
+                      )}
+                      {s.status_validasi === 'menunggu' && (
+                        <span className="inline-flex px-2.5 py-1 rounded-lg bg-[#fffbeb] text-[#92400e] text-xs font-semibold border border-amber-100">Menunggu Validasi</span>
+                      )}
+                      {s.status_validasi === 'ditolak' && (
+                        <span className="inline-flex px-2.5 py-1 rounded-lg bg-[#fef2f2] text-[#b91c1c] text-xs font-semibold border border-red-100">Ditolak</span>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2.5 text-xs mb-3">
+                    <div>
+                      <span className="text-gray-500 block mb-1">Warga:</span>
+                      <p className="text-gray-900 font-semibold">{s.warga.nama_warga}</p>
+                      <p className="text-gray-600">{s.warga.no_telepon || '-'}</p>
+                      {s.warga.alamat && (
+                        <p className="text-gray-600 text-xs">{s.warga.alamat?.split('/')[0]?.trim()}</p>
+                      )}
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <span className="text-gray-500 block mb-1">Tanggal Setoran:</span>
+                        <p className="text-gray-900 font-medium">{new Date(s.tanggal_setoran).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}</p>
+                        <p className="text-gray-500 text-xs">{new Date(s.tanggal_setoran).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</p>
+                      </div>
+                      <div>
+                        <span className="text-gray-500 block mb-1">Total Berat:</span>
+                        <p className="text-gray-900 font-bold">{Number(s.total_berat_aktual).toFixed(1).replace('.', ',')} kg</p>
+                        <p className="text-blue-600 font-semibold text-xs">{(s as any).total_poin ?? s.total_poin_sementara} poin</p>
+                      </div>
+                    </div>
+                    <div>
+                      <span className="text-gray-500 block mb-1">Jenis Sampah & Berat:</span>
+                      <div className="space-y-1">
+                        {(s.detail_setoran || []).map(d => (
+                          <div key={d.detail_setoran_id} className="flex items-center justify-between gap-2 text-xs bg-white rounded-md p-2 border">
+                            <div className="flex items-center gap-2 min-w-0 flex-1">
+                              <WasteIcon type={d.jenis_sampah.nama_jenis_sampah} size={14} />
+                              <span className="text-gray-700 truncate">{d.jenis_sampah.nama_jenis_sampah}</span>
+                            </div>
+                            <span className="font-medium text-gray-900 flex-shrink-0">{Number(d.berat_aktual).toFixed(1).replace('.', ',')} kg</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    {s.status_validasi === 'ditolak' && s.catatan_penolakan && (
+                      <div className="bg-red-50 border border-red-200 rounded-md p-2">
+                        <span className="text-red-700 font-medium text-xs block mb-1">Catatan Penolakan:</span>
+                        <p className="text-red-600 text-xs italic">"{s.catatan_penolakan}"</p>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex justify-end pt-3 border-t border-gray-200">
+                    <button 
+                      onClick={() => { setSelected(s); setShowDetail(true); }}
+                      className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-700 bg-white rounded-lg hover:bg-gray-100 transition-colors border border-gray-200"
+                    >
+                      <Eye size={12} />
+                      Lihat Detail
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
         <div className="flex items-center justify-between px-5 py-3 border-t border-gray-100 text-[12px] text-gray-500">
           <span>Menampilkan {(currentPage - 1) * pageSize + 1} - {Math.min(currentPage * pageSize, filtered.length)} dari {filtered.length} transaksi</span>
           <div className="flex items-center gap-1">

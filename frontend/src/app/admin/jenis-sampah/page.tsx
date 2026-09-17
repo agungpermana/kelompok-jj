@@ -320,8 +320,7 @@ export default function JenisSampahPage() {
 
       {/* Desktop Table & Mobile Cards */}
       <div className="rounded-lg sm:rounded-xl bg-white border border-gray-200/80 shadow-sm overflow-hidden">
-        {/* Desktop Table - hidden on mobile */}
-        <div className="hidden lg:block overflow-x-auto">
+        <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-gray-50/80 text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
@@ -444,95 +443,6 @@ export default function JenisSampahPage() {
               )}
             </tbody>
           </table>
-        </div>
-
-        {/* Mobile Cards - visible only on mobile */}
-        <div className="lg:hidden">
-          {loading ? (
-            <div className="p-8 text-center text-gray-400">
-              <Loader2 className="h-6 w-6 animate-spin mx-auto mb-2 text-gray-300" />
-              Memuat data...
-            </div>
-          ) : currentItems.length === 0 ? (
-            <div className="py-12 text-center text-gray-400">
-              <p className="text-sm font-medium">Tidak ada data jenis sampah yang sesuai.</p>
-            </div>
-          ) : (
-            <div className="space-y-4 p-4">
-              {currentItems.map((item, idx) => {
-                const itemIndex = startIndex + idx + 1;
-                const isAktif = item.status === 'aktif';
-
-                return (
-                  <div key={item.jenis_sampah_id || idx} className="border border-gray-200 rounded-lg p-4 bg-gray-50/30">
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-gray-900 text-sm truncate">{item.nama_jenis_sampah}</h3>
-                        <p className="text-xs text-gray-500 mt-0.5">#{itemIndex}</p>
-                      </div>
-                      <span
-                        className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold flex-shrink-0 ml-3 ${isAktif
-                          ? 'bg-green-100 text-green-700'
-                          : 'bg-gray-100 text-gray-600'
-                          }`}
-                      >
-                        {isAktif ? 'Aktif' : 'Nonaktif'}
-                      </span>
-                    </div>
-                    
-                    <div className="space-y-2 text-xs">
-                      <div className="flex justify-between">
-                        <span className="text-gray-500">Satuan:</span>
-                        <span className="font-medium text-gray-900">{item.satuan}</span>
-                      </div>
-                      {item.keterangan && (
-                        <div className="pt-1">
-                          <div className="text-gray-500 mb-1">Keterangan:</div>
-                          <div className="text-gray-700 text-xs leading-relaxed">{item.keterangan}</div>
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="flex items-center justify-end gap-2 mt-4 pt-3 border-t border-gray-200">
-                      <button
-                        onClick={() => {
-                          setActiveItem(item);
-                          setIsModalDetailOpen(true);
-                          setMessage(null);
-                        }}
-                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-                      >
-                        <Eye className="h-3.5 w-3.5" />
-                        Detail
-                      </button>
-                      <button
-                        onClick={() => {
-                          setActiveItem(item);
-                          setIsModalEditOpen(true);
-                          setMessage(null);
-                        }}
-                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
-                      >
-                        <Pencil className="h-3.5 w-3.5" />
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => {
-                          setActiveItem(item);
-                          setIsModalDeleteOpen(true);
-                          setMessage(null);
-                        }}
-                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors"
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                        Hapus
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
         </div>
 
         {/* Table Footer with Pagination */}

@@ -175,7 +175,8 @@ export default function RiwayatPenjemputanPage() {
         </div>
       ) : (
       <div className="bg-white rounded-2xl border border-gray-200/80 shadow-[0_2px_12px_rgba(0,0,0,0.02)] overflow-hidden mb-5">
-        <div className="overflow-x-auto">
+        {/* Desktop Table - hidden on mobile */}
+        <div className="hidden lg:block overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead><tr className="border-b border-gray-100 bg-[#fafafa]/80 text-[12px] font-bold text-gray-600"><th className="px-5 py-4">Tanggal & Waktu</th><th className="px-5 py-4">Warga</th><th className="px-5 py-4">Alamat</th><th className="px-5 py-4">Jenis Sampah</th><th className="px-5 py-4">Total Berat</th><th className="px-5 py-4">Status Penjemputan</th><th className="px-5 py-4">Aksi</th></tr></thead>
             <tbody className="divide-y divide-gray-100">
@@ -197,6 +198,83 @@ export default function RiwayatPenjemputanPage() {
             </tbody>
           </table>
         </div>
+
+        {/* Mobile Cards - visible only on mobile */}
+        <div className="lg:hidden">
+          {paginated.length === 0 ? (
+            <div className="py-10 text-center text-sm text-gray-400">Tidak ada riwayat penjemputan</div>
+          ) : (
+            <div className="space-y-4 p-4">
+              {paginated.map(j => {
+                const isSelesai = j.status_jadwal === 'selesai';
+                const isBatal = ['dibatalkan', 'batal'].includes(j.status_jadwal);
+                return (
+                  <div key={j.jadwal_id} className="border border-gray-200 rounded-lg p-4 bg-gray-50/30">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-center gap-3 flex-1 min-w-0">
+                        <div className={`h-8 w-8 rounded-full flex items-center justify-center flex-shrink-0 ${isSelesai ? 'bg-[#f0fdf4] text-[#16a34a]' : isBatal ? 'bg-[#fef2f2] text-[#dc2626]' : 'bg-[#eff6ff] text-[#2563eb]'}`}>
+                          <Calendar size={14} />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-semibold text-gray-900">{new Date(j.tanggal_penjemputan).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}</p>
+                          <p className="text-xs text-gray-500">{j.waktu_penjemputan?.slice(0, 5)} WIB</p>
+                        </div>
+                      </div>
+                      {isSelesai ? (
+                        <span className="inline-flex px-2.5 py-1 rounded-lg bg-[#f0fdf4] text-[#15803d] text-xs font-semibold border border-green-100 flex-shrink-0 ml-2">Selesai</span>
+                      ) : isBatal ? (
+                        <span className="inline-flex px-2.5 py-1 rounded-lg bg-[#fef2f2] text-[#b91c1c] text-xs font-semibold border border-red-100 flex-shrink-0 ml-2">Dibatalkan</span>
+                      ) : (
+                        <span className="inline-flex px-2.5 py-1 rounded-lg bg-[#eff6ff] text-[#1d4ed8] text-xs font-semibold border border-blue-100 flex-shrink-0 ml-2">Dalam Proses</span>
+                      )}
+                    </div>
+                    
+                    <div className="space-y-2.5 text-xs mb-3">
+                      <div>
+                        <span className="text-gray-500 block mb-1">Warga:</span>
+                        <p className="text-gray-900 font-semibold">{j.pengajuan_penjemputan?.warga?.nama_warga}</p>
+                        <p className="text-gray-600">{j.pengajuan_penjemputan?.warga?.no_telepon}</p>
+                      </div>
+                      <div>
+                        <span className="text-gray-500 block mb-1">Alamat:</span>
+                        <p className="text-gray-700 leading-relaxed">{j.pengajuan_penjemputan?.alamat_penjemputan}</p>
+                      </div>
+                      <div>
+                        <span className="text-gray-500 block mb-1">Total Berat:</span>
+                        <p className="text-gray-900 font-semibold">{Number(getBeratDisplay(j) || 0).toFixed(1).replace('.', ',')} kg</p>
+                      </div>
+                      <div>
+                        <span className="text-gray-500 block mb-1">Jenis Sampah:</span>
+                        <div className="space-y-1">
+                          {getSampahDisplay(j).map((d, i) => (
+                            <div key={i} className="flex items-center gap-2 text-xs text-gray-700">
+                              <WasteIcon type={d.nama} size={12} />
+                              <span>{d.nama}</span>
+                              {d.isAktual && (
+                                <span className="text-[9px] font-semibold text-emerald-600 bg-emerald-50 border border-emerald-100 rounded-full px-1.5 py-px">aktual</span>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex justify-end pt-3 border-t border-gray-200">
+                      <button 
+                        onClick={() => { setSelected(j); setShowDetail(true); }}
+                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#16a34a] bg-green-50 rounded-lg hover:bg-green-100 transition-colors border border-green-200"
+                      >
+                        <Eye size={12} />
+                        Lihat Detail
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
         <div className="flex items-center justify-between px-5 py-3 border-t border-gray-100 text-[12px] text-gray-500">
           <span>Menampilkan {(currentPage - 1) * pageSize + 1} - {Math.min(currentPage * pageSize, filtered.length)} dari {filtered.length} riwayat penjemputan</span>
           <div className="flex items-center gap-1">
