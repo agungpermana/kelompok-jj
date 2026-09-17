@@ -148,7 +148,7 @@ class WargaController extends Controller
             'nama_warga' => 'required|string|max:100',
             'jenis_kelamin' => 'required|string|in:Laki-laki,Perempuan',
             'alamat' => 'required|string',
-            'no_telepon' => 'nullable|string|max:20',
+            'no_telepon' => 'required|string|size:12',
         ], [
             'username.required' => 'Username wajib diisi.',
             'username.unique' => 'Username sudah digunakan, gunakan username lain.',
@@ -166,7 +166,8 @@ class WargaController extends Controller
             'jenis_kelamin.required' => 'Jenis kelamin wajib dipilih.',
             'jenis_kelamin.in' => 'Jenis kelamin harus Laki-laki atau Perempuan.',
             'alamat.required' => 'Alamat wajib diisi.',
-            'no_telepon.max' => 'Nomor telepon maksimal 20 karakter.',
+            'no_telepon.required' => 'Nomor telepon wajib diisi.',
+            'no_telepon.size' => 'Nomor telepon harus terdiri dari 12 digit.',
         ]);
 
         DB::beginTransaction();
@@ -321,7 +322,7 @@ class WargaController extends Controller
             'nama_warga' => 'required|string|max:100',
             'jenis_kelamin' => 'required|string|in:Laki-laki,Perempuan',
             'alamat' => 'required|string',
-            'no_telepon' => 'nullable|string|max:20',
+            'no_telepon' => 'required|string|size:12',
             'status' => 'nullable|string|in:aktif,nonaktif',
         ], [
             'nik.required' => 'NIK wajib diisi.',
@@ -332,7 +333,8 @@ class WargaController extends Controller
             'jenis_kelamin.required' => 'Jenis kelamin wajib dipilih.',
             'jenis_kelamin.in' => 'Jenis kelamin harus Laki-laki atau Perempuan.',
             'alamat.required' => 'Alamat wajib diisi.',
-            'no_telepon.max' => 'Nomor telepon maksimal 20 karakter.',
+            'no_telepon.required' => 'Nomor telepon wajib diisi.',
+            'no_telepon.size' => 'Nomor telepon harus terdiri dari 12 digit.',
             'status.in' => 'Status harus aktif atau nonaktif.',
         ]);
 

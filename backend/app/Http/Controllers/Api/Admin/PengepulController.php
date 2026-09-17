@@ -233,8 +233,8 @@ class PengepulController extends Controller
             'email' => 'required|email|unique:users,email',
             'password' => ['required', 'string', Password::min(6)],
             'nama_pengepul' => 'required|string|max:100',
-            'alamat' => 'nullable|string',
-            'no_telepon' => 'nullable|string|max:20',
+            'alamat' => 'required|string',
+            'no_telepon' => 'required|string|size:12',
         ], [
             'username.required' => 'Username wajib diisi.',
             'username.unique' => 'Username sudah digunakan, gunakan username lain.',
@@ -246,7 +246,9 @@ class PengepulController extends Controller
             'password.min' => 'Password minimal 6 karakter.',
             'nama_pengepul.required' => 'Nama pengepul wajib diisi.',
             'nama_pengepul.max' => 'Nama pengepul maksimal 100 karakter.',
-            'no_telepon.max' => 'Nomor telepon maksimal 20 karakter.',
+            'alamat.required' => 'Alamat wajib diisi.',
+            'no_telepon.required' => 'Nomor telepon wajib diisi.',
+            'no_telepon.size' => 'Nomor telepon harus terdiri dari 12 digit.',
         ]);
 
         DB::beginTransaction();
@@ -371,14 +373,16 @@ class PengepulController extends Controller
 
         $validated = $request->validate([
             'nama_pengepul' => 'required|string|max:100',
-            'alamat' => 'nullable|string',
-            'no_telepon' => 'nullable|string|max:20',
+            'alamat' => 'required|string',
+            'no_telepon' => 'required|string|size:12',
             'password' => ['nullable', 'string', Password::min(6)],
             'status' => 'nullable|string|in:aktif,nonaktif',
         ], [
             'nama_pengepul.required' => 'Nama pengepul wajib diisi.',
             'nama_pengepul.max' => 'Nama pengepul maksimal 100 karakter.',
-            'no_telepon.max' => 'Nomor telepon maksimal 20 karakter.',
+            'alamat.required' => 'Alamat wajib diisi.',
+            'no_telepon.required' => 'Nomor telepon wajib diisi.',
+            'no_telepon.size' => 'Nomor telepon harus terdiri dari 12 digit.',
             'password.min' => 'Password minimal 6 karakter.',
             'status.in' => 'Status harus aktif atau nonaktif.',
         ]);

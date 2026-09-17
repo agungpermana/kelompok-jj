@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect, useMemo } from 'react';
-import PetugasHeader from '@/components/layout/PetugasHeader';
+import PetugasHeader from '@/components/layout/header';
 import WasteIcon from '@/components/common/WasteIcon';
 import { Search, RotateCcw, FileText, Scale, Star, CheckCircle2, XCircle, Eye, Loader2, MapPin, Phone, User as UserIcon } from 'lucide-react';
 

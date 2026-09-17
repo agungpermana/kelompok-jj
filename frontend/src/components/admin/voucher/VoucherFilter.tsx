@@ -60,18 +60,18 @@ export default function VoucherFilter({
               <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
             </div>
           </div>
-        </div>
 
-        {/* Right Side: + Tambah Voucher Button */}
-        <div className="flex items-center justify-end">
-          <button
-            type="button"
-            onClick={onOpenCreateModal}
-            className="h-11 px-5 rounded-xl bg-[#057a44] hover:bg-[#04683a] active:scale-[0.98] text-white text-sm font-semibold flex items-center justify-center gap-2 shadow-sm transition-all duration-150 cursor-pointer"
-          >
-            <Plus className="h-4 w-4" strokeWidth={2.5} />
-            <span>Tambah Voucher</span>
-          </button>
+          {/* Tambah Voucher Button — di sebelah Status */}
+          <div className="flex items-end">
+            <button
+              type="button"
+              onClick={onOpenCreateModal}
+              className="h-11 px-5 rounded-xl bg-[#057a44] hover:bg-[#04683a] active:scale-[0.98] text-white text-sm font-semibold flex items-center justify-center gap-2 shadow-sm transition-all duration-150 cursor-pointer"
+            >
+              <Plus className="h-4 w-4" strokeWidth={2.5} />
+              <span>Tambah Voucher</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>

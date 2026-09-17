@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { X, Loader2 } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { X, Loader2, AlertCircle } from 'lucide-react';
 import { StatusVoucher, VoucherFormData, VoucherItem } from '@/types/voucher';
 
 interface VoucherFormModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (data: Partial<VoucherItem>) => void;
+  onSave: (data: Partial<VoucherItem>) => Promise<void>;
   initialItem?: VoucherItem | null;
   mode: 'create' | 'edit';
   isSubmitting?: boolean;
@@ -36,6 +36,13 @@ export default function VoucherFormModal({
   const [jumlahTersedia, setJumlahTersedia] = useState<number | ''>('');
   const [status, setStatus] = useState<StatusVoucher>('tersedia');
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [formError, setFormError] = useState<string | null>(null);
+  const formRef = useRef<HTMLFormElement>(null);
+
+  // Kembali ke atas modal agar notifikasi terlihat
+  const scrollModalTop = () => {
+    formRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   useEffect(() => {
     if (initialItem && mode === 'edit') {
@@ -52,11 +59,12 @@ export default function VoucherFormModal({
       setStatus('tersedia');
     }
     setErrors({});
+    setFormError(null);
   }, [initialItem, mode, isOpen]);
 
   if (!isOpen) return null;
 
-  const validate = () => {
+  const susunErrorValidasi = () => {
     const err: Record<string, string> = {};
     if (!namaVoucher.trim()) {
       err.namaVoucher = 'Nama voucher wajib diisi.';
@@ -67,13 +75,21 @@ export default function VoucherFormModal({
     if (jumlahTersedia === '' || Number(jumlahTersedia) < 0) {
       err.jumlahTersedia = 'Jumlah tersedia tidak boleh negatif.';
     }
-    setErrors(err);
-    return Object.keys(err).length === 0;
+    return err;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validate()) return;
+    setFormError(null);
+    const err = susunErrorValidasi();
+    setErrors(err);
+    if (Object.keys(err).length > 0) {
+      // Tampilkan notif di banner atas + kembali ke atas modal
+      const pertama = Object.values(err)[0];
+      if (pertama) setFormError(pertama);
+      scrollModalTop();
+      return;
+    }
 
     const payload: VoucherFormData = {
       namaVoucher: namaVoucher.trim(),
@@ -83,11 +99,17 @@ export default function VoucherFormModal({
       status,
     };
 
-    onSave({
-      ...(initialItem ? { id: initialItem.id } : {}),
-      ...payload,
-    });
-    onClose();
+    try {
+      await onSave({
+        ...(initialItem ? { id: initialItem.id } : {}),
+        ...payload,
+      });
+      // Modal ditutup oleh parent setelah simpan sukses.
+    } catch (saveErr: unknown) {
+      const msg = saveErr instanceof Error ? saveErr.message : 'Gagal menyimpan data ke database.';
+      setFormError(msg);
+      scrollModalTop();
+    }
   };
 
   return (
@@ -113,7 +135,16 @@ export default function VoucherFormModal({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-5 text-[13.5px] max-h-[70vh] overflow-y-auto">
+        <form ref={formRef} onSubmit={handleSubmit} className="p-6 space-y-5 text-[13.5px] max-h-[70vh] overflow-y-auto">
+          {formError && (
+            <div className="p-3 rounded-lg sm:rounded-xl flex items-start gap-2.5 bg-red-50 border border-red-200 text-red-700">
+              <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+              <span className="text-xs font-medium">{formError}</span>
+              <button type="button" onClick={() => setFormError(null)} className="ml-auto flex-shrink-0">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          )}
           <div>
             <label className="block text-xs font-semibold text-gray-700 mb-1">
               Nama Voucher <span className="text-red-500">*</span>

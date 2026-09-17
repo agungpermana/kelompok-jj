@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import AdminHeader from '@/components/layout/header';
 import {
   Search,
@@ -160,6 +160,29 @@ export default function PetugasPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [modalError, setModalError] = useState<string | null>(null);
+  const formRef = useRef<HTMLFormElement>(null);
+
+  // Kembali ke atas modal agar notifikasi terlihat
+  const scrollModalTop = () => {
+    formRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Pesan peringatan sesuai field yang belum diisi / tidak valid
+  const validasiForm = (): string | null => {
+    if (!editingPetugas) {
+      if (!form.username.trim()) return 'Username wajib diisi.';
+      if (!form.email.trim()) return 'Email wajib diisi.';
+      if (!form.password) return 'Password wajib diisi.';
+      if (form.password.length < 6) return 'Password minimal 6 karakter.';
+    } else if (form.password && form.password.length < 6) {
+      return 'Password minimal 6 karakter.';
+    }
+    if (!form.nama_petugas.trim()) return 'Nama petugas wajib diisi.';
+    if (!form.no_telepon.trim()) return 'Nomor telepon wajib diisi.';
+    if (form.no_telepon.trim().length !== 12) return 'Nomor telepon harus terdiri dari 12 digit.';
+    if (!form.alamat.trim()) return 'Alamat wajib diisi.';
+    return null;
+  };
 
   const token = typeof window !== 'undefined' ? localStorage.getItem('trashure_token') : null;
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
@@ -300,6 +323,15 @@ export default function PetugasPage() {
     setIsSubmitting(true);
     setModalError(null);
 
+    // Validasi tiap field dengan pesan spesifik, lalu kembali ke atas modal
+    const pesanError = validasiForm();
+    if (pesanError) {
+      setModalError(pesanError);
+      setIsSubmitting(false);
+      scrollModalTop();
+      return;
+    }
+
     try {
       const url = editingPetugas
         ? `${apiUrl}/admin/petugas/${editingPetugas.petugas_id}`
@@ -339,6 +371,7 @@ export default function PetugasPage() {
       const msg = err instanceof Error ? terjemahkanError(err.message) : 'Terjadi kesalahan sistem. Silakan periksa kembali data yang dimasukkan.';
       // Tampilkan notif salah di dalam modal, bukan di halaman belakang
       setModalError(msg);
+      scrollModalTop();
     } finally {
       setIsSubmitting(false);
     }
@@ -813,15 +846,15 @@ export default function PetugasPage() {
             </div>
 
             {/* Modal Body */}
-            <form onSubmit={handleSubmit} className="p-6 space-y-5 text-[13.5px]">
+            <form ref={formRef} onSubmit={handleSubmit} className="p-6 space-y-5 text-[13.5px] max-h-[70vh] overflow-y-auto">
               {modalError && (
-                <div className="p-3.5 rounded-lg sm:rounded-xl flex items-start gap-2.5 bg-red-50 border border-red-200 text-red-700">
-                  <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0 text-red-600" />
+                <div className="p-3 rounded-lg sm:rounded-xl flex items-start gap-2.5 bg-red-50 border border-red-200 text-red-700">
+                  <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
                   <span className="text-xs font-medium">{modalError}</span>
                   <button
                     type="button"
                     onClick={() => setModalError(null)}
-                    className="ml-auto text-red-400 hover:text-red-600 flex-shrink-0"
+                    className="ml-auto flex-shrink-0"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -846,7 +879,6 @@ export default function PetugasPage() {
                         onChange={(e) => setForm({ ...form, username: e.target.value })}
                         placeholder="contoh: ahmad_petugas"
                         className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-[#16a34a] focus:ring-2 focus:ring-[#16a34a]/10 bg-white"
-                        required
                       />
                     </div>
 
@@ -860,7 +892,6 @@ export default function PetugasPage() {
                         onChange={(e) => setForm({ ...form, email: e.target.value })}
                         placeholder="petugas@trashure.id"
                         className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-[#16a34a] focus:ring-2 focus:ring-[#16a34a]/10 bg-white"
-                        required
                       />
                     </div>
                   </div>
@@ -869,15 +900,13 @@ export default function PetugasPage() {
                     <label className="block text-xs font-semibold text-gray-700 mb-1">
                       Password Akun <span className="text-red-500">*</span>
                     </label>
-                    <input
-                      type="password"
-                      value={form.password}
-                      onChange={(e) => setForm({ ...form, password: e.target.value })}
-                      placeholder="Minimal 6 karakter"
-                      className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-[#16a34a] focus:ring-2 focus:ring-[#16a34a]/10 bg-white"
-                      required
-                      minLength={6}
-                    />
+                      <input
+                        type="password"
+                        value={form.password}
+                        onChange={(e) => setForm({ ...form, password: e.target.value })}
+                        placeholder="Minimal 6 karakter"
+                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-[#16a34a] focus:ring-2 focus:ring-[#16a34a]/10 bg-white"
+                      />
                   </div>
                 </div>
               )}
@@ -899,7 +928,6 @@ export default function PetugasPage() {
                     onChange={(e) => setForm({ ...form, nama_petugas: e.target.value })}
                     placeholder="contoh: Ahmad Fauzi"
                     className="w-full px-3.5 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-[#16a34a] focus:ring-2 focus:ring-[#16a34a]/10"
-                    required
                   />
                 </div>
 
@@ -920,21 +948,23 @@ export default function PetugasPage() {
 
                   <div>
                     <label className="block text-xs font-semibold text-gray-700 mb-1">
-                      No. Telepon / WhatsApp
+                      No. Telepon / WhatsApp (12 digit)
                     </label>
                     <input
                       type="text"
                       value={form.no_telepon}
-                      onChange={(e) => setForm({ ...form, no_telepon: e.target.value })}
-                      placeholder="contoh: 0812-3456-7890"
+                      onChange={(e) => setForm({ ...form, no_telepon: e.target.value.replace(/\D/g, '').slice(0, 12) })}
+                      placeholder="contoh: 081234567890"
                       className="w-full px-3.5 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-[#16a34a] focus:ring-2 focus:ring-[#16a34a]/10"
+                      maxLength={12}
+                      inputMode="numeric"
                     />
                   </div>
                 </div>
 
                 <div>
                   <label className="block text-xs font-semibold text-gray-700 mb-1">
-                    Area Tugas / Alamat
+                    Area Tugas / Alamat <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
@@ -971,7 +1001,6 @@ export default function PetugasPage() {
                       onChange={(e) => setForm({ ...form, password: e.target.value })}
                       placeholder="Kosongkan jika tidak ingin mengubah password"
                       className="w-full px-3.5 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-[#16a34a] focus:ring-2 focus:ring-[#16a34a]/10"
-                      minLength={6}
                     />
                   </div>
                 )}

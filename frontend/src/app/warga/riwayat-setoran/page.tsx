@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import AdminHeader from '@/components/layout/header';
 import {
-  Bell,
   ChevronDown,
   Calendar,
   Clock,
@@ -350,26 +350,11 @@ export default function RiwayatSetoranPage() {
   return (
     <div className="w-full pb-16 font-sans">
       {/* Top Header */}
-      <header className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-8">
-        <div className="min-w-0">
-          <h1 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 tracking-tight">
-            Riwayat Setoran
-          </h1>
-          <p className="text-xs sm:text-sm text-gray-500 mt-1 line-clamp-2">
-            Lihat riwayat setoran sampah yang Anda lakukan dan status validasinya.
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
-          {/* Notification with Badge 5 */}
-          <button className="relative flex h-9 sm:h-10 w-9 sm:w-10 items-center justify-center rounded-lg sm:rounded-xl bg-white border border-gray-200/90 text-gray-600 hover:bg-gray-50 transition-colors shadow-sm">
-            <Bell className="h-[18px] w-[18px]" strokeWidth={2} />
-            <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white shadow">
-              5
-            </span>
-          </button>
-        </div>
-      </header>
+      <AdminHeader
+        title="Riwayat Setoran"
+        subtitle="Lihat riwayat setoran sampah yang Anda lakukan dan status validasinya."
+        notifCount={5}
+      />
 
       {/* RINGKASAN SETORAN - Setelah Header */}
       <div className="bg-white rounded-2xl border border-gray-200/80 p-5 shadow-sm space-y-4 mb-8">
@@ -391,9 +376,6 @@ export default function RiwayatSetoranPage() {
                 </p>
               </div>
             </div>
-            <span className="text-xs font-semibold text-gray-400">
-              {ringkasan.total_setoran}
-            </span>
           </div>
 
           {/* Total Berat Sampah */}
@@ -439,9 +421,6 @@ export default function RiwayatSetoranPage() {
                 </p>
               </div>
             </div>
-            <span className="text-xs font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-md">
-              {ringkasan.menunggu_validasi}
-            </span>
           </div>
         </div>
       </div>
