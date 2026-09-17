@@ -149,6 +149,24 @@ class WargaController extends Controller
             'jenis_kelamin' => 'required|string|in:Laki-laki,Perempuan',
             'alamat' => 'required|string',
             'no_telepon' => 'nullable|string|max:20',
+        ], [
+            'username.required' => 'Username wajib diisi.',
+            'username.unique' => 'Username sudah digunakan, gunakan username lain.',
+            'username.max' => 'Username maksimal 255 karakter.',
+            'email.required' => 'Email wajib diisi.',
+            'email.email' => 'Format email tidak valid.',
+            'email.unique' => 'Email sudah digunakan, gunakan email lain.',
+            'password.required' => 'Password wajib diisi.',
+            'password.min' => 'Password minimal 6 karakter.',
+            'nik.required' => 'NIK wajib diisi.',
+            'nik.size' => 'NIK harus terdiri dari 16 digit.',
+            'nik.unique' => 'NIK sudah terdaftar.',
+            'nama_warga.required' => 'Nama warga wajib diisi.',
+            'nama_warga.max' => 'Nama warga maksimal 100 karakter.',
+            'jenis_kelamin.required' => 'Jenis kelamin wajib dipilih.',
+            'jenis_kelamin.in' => 'Jenis kelamin harus Laki-laki atau Perempuan.',
+            'alamat.required' => 'Alamat wajib diisi.',
+            'no_telepon.max' => 'Nomor telepon maksimal 20 karakter.',
         ]);
 
         DB::beginTransaction();
@@ -305,6 +323,17 @@ class WargaController extends Controller
             'alamat' => 'required|string',
             'no_telepon' => 'nullable|string|max:20',
             'status' => 'nullable|string|in:aktif,nonaktif',
+        ], [
+            'nik.required' => 'NIK wajib diisi.',
+            'nik.size' => 'NIK harus terdiri dari 16 digit.',
+            'nik.unique' => 'NIK sudah terdaftar.',
+            'nama_warga.required' => 'Nama warga wajib diisi.',
+            'nama_warga.max' => 'Nama warga maksimal 100 karakter.',
+            'jenis_kelamin.required' => 'Jenis kelamin wajib dipilih.',
+            'jenis_kelamin.in' => 'Jenis kelamin harus Laki-laki atau Perempuan.',
+            'alamat.required' => 'Alamat wajib diisi.',
+            'no_telepon.max' => 'Nomor telepon maksimal 20 karakter.',
+            'status.in' => 'Status harus aktif atau nonaktif.',
         ]);
 
         DB::beginTransaction();

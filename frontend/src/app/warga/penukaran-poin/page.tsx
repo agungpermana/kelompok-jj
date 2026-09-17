@@ -706,13 +706,13 @@ export default function PenukaranPoinPage() {
 
               <div className="border-b border-gray-100 px-5 py-4">
 
-                <div className="flex flex-col gap-3 md:flex-row md:items-center">
+                <div className="flex flex-col gap-3">
 
                   {/* Search */}
 
-                  <div className="relative min-w-0 flex-1">
+                  <div className="relative w-full">
 
-                    <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
 
                     <input
                       type="text"
@@ -730,10 +730,12 @@ export default function PenukaranPoinPage() {
                           handleSearch();
                         }
                       }}
-                      className="h-10 w-full rounded-lg border border-gray-200 bg-white pl-10 pr-4 text-sm text-gray-700 outline-none transition-all placeholder:text-gray-400 focus:border-green-500 focus:ring-2 focus:ring-green-100"
+                      className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
                     />
 
                   </div>
+
+                  <div className="flex flex-wrap items-center gap-3">
 
                   {/* Sort */}
 
@@ -773,6 +775,8 @@ export default function PenukaranPoinPage() {
 
                     Filter
                   </button>
+
+                  </div>
 
                 </div>
 
@@ -1166,25 +1170,6 @@ export default function PenukaranPoinPage() {
                   </span>
 
                 </div>
-
-              </div>
-
-              <p className="mt-5 text-xs text-gray-500">
-                Setara dengan
-              </p>
-
-              <div className="mt-2 flex items-center gap-3 rounded-lg bg-green-50 px-4 py-3">
-
-                <Gift className="h-5 w-5 text-green-600" />
-
-                <span className="text-sm font-bold text-green-700">
-                  Rp
-                  {(
-                    saldo * 100
-                  ).toLocaleString(
-                    'id-ID'
-                  )}
-                </span>
 
               </div>
 

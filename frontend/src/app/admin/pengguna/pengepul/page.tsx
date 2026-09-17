@@ -15,6 +15,7 @@ import {
   deletePengepulFromDB,
 } from '@/services/pengepulService';
 import { CheckCircle2, AlertCircle, X } from 'lucide-react';
+import { terjemahkanErrorPengepul } from '@/services/pengepulService';
 
 const STATUS_OPTIONS = ['aktif', 'nonaktif'];
 
@@ -56,7 +57,7 @@ export default function PengepulPage() {
       setCurrentPage(res.pagination.current_page);
     } catch (err: unknown) {
       console.error('Error fetching pengepul data:', err);
-      const message = err instanceof Error ? err.message : 'Gagal terhubung ke database backend.';
+      const message = err instanceof Error ? terjemahkanErrorPengepul(err.message, 'Gagal memuat data pengepul.') : 'Gagal memuat data pengepul.';
       setMessage({ type: 'error', text: message });
     } finally {
       setIsLoading(false);
@@ -103,7 +104,6 @@ export default function PengepulPage() {
     status?: StatusUser;
   }) => {
     setIsSubmitting(true);
-    setMessage(null);
     try {
       const payload = data.payload;
       if (formMode === 'create') {
@@ -125,8 +125,8 @@ export default function PengepulPage() {
       await loadData(currentPage, filter);
     } catch (err: unknown) {
       console.error('Save error:', err);
-      const message = err instanceof Error ? err.message : 'Gagal menyimpan data ke database.';
-      setMessage({ type: 'error', text: message });
+      // Lempar ke modal agar notif salah tampil di dalam modal, bukan di halaman belakang
+      throw err;
     } finally {
       setIsSubmitting(false);
     }
@@ -142,7 +142,7 @@ export default function PengepulPage() {
       await loadData(nextPage, filter);
     } catch (err: unknown) {
       console.error('Delete error:', err);
-      const message = err instanceof Error ? err.message : 'Gagal menghapus data dari database.';
+      const message = err instanceof Error ? terjemahkanErrorPengepul(err.message, 'Gagal menghapus data pengepul.') : 'Gagal menghapus data pengepul.';
       setMessage({ type: 'error', text: message });
     }
   };

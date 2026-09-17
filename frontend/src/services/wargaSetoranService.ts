@@ -20,6 +20,7 @@ export interface DetailSetoranItem {
 export interface SetoranItem {
   setoran_id: number;
   pengajuan_id: number;
+  sumber_data?: 'pengajuan' | 'transaksi';
   jadwal_id: number;
   warga_id: number;
   petugas_id: number;
@@ -72,9 +73,10 @@ export async function fetchRiwayatSetoran(params?: SetoranFilterParams): Promise
   }
 }
 
-export async function fetchDetailSetoran(id: number): Promise<SetoranItem | null> {
+export async function fetchDetailSetoran(id: number, tipe?: 'pengajuan' | 'setoran'): Promise<SetoranItem | null> {
   try {
-    const res = await fetch(`${getApiUrl()}/warga/setoran/${id}`, { headers: getAuthHeaders() });
+    const query = tipe ? `?tipe=${tipe}` : '';
+    const res = await fetch(`${getApiUrl()}/warga/setoran/${id}${query}`, { headers: getAuthHeaders() });
     if (!res.ok) return null;
     return (await res.json()).data || null;
   } catch (err) {

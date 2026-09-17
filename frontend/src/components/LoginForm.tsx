@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { User, Lock, Eye, EyeOff, LogIn, AlertCircle, CheckCircle2 } from "lucide-react";
+import { User, Lock, Eye, EyeOff, LogIn, AlertCircle, CheckCircle2, Leaf } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function LoginForm() {
@@ -86,38 +86,10 @@ export default function LoginForm() {
 
   return (
     <div className="w-full max-w-[440px] bg-white rounded-[24px] shadow-[0_12px_45px_rgba(0,0,0,0.07)] border border-gray-100/80 p-7 sm:p-9 relative z-10 transition-all">
-      {/* Top Sprout Icon Badge */}
+      {/* Top Logo Badge — sama seperti sidebar admin */}
       <div className="flex justify-center mb-4">
-        <div className="w-14 h-14 rounded-full bg-[#eaf6ee] flex items-center justify-center">
-          <svg
-            className="w-7 h-7"
-            viewBox="0 0 48 48"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M24 42C24 32 24 22 24 12"
-              stroke="#167e41"
-              strokeWidth="3.2"
-              strokeLinecap="round"
-            />
-            <path
-              d="M24 20C16 20 11 15 12 8C19 8 23 13 24 20Z"
-              fill="#167e41"
-            />
-            <path
-              d="M24 14C31 14 36 10 35 4C28 4 25 9 24 14Z"
-              fill="#1da457"
-            />
-            <path
-              d="M24 30C15 30 10 24 11 17C18 17 23 23 24 30Z"
-              fill="#1da457"
-            />
-            <path
-              d="M24 25C33 25 38 20 37 13C29 13 25 19 24 25Z"
-              fill="#167e41"
-            />
-          </svg>
+        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#22c55e] to-[#16a34a] shadow-md shadow-green-200 flex items-center justify-center">
+          <Leaf className="w-7 h-7 text-white" strokeWidth={2.5} />
         </div>
       </div>
 

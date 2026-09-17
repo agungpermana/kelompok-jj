@@ -208,9 +208,116 @@ class AuthController extends Controller
     public function me(Request $request)
     {
         $user = $request->user();
-        $user->load(['admin', 'warga', 'petugas', 'pengepul']);
+        $user->load(['admin', 'warga.saldoPoin', 'petugas', 'pengepul']);
 
         return response()->json([
+            'user' => $user
+        ]);
+    }
+
+    #[OA\Put(
+        path: "/profile",
+        summary: "Perbarui profil pengguna login",
+        description: "Memperbarui informasi profil akun dan data spesifik role pengguna yang sedang login.",
+        tags: ["Auth"],
+        security: [["bearerAuth" => []]],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ["username", "email"],
+                properties: [
+                    new OA\Property(property: "username", type: "string", example: "warga_budi"),
+                    new OA\Property(property: "email", type: "string", format: "email", example: "budi@gmail.com"),
+                    new OA\Property(property: "password", type: "string", format: "password", nullable: true, example: "newpassword123"),
+                    new OA\Property(property: "nama_warga", type: "string", nullable: true, example: "Budi Santoso"),
+                    new OA\Property(property: "nama_petugas", type: "string", nullable: true, example: "Ahmad Fauzi"),
+                    new OA\Property(property: "nik", type: "string", nullable: true, example: "3171000000000001"),
+                    new OA\Property(property: "jenis_kelamin", type: "string", enum: ["L", "P"], nullable: true, example: "L"),
+                    new OA\Property(property: "no_telepon", type: "string", nullable: true, example: "081234567890"),
+                    new OA\Property(property: "alamat", type: "string", nullable: true, example: "Jl. Merdeka No. 10"),
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Profil berhasil diperbarui",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "message", type: "string", example: "Profil berhasil diperbarui."),
+                        new OA\Property(property: "user", type: "object")
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 422,
+                description: "Validasi gagal",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "message", type: "string", example: "Data yang diberikan tidak valid."),
+                        new OA\Property(property: "errors", type: "object")
+                    ]
+                )
+            )
+        ]
+    )]
+    public function updateProfile(Request $request)
+    {
+        $user = $request->user();
+
+        $rules = [
+            'username' => 'required|string|max:50|unique:users,username,' . $user->id,
+            'email' => 'required|email|max:100|unique:users,email,' . $user->id,
+            'password' => 'nullable|string|min:6',
+        ];
+
+        if ($user->role === 'warga') {
+            $rules['nama_warga'] = 'required|string|max:100';
+            $rules['nik'] = 'nullable|string|max:20';
+            $rules['jenis_kelamin'] = 'nullable|in:L,P';
+            $rules['no_telepon'] = 'nullable|string|max:20';
+            $rules['alamat'] = 'nullable|string';
+        } elseif ($user->role === 'petugas') {
+            $rules['nama_petugas'] = 'required|string|max:100';
+            $rules['jenis_kelamin'] = 'nullable|in:L,P';
+            $rules['no_telepon'] = 'nullable|string|max:20';
+            $rules['alamat'] = 'nullable|string';
+        }
+
+        $validated = $request->validate($rules);
+
+        $userUpdate = [
+            'username' => $validated['username'],
+            'email' => $validated['email'],
+        ];
+
+        if (!empty($validated['password'])) {
+            $userUpdate['password'] = Hash::make($validated['password']);
+        }
+
+        $user->update($userUpdate);
+
+        if ($user->role === 'warga' && $user->warga) {
+            $user->warga->update([
+                'nama_warga' => $validated['nama_warga'] ?? $user->warga->nama_warga,
+                'nik' => array_key_exists('nik', $validated) ? $validated['nik'] : $user->warga->nik,
+                'jenis_kelamin' => array_key_exists('jenis_kelamin', $validated) ? $validated['jenis_kelamin'] : $user->warga->jenis_kelamin,
+                'no_telepon' => array_key_exists('no_telepon', $validated) ? $validated['no_telepon'] : $user->warga->no_telepon,
+                'alamat' => array_key_exists('alamat', $validated) ? $validated['alamat'] : $user->warga->alamat,
+            ]);
+        } elseif ($user->role === 'petugas' && $user->petugas) {
+            $user->petugas->update([
+                'nama_petugas' => $validated['nama_petugas'] ?? $user->petugas->nama_petugas,
+                'jenis_kelamin' => array_key_exists('jenis_kelamin', $validated) ? $validated['jenis_kelamin'] : $user->petugas->jenis_kelamin,
+                'no_telepon' => array_key_exists('no_telepon', $validated) ? $validated['no_telepon'] : $user->petugas->no_telepon,
+                'alamat' => array_key_exists('alamat', $validated) ? $validated['alamat'] : $user->petugas->alamat,
+            ]);
+        }
+
+        $user->load(['admin', 'warga.saldoPoin', 'petugas', 'pengepul']);
+
+        return response()->json([
+            'message' => 'Profil berhasil diperbarui.',
             'user' => $user
         ]);
     }

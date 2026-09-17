@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import {
   Bell,
   ChevronDown,
@@ -23,7 +23,6 @@ import {
   Leaf,
   Layers,
   Search,
-  User,
   Loader2,
   FileSpreadsheet,
 } from 'lucide-react';
@@ -150,15 +149,30 @@ export default function RiwayatSetoranPage() {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
 
   // Filters
-  const [activeTab, setActiveTab] = useState<'semua' | 'menunggu' | 'disetujui' | 'ditolak'>('semua');
+  const [activeTab, setActiveTab] = useState<'semua' | 'menunggu' | 'disetujui' | 'ditolak' | 'dibatalkan'>('semua');
   const [sortOrder, setSortOrder] = useState<'terbaru' | 'terlama'>('terbaru');
-  const [isDateFilterModalOpen, setIsDateFilterModalOpen] = useState(false);
-  const [customStartDate, setCustomStartDate] = useState('');
-  const [customEndDate, setCustomEndDate] = useState('');
+  const [dariTanggal, setDariTanggal] = useState('');
+  const [sampaiTanggal, setSampaiTanggal] = useState('');
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const filterRef = useRef<HTMLDivElement>(null);
+
+  // Tutup dropdown filter saat klik di luar
+  useEffect(() => {
+    if (!isFilterOpen) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (filterRef.current && !filterRef.current.contains(e.target as Node)) {
+        setIsFilterOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isFilterOpen]);
 
   // Detail Modal
   const [selectedSetoran, setSelectedSetoran] = useState<SetoranItem | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  // Penanda request detail terakhir agar respons basi tidak menimpa modal lain
+  const detailRequestRef = useRef(0);
 
   // Cancel Modal & Toast
   const [cancelModalItem, setCancelModalItem] = useState<SetoranItem | null>(null);
@@ -202,47 +216,92 @@ export default function RiwayatSetoranPage() {
     loadData();
   }, [loadData]);
 
-  // Client-side date filter if custom range is set
+  // Jumlah per status untuk ditampilkan di dropdown filter
+  const statusCounts = useMemo(() => {
+    const counts = { semua: data.length, menunggu: 0, disetujui: 0, ditolak: 0, dibatalkan: 0 };
+    data.forEach((item) => {
+      const status = item.status_validasi?.toLowerCase();
+      const statusPengajuan = item.status_pengajuan?.toLowerCase();
+      if (statusPengajuan === 'dibatalkan') counts.dibatalkan += 1;
+      else if (status === 'ditolak' || statusPengajuan === 'ditolak') counts.ditolak += 1;
+      else if (status === 'disetujui') counts.disetujui += 1;
+      else if (status === 'menunggu') counts.menunggu += 1;
+    });
+    return counts;
+  }, [data]);
+
+  const statusOptions: Array<{ value: typeof activeTab; label: string }> = [
+    { value: 'semua', label: 'Semua Data' },
+    { value: 'menunggu', label: 'Menunggu Validasi' },
+    { value: 'disetujui', label: 'Disetujui' },
+    { value: 'ditolak', label: 'Ditolak' },
+    { value: 'dibatalkan', label: 'Dibatalkan' },
+  ];
+
+  const activeLabel = statusOptions.find((o) => o.value === activeTab)?.label || 'Semua Data';
+
+  // Client-side filter: tab status + rentang tanggal (seperti admin setoran sampah)
   const filteredData = useMemo(() => {
     return data.filter((item) => {
-      // Tab filter
+      // Tab filter (Ditolak dan Dibatalkan terpisah)
       if (activeTab !== 'semua') {
         const status = item.status_validasi?.toLowerCase();
         const statusPengajuan = item.status_pengajuan?.toLowerCase();
-        const isItemDitolak = status === 'ditolak' || statusPengajuan === 'ditolak' || statusPengajuan === 'dibatalkan';
+        const isDibatalkan = statusPengajuan === 'dibatalkan';
+        const isDitolak = status === 'ditolak' || statusPengajuan === 'ditolak';
 
-        if (activeTab === 'menunggu' && (status !== 'menunggu' || isItemDitolak)) return false;
+        if (activeTab === 'menunggu' && (status !== 'menunggu' || isDitolak || isDibatalkan)) return false;
         if (activeTab === 'disetujui' && status !== 'disetujui') return false;
-        if (activeTab === 'ditolak' && !isItemDitolak) return false;
+        if (activeTab === 'ditolak' && (!isDitolak || isDibatalkan)) return false;
+        if (activeTab === 'dibatalkan' && !isDibatalkan) return false;
       }
 
-      // Custom date filter
-      if (customStartDate) {
-        const itemDate = new Date(item.tanggal_setoran);
-        const start = new Date(customStartDate);
-        if (itemDate < start) return false;
-      }
-      if (customEndDate) {
-        const itemDate = new Date(item.tanggal_setoran);
-        const end = new Date(customEndDate);
-        end.setHours(23, 59, 59, 999);
-        if (itemDate > end) return false;
-      }
+      // Filter rentang tanggal (bandingkan bagian tanggal saja agar stabil)
+      const tanggalItem = String(item.tanggal_setoran || '').slice(0, 10);
+      if (dariTanggal && tanggalItem < dariTanggal) return false;
+      if (sampaiTanggal && tanggalItem > sampaiTanggal) return false;
 
       return true;
     });
-  }, [data, activeTab, customStartDate, customEndDate]);
+  }, [data, activeTab, dariTanggal, sampaiTanggal]);
+
+  const resetFilterTanggal = () => {
+    setDariTanggal('');
+    setSampaiTanggal('');
+  };
 
   const handleOpenDetail = async (item: SetoranItem) => {
     setSelectedSetoran(item);
     setIsDetailModalOpen(true);
-    // Optionally fetch freshest detail from API
-    const fresh = await fetchDetailSetoran(item.setoran_id);
-    if (fresh) setSelectedSetoran(fresh);
+    // Ambil detail terbaru dari API sesuai sumber datanya.
+    // Item pengajuan (mis. Dibatalkan) memakai tipe=pengajuan agar tidak
+    // tertukar dengan transaksi lain yang nomor ID-nya sama.
+    const requestNo = ++detailRequestRef.current;
+    try {
+      const tipe = item.sumber_data === 'pengajuan' ? 'pengajuan' : 'setoran';
+      const id = tipe === 'pengajuan' && item.pengajuan_id ? item.pengajuan_id : item.setoran_id;
+      const fresh = await fetchDetailSetoran(id, tipe as 'pengajuan' | 'setoran');
+      // Abaikan jika pengguna sudah membuka item lain (respons basi)
+      if (requestNo !== detailRequestRef.current) return;
+      // Pastikan data yang kembali memang untuk item yang dibuka
+      if (fresh && fresh.pengajuan_id === item.pengajuan_id) setSelectedSetoran(fresh);
+    } catch {
+      // Abaikan, tetap tampilkan data yang sudah ada
+    }
   };
 
   const handleCancelPengajuan = async () => {
     if (!cancelModalItem) return;
+
+    // Batal hanya memakai pengajuan_id asli (bukan setoran_id)
+    if (!cancelModalItem.pengajuan_id) {
+      setCancelError('Pengajuan ini tidak dapat dibatalkan.');
+      return;
+    }
+    if (cancelModalItem.status_pengajuan && cancelModalItem.status_pengajuan !== 'diajukan') {
+      setCancelError('Hanya pengajuan yang masih berstatus Diajukan yang dapat dibatalkan.');
+      return;
+    }
 
     const trimmedAlasan = alasanPembatalan.trim();
     if (!trimmedAlasan) {
@@ -257,8 +316,7 @@ export default function RiwayatSetoranPage() {
     setCancelling(true);
     setCancelError(null);
     try {
-      const idToCancel = cancelModalItem.pengajuan_id || cancelModalItem.setoran_id;
-      const res = await cancelPengajuan(idToCancel, trimmedAlasan);
+      const res = await cancelPengajuan(cancelModalItem.pengajuan_id, trimmedAlasan);
       if (res.success) {
         setToastMessage({
           type: 'success',
@@ -310,26 +368,6 @@ export default function RiwayatSetoranPage() {
               5
             </span>
           </button>
-
-          {/* User Profile */}
-          <div className="flex items-center gap-3 rounded-lg sm:rounded-xl bg-white border border-gray-200/90 px-3.5 py-1.5 shadow-sm cursor-pointer hover:bg-gray-50 transition-colors">
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-tr from-amber-200 to-rose-200 text-gray-800 font-semibold text-sm shadow-inner overflow-hidden">
-              <img
-                src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80"
-                alt="Warga Avatar"
-                className="h-full w-full object-cover"
-                onError={(e) => {
-                  (e.currentTarget as HTMLElement).style.display = 'none';
-                }}
-              />
-            </div>
-            <div className="text-left">
-              <p className="text-xs sm:text-sm font-semibold text-gray-900 leading-tight">
-                {userProfile?.warga?.nama_warga || userProfile?.username || 'Warga'}
-              </p>
-            </div>
-            <ChevronDown className="h-4 w-4 text-gray-400 ml-1" />
-          </div>
         </div>
       </header>
 
@@ -337,50 +375,64 @@ export default function RiwayatSetoranPage() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* LEFT COLUMN: Controls + Setoran Cards List */}
         <div className="lg:col-span-8 space-y-5">
-          {/* Controls Bar: Status Tabs + Sort & Filter */}
+          {/* Controls Bar: Filter Button + Sort & Tanggal */}
           <div className="bg-white rounded-2xl border border-gray-200/80 p-3 md:p-4 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
-            {/* Status Filter Tabs */}
-            <div className="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-1 md:pb-0">
+            {/* Filter Button + Dropdown */}
+            <div ref={filterRef} className="relative w-full md:w-auto">
               <button
-                onClick={() => setActiveTab('semua')}
-                className={`px-4 py-2 rounded-lg sm:rounded-xl text-xs font-semibold transition-all duration-150 relative ${activeTab === 'semua'
-                  ? 'text-[#16a34a] bg-green-50/70 border-b-2 border-[#16a34a]'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                type="button"
+                onClick={() => setIsFilterOpen((v) => !v)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg sm:rounded-xl border text-xs font-semibold transition shadow-xs w-full md:w-auto justify-center ${activeTab !== 'semua'
+                  ? 'bg-green-50 border-[#16a34a] text-[#16a34a]'
+                  : 'bg-white border-gray-200/90 text-gray-700 hover:bg-gray-50'
                   }`}
               >
-                Semua
+                <Filter className="h-3.5 w-3.5" />
+                <span>{activeTab === 'semua' ? 'Filter' : `Filter: ${activeLabel}`}</span>
+                <ChevronDown className={`h-3.5 w-3.5 text-gray-400 transition-transform ${isFilterOpen ? 'rotate-180' : ''}`} />
+                {activeTab !== 'semua' && (
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#16a34a]" />
+                )}
               </button>
-              <button
-                onClick={() => setActiveTab('menunggu')}
-                className={`px-4 py-2 rounded-lg sm:rounded-xl text-xs font-semibold transition-all duration-150 relative ${activeTab === 'menunggu'
-                  ? 'text-amber-700 bg-amber-50 border-b-2 border-amber-500'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                  }`}
-              >
-                Menunggu Validasi
-              </button>
-              <button
-                onClick={() => setActiveTab('disetujui')}
-                className={`px-4 py-2 rounded-lg sm:rounded-xl text-xs font-semibold transition-all duration-150 relative ${activeTab === 'disetujui'
-                  ? 'text-[#16a34a] bg-green-50/70 border-b-2 border-[#16a34a]'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                  }`}
-              >
-                Disetujui
-              </button>
-              <button
-                onClick={() => setActiveTab('ditolak')}
-                className={`px-4 py-2 rounded-lg sm:rounded-xl text-xs font-semibold transition-all duration-150 relative ${activeTab === 'ditolak'
-                  ? 'text-rose-600 bg-rose-50 border-b-2 border-rose-500'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                  }`}
-              >
-                Ditolak
-              </button>
+
+              {isFilterOpen && (
+                <div className="absolute z-20 mt-2 w-56 bg-white rounded-xl border border-gray-200/90 shadow-lg overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+                  <p className="px-4 pt-3 pb-1 text-[11px] font-semibold text-gray-400 uppercase tracking-wider">
+                    Tampilkan data
+                  </p>
+                  <div className="p-1.5">
+                    {statusOptions.map((opt) => {
+                      const isActive = activeTab === opt.value;
+                      return (
+                        <button
+                          key={opt.value}
+                          type="button"
+                          onClick={() => {
+                            setActiveTab(opt.value);
+                            setIsFilterOpen(false);
+                          }}
+                          className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold transition ${isActive
+                            ? 'bg-green-50 text-[#16a34a]'
+                            : 'text-gray-700 hover:bg-gray-50'
+                            }`}
+                        >
+                          <span className="flex items-center gap-2">
+                            <span className={`h-1.5 w-1.5 rounded-full ${isActive ? 'bg-[#16a34a]' : 'bg-gray-300'}`} />
+                            {opt.label}
+                          </span>
+                          <span className={`text-[11px] font-bold px-1.5 py-0.5 rounded-md ${isActive ? 'bg-green-100 text-[#16a34a]' : 'bg-gray-100 text-gray-500'}`}>
+                            {statusCounts[opt.value]}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
 
-            {/* Right Controls: Sort Dropdown & Date Filter */}
-            <div className="flex items-center gap-2.5 w-full md:w-auto justify-end">
+            {/* Right Controls: Sort Dropdown & Filter Tanggal (seperti admin) */}
+            <div className="flex flex-wrap items-center gap-2.5 w-full md:w-auto justify-end">
               {/* Sort dropdown */}
               <div className="relative">
                 <select
@@ -394,20 +446,32 @@ export default function RiwayatSetoranPage() {
                 <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400 pointer-events-none" />
               </div>
 
-              {/* Date filter button */}
-              <button
-                onClick={() => setIsDateFilterModalOpen(true)}
-                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg sm:rounded-xl border text-xs font-medium transition shadow-xs ${customStartDate || customEndDate
-                  ? 'bg-green-50 border-[#16a34a] text-[#16a34a]'
-                  : 'bg-white border-gray-200/90 text-gray-700 hover:bg-gray-50'
-                  }`}
-              >
-                <Calendar className="h-3.5 w-3.5 text-gray-500" />
-                <span>Filter Tanggal</span>
-                {(customStartDate || customEndDate) && (
-                  <span className="h-1.5 w-1.5 rounded-full bg-[#16a34a]" />
-                )}
-              </button>
+              {/* Filter rentang tanggal */}
+              <input
+                type="date"
+                value={dariTanggal}
+                max={sampaiTanggal || undefined}
+                onChange={(e) => setDariTanggal(e.target.value)}
+                aria-label="Dari tanggal"
+                className="bg-white border border-gray-200/90 rounded-lg sm:rounded-xl px-3 py-1.5 text-xs font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-[#16a34a] shadow-xs"
+              />
+              <span className="text-xs text-gray-400">s/d</span>
+              <input
+                type="date"
+                value={sampaiTanggal}
+                min={dariTanggal || undefined}
+                onChange={(e) => setSampaiTanggal(e.target.value)}
+                aria-label="Sampai tanggal"
+                className="bg-white border border-gray-200/90 rounded-lg sm:rounded-xl px-3 py-1.5 text-xs font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-[#16a34a] shadow-xs"
+              />
+              {(dariTanggal || sampaiTanggal) && (
+                <button
+                  onClick={resetFilterTanggal}
+                  className="px-3 py-1.5 rounded-lg sm:rounded-xl border border-gray-200/90 text-xs font-medium text-gray-600 hover:bg-gray-50 transition shadow-xs"
+                >
+                  Reset
+                </button>
+              )}
             </div>
           </div>
 
@@ -498,19 +562,18 @@ export default function RiwayatSetoranPage() {
                         {/* Date & Time */}
                         <div className="pt-1">
                           <span
-                            className={`text-[11px] font-semibold block mb-0.5 ${
-                              isRejectedOverall
-                                ? 'text-rose-600 font-bold'
-                                : isMenunggu
+                            className={`text-[11px] font-semibold block mb-0.5 ${isRejectedOverall
+                              ? 'text-rose-600 font-bold'
+                              : isMenunggu
                                 ? 'text-amber-700 font-bold'
                                 : 'text-gray-400'
-                            }`}
+                              }`}
                           >
                             {isRejectedOverall
                               ? 'Status Penjemputan'
                               : isMenunggu
-                              ? 'Perkiraan Penjemputan'
-                              : 'Waktu Pengambilan'}
+                                ? 'Perkiraan Penjemputan'
+                                : 'Waktu Pengambilan'}
                           </span>
                           <div className="flex items-center gap-1.5 text-sm font-bold text-gray-900">
                             <Calendar className="h-4 w-4 text-gray-400" />
@@ -684,7 +747,7 @@ export default function RiwayatSetoranPage() {
                             <ArrowRight className="h-3.5 w-3.5" />
                           </button>
 
-                          {isDiajukan && (
+                          {isDiajukan && item.pengajuan_id && (
                             <button
                               type="button"
                               onClick={() => {
@@ -824,70 +887,6 @@ export default function RiwayatSetoranPage() {
         </div>
       </div>
 
-      {/* MODAL: Filter Tanggal Custom */}
-      {isDateFilterModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4">
-          <div className="bg-white rounded-2xl max-w-sm w-full p-4 sm:p-5 lg:p-6 shadow-2xl border border-gray-100 space-y-4 animate-in fade-in zoom-in duration-150">
-            <div className="flex items-center justify-between pb-2 border-b border-gray-100">
-              <h3 className="text-sm font-bold text-gray-900">Filter Rentang Tanggal</h3>
-              <button
-                onClick={() => setIsDateFilterModalOpen(false)}
-                className="h-8 w-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-
-            <div className="space-y-3">
-              <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">
-                  Dari Tanggal
-                </label>
-                <input
-                  type="date"
-                  value={customStartDate}
-                  onChange={(e) => setCustomStartDate(e.target.value)}
-                  className="w-full bg-gray-50 border border-gray-200 rounded-lg sm:rounded-xl px-3 py-2 text-xs font-medium text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-[#16a34a]"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">
-                  Sampai Tanggal
-                </label>
-                <input
-                  type="date"
-                  value={customEndDate}
-                  onChange={(e) => setCustomEndDate(e.target.value)}
-                  className="w-full bg-gray-50 border border-gray-200 rounded-lg sm:rounded-xl px-3 py-2 text-xs font-medium text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-[#16a34a]"
-                />
-              </div>
-            </div>
-
-            <div className="flex items-center justify-end gap-2 pt-2 border-t border-gray-100">
-              <button
-                type="button"
-                onClick={() => {
-                  setCustomStartDate('');
-                  setCustomEndDate('');
-                  setIsDateFilterModalOpen(false);
-                }}
-                className="px-3.5 py-2 text-xs font-semibold text-gray-500 hover:bg-gray-100 rounded-lg sm:rounded-xl transition"
-              >
-                Reset
-              </button>
-              <button
-                type="button"
-                onClick={() => setIsDateFilterModalOpen(false)}
-                className="px-5 py-2 bg-[#16a34a] hover:bg-[#15803d] text-white text-xs font-semibold rounded-lg sm:rounded-xl shadow-xs transition"
-              >
-                Terapkan
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* MODAL: Detail Setoran Sampah */}
       {isDetailModalOpen && selectedSetoran && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4">
@@ -1003,13 +1002,12 @@ export default function RiwayatSetoranPage() {
               {/* Catatan Validasi / Pembatalan if present */}
               {selectedSetoran.catatan_validasi && (
                 <div
-                  className={`p-3.5 rounded-lg sm:rounded-xl text-xs flex items-start gap-2.5 ${
-                    selectedSetoran.status_pengajuan === 'dibatalkan'
-                      ? 'bg-gray-50 border border-gray-200 text-gray-800'
-                      : selectedSetoran.status_validasi === 'ditolak'
+                  className={`p-3.5 rounded-lg sm:rounded-xl text-xs flex items-start gap-2.5 ${selectedSetoran.status_pengajuan === 'dibatalkan'
+                    ? 'bg-gray-50 border border-gray-200 text-gray-800'
+                    : selectedSetoran.status_validasi === 'ditolak'
                       ? 'bg-rose-50 border border-rose-200 text-rose-800'
                       : 'bg-green-50 border border-green-200 text-emerald-900'
-                  }`}
+                    }`}
                 >
                   <AlertCircle className="h-4 w-4 flex-shrink-0 mt-0.5" />
                   <div>
@@ -1101,7 +1099,7 @@ export default function RiwayatSetoranPage() {
 
             {/* Modal Footer */}
             <div className="pt-2 border-t border-gray-100 flex items-center justify-between">
-              {selectedSetoran.status_pengajuan === 'diajukan' ? (
+              {selectedSetoran.status_pengajuan === 'diajukan' && selectedSetoran.pengajuan_id ? (
                 <button
                   type="button"
                   onClick={() => {
@@ -1164,11 +1162,10 @@ export default function RiwayatSetoranPage() {
                 placeholder="Tuliskan alasan pembatalan (wajib diisi, contoh: Ada keperluan mendadak, ingin menjadwalkan ulang, dll.)"
                 rows={3}
                 maxLength={500}
-                className={`w-full text-xs rounded-lg sm:rounded-xl border p-3 text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 transition resize-none ${
-                  cancelError
-                    ? 'border-rose-300 ring-2 ring-rose-500/20 focus:border-rose-500'
-                    : 'border-gray-200 focus:ring-rose-500/20 focus:border-rose-500'
-                }`}
+                className={`w-full text-xs rounded-lg sm:rounded-xl border p-3 text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 transition resize-none ${cancelError
+                  ? 'border-rose-300 ring-2 ring-rose-500/20 focus:border-rose-500'
+                  : 'border-gray-200 focus:ring-rose-500/20 focus:border-rose-500'
+                  }`}
               />
               {cancelError && (
                 <p className="text-[11px] font-medium text-rose-600 mt-1.5 flex items-center gap-1">
@@ -1218,11 +1215,10 @@ export default function RiwayatSetoranPage() {
       {toastMessage && (
         <div className="fixed bottom-6 right-6 z-50 animate-in slide-in-from-bottom-5 fade-in duration-200">
           <div
-            className={`flex items-center gap-2.5 px-4 py-3 rounded-2xl shadow-lg border text-xs font-semibold ${
-              toastMessage.type === 'success'
-                ? 'bg-emerald-900 text-white border-emerald-800'
-                : 'bg-rose-900 text-white border-rose-800'
-            }`}
+            className={`flex items-center gap-2.5 px-4 py-3 rounded-2xl shadow-lg border text-xs font-semibold ${toastMessage.type === 'success'
+              ? 'bg-emerald-900 text-white border-emerald-800'
+              : 'bg-rose-900 text-white border-rose-800'
+              }`}
           >
             {toastMessage.type === 'success' ? (
               <CheckCircle2 className="h-4 w-4 text-emerald-400" />

@@ -233,72 +233,73 @@ export default function JenisSampahPage() {
       />
 
       {/* Filter & Action Toolbar */}
-      <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 mb-5">
-        {/* Left Filters */}
-        <div className="flex flex-wrap items-center gap-3 flex-1">
+      <div className="bg-white rounded-2xl p-5 mb-5 border border-gray-100">
+        <div className="flex flex-col gap-4">
           {/* Search Box */}
-          <div className="relative min-w-[260px] flex-1 max-w-[360px]">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Cari nama jenis sampah..."
-              className="w-full pl-10 pr-4 py-2.5 rounded-lg sm:rounded-xl bg-white border border-gray-200 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 shadow-2xs transition"
+              className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
             />
           </div>
 
-          {/* Filter Satuan */}
-          <div className="relative min-w-[150px]">
-            <select
-              value={selectedUnit}
-              onChange={(e) => setSelectedUnit(e.target.value)}
-              className="w-full appearance-none rounded-lg sm:rounded-xl bg-white border border-gray-200 px-3.5 py-2.5 pr-8 text-sm text-gray-700 focus:outline-none focus:border-green-500 shadow-2xs cursor-pointer transition"
-            >
-              <option value="Semua Satuan">Semua Satuan</option>
-              <option value="Kg">Kg</option>
-              <option value="Pcs">Pcs</option>
-              <option value="Gram">Gram</option>
-              <option value="Liter">Liter</option>
-            </select>
-            <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
-              <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20">
-                <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
-              </svg>
+          <div className="flex flex-wrap items-center gap-3">
+            {/* Filter Satuan */}
+            <div className="relative min-w-[150px]">
+              <select
+                value={selectedUnit}
+                onChange={(e) => setSelectedUnit(e.target.value)}
+                className="w-full appearance-none rounded-lg sm:rounded-xl bg-white border border-gray-200 px-3.5 py-2.5 pr-8 text-sm text-gray-700 focus:outline-none focus:border-green-500 shadow-2xs cursor-pointer transition"
+              >
+                <option value="Semua Satuan">Semua Satuan</option>
+                <option value="Kg">Kg</option>
+                <option value="Pcs">Pcs</option>
+                <option value="Gram">Gram</option>
+                <option value="Liter">Liter</option>
+              </select>
+              <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
+                <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20">
+                  <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+                </svg>
+              </div>
             </div>
-          </div>
 
-          {/* Filter Status */}
-          <div className="relative min-w-[150px]">
-            <select
-              value={selectedStatus}
-              onChange={(e) => setSelectedStatus(e.target.value)}
-              className="w-full appearance-none rounded-lg sm:rounded-xl bg-white border border-gray-200 px-3.5 py-2.5 pr-8 text-sm text-gray-700 focus:outline-none focus:border-green-500 shadow-2xs cursor-pointer transition"
-            >
-              <option value="Semua Status">Semua Status</option>
-              <option value="Aktif">Aktif</option>
-              <option value="Nonaktif">Nonaktif</option>
-            </select>
-            <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
-              <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20">
-                <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
-              </svg>
+            {/* Filter Status */}
+            <div className="relative min-w-[150px]">
+              <select
+                value={selectedStatus}
+                onChange={(e) => setSelectedStatus(e.target.value)}
+                className="w-full appearance-none rounded-lg sm:rounded-xl bg-white border border-gray-200 px-3.5 py-2.5 pr-8 text-sm text-gray-700 focus:outline-none focus:border-green-500 shadow-2xs cursor-pointer transition"
+              >
+                <option value="Semua Status">Semua Status</option>
+                <option value="Aktif">Aktif</option>
+                <option value="Nonaktif">Nonaktif</option>
+              </select>
+              <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
+                <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20">
+                  <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+                </svg>
+              </div>
             </div>
+
+            {/* Right Action: Button Tambah */}
+            <button
+              onClick={() => {
+                setActiveItem(null);
+                setIsModalAddOpen(true);
+                setMessage(null);
+              }}
+              className="flex items-center justify-center gap-2 rounded-lg sm:rounded-xl bg-[#16a34a] hover:bg-[#15803d] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition active:scale-[0.98] shrink-0"
+            >
+              <Plus className="h-4 w-4" strokeWidth={2.5} />
+              <span>Tambah Jenis Sampah</span>
+            </button>
           </div>
         </div>
-
-        {/* Right Action: Button Tambah */}
-        <button
-          onClick={() => {
-            setActiveItem(null);
-            setIsModalAddOpen(true);
-            setMessage(null);
-          }}
-          className="flex items-center justify-center gap-2 rounded-lg sm:rounded-xl bg-[#16a34a] hover:bg-[#15803d] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition active:scale-[0.98] shrink-0"
-        >
-          <Plus className="h-4 w-4" strokeWidth={2.5} />
-          <span>Tambah Jenis Sampah</span>
-        </button>
       </div>
 
       {/* Flash Message */}

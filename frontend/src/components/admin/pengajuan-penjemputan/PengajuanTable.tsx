@@ -73,9 +73,8 @@ export default function PengajuanTable({
         <table className="w-full">
           <thead className="bg-gray-50 border-b border-gray-100">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700">ID Pengajuan</th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700">Nama Warga</th>
               <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700">Tanggal Pengajuan</th>
+              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700">Nama Warga</th>
               <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700">Alamat</th>
               <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700">Est. Berat</th>
               <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700">Status</th>
@@ -85,12 +84,6 @@ export default function PengajuanTable({
           <tbody className="divide-y divide-gray-100">
             {items.map((item) => (
               <tr key={item.pengajuan_id} className="hover:bg-gray-50 transition-colors">
-                <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                  #{item.pengajuan_id}
-                </td>
-                <td className="px-6 py-4 text-sm text-gray-700">
-                  {item.warga?.nama_warga || '-'}
-                </td>
                 <td className="px-6 py-4 text-sm text-gray-700">
                   <div className="flex flex-col">
                     <span>{formatDate(item.tanggal_pengajuan)}</span>
@@ -98,6 +91,9 @@ export default function PengajuanTable({
                       {formatTime(item.tanggal_pengajuan)}
                     </span>
                   </div>
+                </td>
+                <td className="px-6 py-4 text-sm text-gray-700">
+                  {item.warga?.nama_warga || '-'}
                 </td>
                 <td className="px-6 py-4 text-sm text-gray-700 max-w-xs truncate">
                   {item.alamat_penjemputan}

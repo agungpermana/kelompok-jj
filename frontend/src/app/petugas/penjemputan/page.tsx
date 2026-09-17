@@ -21,6 +21,7 @@ import {
   CheckCircle,
   Plus,
   Trash2,
+  Loader2,
 } from 'lucide-react';
 
 interface JenisSampah {
@@ -44,6 +45,13 @@ interface Warga {
   no_telepon: string;
 }
 
+interface DetailSetoranAktual {
+  detail_setoran_id?: number;
+  jenis_sampah_id: number;
+  berat_aktual: number;
+  jenis_sampah: JenisSampah;
+}
+
 interface Jadwal {
   jadwal_id: number;
   pengajuan_id: number;
@@ -52,6 +60,16 @@ interface Jadwal {
   waktu_penjemputan: string;
   status_jadwal: string;
   catatan: string | null;
+  transaksi_setoran?: {
+    setoran_id: number;
+    total_berat_aktual?: number;
+    detail_setoran?: DetailSetoranAktual[];
+  } | null;
+  transaksiSetoran?: {
+    setoran_id: number;
+    total_berat_aktual?: number;
+    detail_setoran?: DetailSetoranAktual[];
+  } | null;
   pengajuan_penjemputan: {
     pengajuan_id: number;
     warga_id: number;
@@ -237,6 +255,29 @@ const FALLBACK_JADWAL: Jadwal[] = [
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
+// Helper: ambil daftar jenis sampah untuk ditampilkan.
+// Jika setoran aktual sudah ada (petugas sudah input, termasuk tambahan jenis),
+// tampilkan data aktual. Kalau belum, fallback ke estimasi pengajuan warga.
+function getTransaksiAktual(j: Jadwal) {
+  return j.transaksi_setoran || (j as unknown as { transaksiSetoran?: Jadwal['transaksi_setoran'] }).transaksiSetoran || null;
+}
+
+function getSampahDisplay(j: Jadwal): Array<{ nama: string; berat?: number; isAktual: boolean }> {
+  const aktual = getTransaksiAktual(j);
+  if (aktual?.detail_setoran && aktual.detail_setoran.length > 0) {
+    return aktual.detail_setoran.map((d) => ({
+      nama: d.jenis_sampah?.nama_jenis_sampah || 'Sampah',
+      berat: Number(d.berat_aktual),
+      isAktual: true,
+    }));
+  }
+  return (j.pengajuan_penjemputan?.detail_pengajuan_sampah || []).map((d) => ({
+    nama: d.jenis_sampah?.nama_jenis_sampah || 'Sampah',
+    berat: Number(d.perkiraan_berat),
+    isAktual: false,
+  }));
+}
+
 export default function TugasSayaPage() {
   const [jadwalList, setJadwalList] = useState<Jadwal[]>([]);
   const [loading, setLoading] = useState(true);
@@ -244,7 +285,8 @@ export default function TugasSayaPage() {
   // Filters
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('Semua Status');
-  const [selectedTanggal, setSelectedTanggal] = useState('Semua Tanggal');
+  const [tanggalDari, setTanggalDari] = useState('');
+  const [tanggalSampai, setTanggalSampai] = useState('');
 
   // Modals
   const [selectedJadwal, setSelectedJadwal] = useState<Jadwal | null>(null);
@@ -375,23 +417,16 @@ export default function TugasSayaPage() {
     return { dijadwalkan, dalamProses, selesai, dibatalkan };
   }, [jadwalList]);
 
-  // Distinct dates for the Tanggal filter dropdown
-  const availableDates = useMemo(() => {
-    const dates = new Set<string>();
-    jadwalList.forEach((j) => {
-      if (j.tanggal_penjemputan) {
-        const d = new Date(j.tanggal_penjemputan);
-        if (!isNaN(d.getTime())) {
-          dates.add(formatDateShort(j.tanggal_penjemputan));
-        }
-      }
-    });
-    return Array.from(dates);
-  }, [jadwalList]);
-
   // Filtering logic
   const filteredList = useMemo(() => {
-    return jadwalList.filter((item) => {
+    const toTime = (j: Jadwal) => {
+      const tgl = String(j.tanggal_penjemputan || '').slice(0, 10);
+      const jam = String(j.waktu_penjemputan || '00:00').slice(0, 5);
+      const t = new Date(`${tgl}T${jam}`).getTime();
+      return isNaN(t) ? 0 : t;
+    };
+    return jadwalList
+      .filter((item) => {
       // 1. Status Filter
       if (selectedStatus !== 'Semua Status') {
         const s = item.status_jadwal.toLowerCase();
@@ -401,10 +436,12 @@ export default function TugasSayaPage() {
         if (selectedStatus === 'Dibatalkan' && s !== 'dibatalkan' && s !== 'batal') return false;
       }
 
-      // 2. Tanggal Filter
-      if (selectedTanggal !== 'Semua Tanggal') {
-        const itemDateStr = formatDateShort(item.tanggal_penjemputan);
-        if (itemDateStr !== selectedTanggal) return false;
+      // 2. Filter Rentang Tanggal (seperti admin pengajuan penjemputan)
+      if (tanggalDari || tanggalSampai) {
+        const tgl = item.tanggal_penjemputan?.slice(0, 10);
+        if (!tgl) return false;
+        if (tanggalDari && tgl < tanggalDari) return false;
+        if (tanggalSampai && tgl > tanggalSampai) return false;
       }
 
       // 3. Search Query
@@ -412,8 +449,8 @@ export default function TugasSayaPage() {
         const q = searchQuery.toLowerCase().trim();
         const nama = item.pengajuan_penjemputan?.warga?.nama_warga?.toLowerCase() || '';
         const alamat = (item.pengajuan_penjemputan?.alamat_penjemputan || '').toLowerCase();
-        const sampah = (item.pengajuan_penjemputan?.detail_pengajuan_sampah || [])
-          .map((d) => d.jenis_sampah?.nama_jenis_sampah?.toLowerCase())
+        const sampah = getSampahDisplay(item)
+          .map((d) => d.nama?.toLowerCase())
           .join(' ');
 
         if (!nama.includes(q) && !alamat.includes(q) && !sampah.includes(q)) {
@@ -422,13 +459,16 @@ export default function TugasSayaPage() {
       }
 
       return true;
-    });
-  }, [jadwalList, selectedStatus, selectedTanggal, searchQuery]);
+    })
+    // Data terbaru paling atas
+    .sort((a, b) => toTime(b) - toTime(a));
+  }, [jadwalList, selectedStatus, tanggalDari, tanggalSampai, searchQuery]);
 
   const handleResetFilter = () => {
     setSearchQuery('');
     setSelectedStatus('Semua Status');
-    setSelectedTanggal('Semua Tanggal');
+    setTanggalDari('');
+    setTanggalSampai('');
   };
 
   const handleViewDetail = (jadwal: Jadwal) => {
@@ -511,6 +551,20 @@ export default function TugasSayaPage() {
       return;
     }
 
+    // Cegah jenis sampah ganda: yang sudah diinput warga / baris lain
+    // tidak boleh dipilih lagi sebagai tambahan.
+    if (konfirmasiPengambilan === 'ya') {
+      const ids = detailSampah.map((d) => d.jenis_sampah_id);
+      const duplikatId = ids.find((id, idx) => ids.indexOf(id) !== idx);
+      if (duplikatId !== undefined) {
+        const namaDuplikat =
+          jenisSampahList.find((x) => x.jenis_sampah_id === duplikatId)?.nama_jenis_sampah ||
+          'Jenis sampah tersebut';
+        alert(`${namaDuplikat} sudah ada di daftar. Setiap jenis sampah hanya boleh diinput satu kali.`);
+        return;
+      }
+    }
+
     if (konfirmasiPengambilan === 'tidak' && !catatanPenolakan.trim()) {
       alert('Catatan penolakan wajib diisi jika penjemputan gagal diambil');
       return;
@@ -534,8 +588,31 @@ export default function TugasSayaPage() {
       });
 
       if (response.ok) {
+        const result = await response.json().catch(() => null);
         const isGagal = konfirmasiPengambilan === 'tidak';
         alert(isGagal ? 'Penolakan penjemputan berhasil dicatat. Status pengajuan ditolak.' : 'Transaksi setoran berhasil dibuat!');
+        // Ambil transaksi aktual dari response agar tambahan jenis sampah
+        // langsung muncul di Tugas Saya & Riwayat tanpa perlu reload.
+        const transaksiBaru = result?.data
+          ? {
+              setoran_id: result.data.setoran_id,
+              total_berat_aktual: result.data.total_berat_aktual,
+              detail_setoran: (result.data.detail_setoran || result.data.detailSetoran || []).map(
+                (d: { detail_setoran_id?: number; jenis_sampah_id: number; berat_aktual: number; jenis_sampah?: JenisSampah; jenisSampah?: JenisSampah }) => ({
+                  detail_setoran_id: d.detail_setoran_id,
+                  jenis_sampah_id: d.jenis_sampah_id,
+                  berat_aktual: Number(d.berat_aktual),
+                  jenis_sampah:
+                    d.jenis_sampah ||
+                    d.jenisSampah ||
+                    jenisSampahList.find((x) => x.jenis_sampah_id === d.jenis_sampah_id) || {
+                      jenis_sampah_id: d.jenis_sampah_id,
+                      nama_jenis_sampah: 'Sampah',
+                    },
+                })
+              ),
+            }
+          : null;
         setJadwalList((prev) =>
           prev.map((j) =>
             j.jadwal_id === selectedJadwal.jadwal_id
@@ -546,6 +623,7 @@ export default function TugasSayaPage() {
                     ...j.pengajuan_penjemputan,
                     status_pengajuan: isGagal ? 'ditolak' : 'selesai',
                   },
+                  ...(transaksiBaru ? { transaksi_setoran: transaksiBaru } : {}),
                 }
               : j
           )
@@ -559,9 +637,26 @@ export default function TugasSayaPage() {
         alert(detail);
         console.error('Setoran error:', data);
       }
+      // Sinkron ulang dari server agar data aktual (termasuk tambahan jenis) konsisten.
+      fetchJadwalList();
     } catch {
       const isGagal = konfirmasiPengambilan === 'tidak';
       alert(isGagal ? 'Penolakan penjemputan berhasil dicatat.' : 'Transaksi setoran berhasil disimpan.');
+      const transaksiLokal = isGagal
+        ? null
+        : {
+            setoran_id: Date.now(),
+            total_berat_aktual: detailSampah.reduce((s, d) => s + Number(d.berat_aktual || 0), 0),
+            detail_setoran: detailSampah.map((d, i) => ({
+              detail_setoran_id: i,
+              jenis_sampah_id: d.jenis_sampah_id,
+              berat_aktual: Number(d.berat_aktual),
+              jenis_sampah: jenisSampahList.find((x) => x.jenis_sampah_id === d.jenis_sampah_id) || {
+                jenis_sampah_id: d.jenis_sampah_id,
+                nama_jenis_sampah: 'Sampah',
+              },
+            })),
+          };
       setJadwalList((prev) =>
         prev.map((j) =>
           j.jadwal_id === selectedJadwal.jadwal_id
@@ -572,6 +667,7 @@ export default function TugasSayaPage() {
                   ...j.pengajuan_penjemputan,
                   status_pengajuan: isGagal ? 'ditolak' : 'selesai',
                 },
+                ...(transaksiLokal ? { transaksi_setoran: transaksiLokal } : {}),
               }
             : j
         )
@@ -659,67 +755,85 @@ export default function TugasSayaPage() {
       </div>
 
       {/* Filter Toolbar */}
-      <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 mb-5">
-        {/* Search Input */}
-        <div className="relative flex-1 max-w-lg">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Cari nama warga, alamat, atau jenis sampah..."
-            className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200/90 rounded-2xl text-[13.5px] text-gray-800 placeholder:text-gray-400 focus:outline-none focus:border-[#16a34a] focus:ring-4 focus:ring-green-100 shadow-sm transition-all"
-          />
-        </div>
-
-        {/* Dropdowns & Reset Button */}
-        <div className="flex flex-wrap items-center gap-3">
-          {/* Status Dropdown */}
-          <div className="flex items-center bg-white border border-gray-200/90 rounded-2xl px-3 py-2 shadow-sm text-[13px] text-gray-600">
-            <span className="text-gray-400 mr-2 text-[12px] font-medium">Status</span>
-            <select
-              value={selectedStatus}
-              onChange={(e) => setSelectedStatus(e.target.value)}
-              className="bg-transparent font-medium text-gray-800 focus:outline-none cursor-pointer pr-1"
-            >
-              <option value="Semua Status">Semua Status</option>
-              <option value="Dijadwalkan">Dijadwalkan</option>
-              <option value="Dalam Proses">Dalam Proses</option>
-              <option value="Selesai">Selesai</option>
-              <option value="Dibatalkan">Dibatalkan</option>
-            </select>
+      <div className="bg-white rounded-2xl p-5 mb-5 border border-gray-100">
+        <div className="flex flex-col gap-4">
+          {/* Search Input */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Cari nama warga, alamat, atau jenis sampah..."
+              className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+            />
           </div>
 
-          {/* Tanggal Dropdown */}
-          <div className="flex items-center bg-white border border-gray-200/90 rounded-2xl px-3 py-2 shadow-sm text-[13px] text-gray-600">
-            <span className="text-gray-400 mr-2 text-[12px] font-medium">Tanggal</span>
-            <select
-              value={selectedTanggal}
-              onChange={(e) => setSelectedTanggal(e.target.value)}
-              className="bg-transparent font-medium text-gray-800 focus:outline-none cursor-pointer pr-1"
-            >
-              <option value="Semua Tanggal">Semua Tanggal</option>
-              {availableDates.map((d) => (
-                <option key={d} value={d}>
-                  {d}
-                </option>
-              ))}
-            </select>
-          </div>
+          {/* Dropdowns & Reset Button */}
+          <div className="flex flex-wrap items-center gap-3">
+            {/* Status Dropdown */}
+            <div className="flex items-center bg-white border border-gray-200/90 rounded-2xl px-3 py-2 shadow-sm text-[13px] text-gray-600">
+              <span className="text-gray-400 mr-2 text-[12px] font-medium">Status</span>
+              <select
+                value={selectedStatus}
+                onChange={(e) => setSelectedStatus(e.target.value)}
+                className="bg-transparent font-medium text-gray-800 focus:outline-none cursor-pointer pr-1"
+              >
+                <option value="Semua Status">Semua Status</option>
+                <option value="Dijadwalkan">Dijadwalkan</option>
+                <option value="Dalam Proses">Dalam Proses</option>
+                <option value="Selesai">Selesai</option>
+                <option value="Dibatalkan">Dibatalkan</option>
+              </select>
+            </div>
 
-          {/* Reset Filter Button */}
-          <button
-            type="button"
-            onClick={handleResetFilter}
-            className="flex items-center gap-2 bg-white border border-gray-200/90 hover:bg-gray-50 px-4 py-2 rounded-2xl text-[13px] font-medium text-gray-700 shadow-sm transition-colors cursor-pointer"
-          >
-            <RotateCcw className="h-3.5 w-3.5 text-gray-500" strokeWidth={2} />
-            <span>Reset Filter</span>
-          </button>
+            {/* Range Tanggal */}
+            <div className="flex items-center gap-2 text-sm text-gray-600">
+              <span className="text-xs font-medium text-gray-500">Dari Tanggal</span>
+              <input
+                type="date"
+                value={tanggalDari}
+                max={tanggalSampai || undefined}
+                onChange={(e) => setTanggalDari(e.target.value)}
+                className="px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+              />
+              <span className="text-xs font-medium text-gray-500">Sampai Tanggal</span>
+              <input
+                type="date"
+                value={tanggalSampai}
+                min={tanggalDari || undefined}
+                onChange={(e) => setTanggalSampai(e.target.value)}
+                className="px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+              />
+            </div>
+
+            {/* Reset Filter Button */}
+            <button
+              type="button"
+              onClick={handleResetFilter}
+              className="flex items-center gap-2 bg-white border border-gray-200/90 hover:bg-gray-50 px-4 py-2 rounded-2xl text-[13px] font-medium text-gray-700 shadow-sm transition-colors cursor-pointer"
+            >
+              <RotateCcw className="h-3.5 w-3.5 text-gray-500" strokeWidth={2} />
+              <span>Reset Filter</span>
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Table Container */}
+      {loading ? (
+        <div className="bg-white rounded-2xl border border-gray-200/80 p-14 text-center shadow-sm flex flex-col items-center justify-center mb-5 min-h-[380px] animate-in fade-in duration-200">
+          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-50 text-[#16a34a] border border-emerald-100 mb-4 shadow-xs">
+            <Loader2 className="h-7 w-7 animate-spin" />
+          </div>
+          <h3 className="text-base font-bold text-gray-900">
+            Memuat Daftar Penjemputan...
+          </h3>
+          <p className="text-xs font-medium text-gray-500 mt-1 max-w-sm">
+            Menyiapkan daftar tugas penjemputan sampah untuk Anda.
+          </p>
+        </div>
+      ) : (
       <div className="bg-white rounded-2xl border border-gray-200/80 shadow-[0_2px_12px_rgba(0,0,0,0.02)] overflow-hidden mb-5">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
@@ -739,13 +853,7 @@ export default function TugasSayaPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 text-[13px]">
-              {loading ? (
-                <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-gray-400 font-medium">
-                    Memuat daftar penjemputan...
-                  </td>
-                </tr>
-              ) : filteredList.length === 0 ? (
+              {filteredList.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="px-6 py-12 text-center text-gray-400 font-medium">
                     Tidak ada tugas penjemputan yang sesuai.
@@ -764,8 +872,8 @@ export default function TugasSayaPage() {
                   const dateStr = formatDateShort(item.tanggal_penjemputan);
                   const warga = item.pengajuan_penjemputan?.warga;
                   const alamat = item.pengajuan_penjemputan?.alamat_penjemputan || '-';
-                  const detailSampahList =
-                    item.pengajuan_penjemputan?.detail_pengajuan_sampah || [];
+                  const sampahDisplay = getSampahDisplay(item);
+                  const adaAktual = sampahDisplay.some((s) => s.isAktual);
 
                   return (
                     <tr
@@ -825,17 +933,26 @@ export default function TugasSayaPage() {
                       {/* Jenis Sampah */}
                       <td className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4.5 align-middle">
                         <div className="flex flex-col gap-1.5">
-                          {detailSampahList.map((sampah, idx) => {
-                            const nama = sampah.jenis_sampah?.nama_jenis_sampah || 'Sampah';
+                          {sampahDisplay.map((sampah, idx) => {
                             return (
                               <div key={idx} className="flex items-center gap-2">
-                                <WasteIcon type={nama} size={16} />
+                                <WasteIcon type={sampah.nama} size={16} />
                                 <span className="text-[13px] text-gray-700 font-medium">
-                                  {nama}
+                                  {sampah.nama}
                                 </span>
+                                {sampah.isAktual && (
+                                  <span className="text-[10px] font-semibold text-emerald-600 bg-emerald-50 border border-emerald-100 rounded-full px-1.5 py-0.5">
+                                    aktual
+                                  </span>
+                                )}
                               </div>
                             );
                           })}
+                          {adaAktual && (
+                            <span className="text-[11px] text-gray-400">
+                              Termasuk tambahan jenis sampah oleh petugas
+                            </span>
+                          )}
                         </div>
                       </td>
 
@@ -891,6 +1008,7 @@ export default function TugasSayaPage() {
           </div>
         </div>
       </div>
+      )}
 
       {/* Bottom Info Banner */}
       <div className="flex items-center gap-3 bg-[#f0fdf4] border border-[#bbf7d0] rounded-2xl p-4 text-[13px] text-[#15803d]">
@@ -979,29 +1097,36 @@ export default function TugasSayaPage() {
                 <div className="flex items-center justify-between mb-2">
                   <h4 className="font-bold text-gray-800 text-sm flex items-center gap-1.5">
                     <FileText className="h-4 w-4 text-[#16a34a]" />
-                    <span>Estimasi Jenis Sampah</span>
+                    <span>
+                      {getTransaksiAktual(selectedJadwal)?.detail_setoran?.length
+                        ? 'Jenis Sampah Aktual (termasuk tambahan)'
+                        : 'Estimasi Jenis Sampah'}
+                    </span>
                   </h4>
                   <span className="text-xs text-gray-500">
                     Est. Total: {selectedJadwal.pengajuan_penjemputan?.perkiraan_total_berat || 0} kg
+                    {getTransaksiAktual(selectedJadwal)?.total_berat_aktual != null &&
+                      ` • Aktual: ${getTransaksiAktual(selectedJadwal)?.total_berat_aktual} kg`}
                   </span>
                 </div>
                 <div className="space-y-2">
-                  {(selectedJadwal.pengajuan_penjemputan?.detail_pengajuan_sampah || []).map(
-                    (item, idx) => (
-                      <div
-                        key={idx}
-                        className="flex items-center justify-between p-3 rounded-lg sm:rounded-xl border border-gray-100 bg-gray-50/50"
-                      >
-                        <div className="flex items-center gap-2">
-                          <WasteIcon type={item.jenis_sampah?.nama_jenis_sampah} size={18} />
-                          <span className="font-semibold text-gray-800">
-                            {item.jenis_sampah?.nama_jenis_sampah}
+                  {getSampahDisplay(selectedJadwal).map((item, idx) => (
+                    <div
+                      key={idx}
+                      className="flex items-center justify-between p-3 rounded-lg sm:rounded-xl border border-gray-100 bg-gray-50/50"
+                    >
+                      <div className="flex items-center gap-2">
+                        <WasteIcon type={item.nama} size={18} />
+                        <span className="font-semibold text-gray-800">{item.nama}</span>
+                        {item.isAktual && (
+                          <span className="text-[10px] font-semibold text-emerald-600 bg-emerald-50 border border-emerald-100 rounded-full px-1.5 py-0.5">
+                            aktual
                           </span>
-                        </div>
-                        <span className="font-bold text-gray-900">{item.perkiraan_berat} kg</span>
+                        )}
                       </div>
-                    )
-                  )}
+                      <span className="font-bold text-gray-900">{item.berat} kg</span>
+                    </div>
+                  ))}
                 </div>
               </div>
 
@@ -1077,12 +1202,24 @@ export default function TugasSayaPage() {
               <div>
                 <label className="block font-bold text-gray-700 mb-2">Berat Aktual Sampah (Kg)</label>
                 <div className="space-y-2.5">
-                  {detailSampah.map((d, index) => (
+                  {detailSampah.map((d, index) => {
+                    // ID yang sudah dipakai di baris lain tidak boleh dipilih lagi
+                    const dipakaiDiBarisLain = detailSampah
+                      .filter((_, i) => i !== index)
+                      .map((x) => x.jenis_sampah_id);
+                    return (
                     <div key={index} className="flex gap-2 items-center">
                       <select
                         value={d.jenis_sampah_id}
                         onChange={(e) => {
                           const val = parseInt(e.target.value);
+                          if (val !== 0 && dipakaiDiBarisLain.includes(val)) {
+                            const nama =
+                              jenisSampahList.find((x) => x.jenis_sampah_id === val)
+                                ?.nama_jenis_sampah || 'Jenis sampah tersebut';
+                            alert(`${nama} sudah ada di daftar. Pilih jenis sampah lain.`);
+                            return;
+                          }
                           const updated = [...detailSampah];
                           updated[index].jenis_sampah_id = val;
                           setDetailSampah(updated);
@@ -1090,11 +1227,19 @@ export default function TugasSayaPage() {
                         className="flex-1 px-3 py-2 border border-gray-200 rounded-lg sm:rounded-xl bg-white font-medium"
                       >
                         <option value={0}>Pilih Jenis Sampah</option>
-                        {jenisSampahList.map((item) => (
-                          <option key={item.jenis_sampah_id} value={item.jenis_sampah_id}>
-                            {item.nama_jenis_sampah}
-                          </option>
-                        ))}
+                        {jenisSampahList.map((item) => {
+                          const sudahDipakai = dipakaiDiBarisLain.includes(item.jenis_sampah_id);
+                          return (
+                            <option
+                              key={item.jenis_sampah_id}
+                              value={item.jenis_sampah_id}
+                              disabled={sudahDipakai}
+                            >
+                              {item.nama_jenis_sampah}
+                              {sudahDipakai ? ' (sudah ada)' : ''}
+                            </option>
+                          );
+                        })}
                       </select>
                       <input
                         type="number"
@@ -1123,11 +1268,20 @@ export default function TugasSayaPage() {
                         </button>
                       )}
                     </div>
-                  ))}
+                    );
+                  })}
                 </div>
                 <button
                   type="button"
                   onClick={() => {
+                    const terpakai = detailSampah
+                      .map((x) => x.jenis_sampah_id)
+                      .filter((id) => id !== 0);
+                    const sisa = jenisSampahList.filter((x) => !terpakai.includes(x.jenis_sampah_id));
+                    if (jenisSampahList.length > 0 && sisa.length === 0) {
+                      alert('Semua jenis sampah sudah ada di daftar. Tidak ada lagi yang bisa ditambahkan.');
+                      return;
+                    }
                     setDetailSampah([...detailSampah, { jenis_sampah_id: 0, berat_aktual: 0 }]);
                   }}
                   className="mt-3 flex items-center gap-1.5 text-xs font-semibold text-[#16a34a] hover:text-[#15803d] transition-colors"

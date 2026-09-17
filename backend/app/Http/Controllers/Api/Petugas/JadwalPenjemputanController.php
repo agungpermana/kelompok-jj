@@ -63,6 +63,7 @@ class JadwalPenjemputanController extends Controller
             ->with([
                 'pengajuanPenjemputan.warga',
                 'pengajuanPenjemputan.detailPengajuanSampah.jenisSampah',
+                'transaksiSetoran.detailSetoran.jenisSampah',
             ])
             ->orderBy('tanggal_penjemputan')
             ->orderBy('waktu_penjemputan')
@@ -141,6 +142,7 @@ class JadwalPenjemputanController extends Controller
             ->with([
                 'pengajuanPenjemputan.warga',
                 'pengajuanPenjemputan.detailPengajuanSampah.jenisSampah',
+                'transaksiSetoran.detailSetoran.jenisSampah',
             ])
             ->first();
 

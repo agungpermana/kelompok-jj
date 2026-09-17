@@ -60,6 +60,23 @@ const emptyForm = {
   status: 'aktif',
 };
 
+// Terjemahkan sisa pesan error berbahasa Inggris ke bahasa Indonesia
+function terjemahkanError(pesan?: string, fallback = 'Terjadi kesalahan. Silakan periksa kembali data yang dimasukkan.'): string {
+  if (!pesan) return fallback;
+  const p = pesan.trim();
+  if (/the given data was invalid/i.test(p)) return 'Data yang dimasukkan tidak valid. Silakan periksa kembali isian Anda.';
+  if (/failed to fetch|networkerror|network request failed/i.test(p)) return 'Gagal terhubung ke server. Periksa koneksi internet Anda.';
+  if (/unauthenticated/i.test(p)) return 'Sesi Anda telah berakhir. Silakan masuk kembali.';
+  if (/no query results for model/i.test(p)) return 'Data tidak ditemukan.';
+  if (/^the .* (field|must|is|has|should)/i.test(p)) return 'Data yang dimasukkan tidak valid. Silakan periksa kembali isian Anda.';
+  return p;
+}
+
+function ambilPesanError(data: { message?: string; errors?: Record<string, string[]> }): string {
+  const dariErrors = data.errors ? Object.values(data.errors).flat().filter(Boolean).join(' ') : '';
+  return terjemahkanError(dariErrors || data.message);
+}
+
 // Component for rendering stylized avatar matching screenshot with green cap/uniform
 function PetugasAvatar({ nama, jenisKelamin }: { nama: string; jenisKelamin?: string }) {
   const isFemale =
@@ -142,6 +159,7 @@ export default function PetugasPage() {
   const [form, setForm] = useState(emptyForm);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [modalError, setModalError] = useState<string | null>(null);
 
   const token = typeof window !== 'undefined' ? localStorage.getItem('trashure_token') : null;
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
@@ -174,7 +192,7 @@ export default function PetugasPage() {
           total: data.total || 0,
         });
       } catch (err: unknown) {
-        const msg = err instanceof Error ? err.message : 'Gagal memuat data petugas.';
+        const msg = err instanceof Error ? terjemahkanError(err.message, 'Gagal memuat data petugas.') : 'Gagal memuat data petugas.';
         setMessage({ type: 'error', text: msg });
       } finally {
         setIsLoading(false);
@@ -216,7 +234,7 @@ export default function PetugasPage() {
         }
       } catch (err: unknown) {
         if (!ignore) {
-          const msg = err instanceof Error ? err.message : 'Gagal memuat data petugas.';
+          const msg = err instanceof Error ? terjemahkanError(err.message, 'Gagal memuat data petugas.') : 'Gagal memuat data petugas.';
           setMessage({ type: 'error', text: msg });
           setIsLoading(false);
         }
@@ -248,7 +266,7 @@ export default function PetugasPage() {
     setEditingPetugas(null);
     setForm(emptyForm);
     setShowModal(true);
-    setMessage(null);
+    setModalError(null);
   };
 
   const openEditModal = (petugas: Petugas) => {
@@ -264,7 +282,7 @@ export default function PetugasPage() {
       status: petugas.user?.status || 'aktif',
     });
     setShowModal(true);
-    setMessage(null);
+    setModalError(null);
   };
 
   const openDetailModal = (petugas: Petugas) => {
@@ -280,7 +298,7 @@ export default function PetugasPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setMessage(null);
+    setModalError(null);
 
     try {
       const url = editingPetugas
@@ -307,7 +325,7 @@ export default function PetugasPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.message || Object.values(data.errors || {}).flat().join(' '));
+        throw new Error(ambilPesanError(data));
       }
 
       setMessage({
@@ -315,10 +333,12 @@ export default function PetugasPage() {
         text: editingPetugas ? 'Data petugas berhasil diperbarui.' : 'Petugas dan akun user berhasil ditambahkan.',
       });
       setShowModal(false);
+      setModalError(null);
       fetchPetugas(pagination.current_page, search, statusFilter, areaFilter);
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Terjadi kesalahan sistem.';
-      setMessage({ type: 'error', text: msg });
+      const msg = err instanceof Error ? terjemahkanError(err.message) : 'Terjadi kesalahan sistem. Silakan periksa kembali data yang dimasukkan.';
+      // Tampilkan notif salah di dalam modal, bukan di halaman belakang
+      setModalError(msg);
     } finally {
       setIsSubmitting(false);
     }
@@ -340,7 +360,7 @@ export default function PetugasPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.message || 'Gagal menghapus petugas.');
+        throw new Error(terjemahkanError(data.message, 'Gagal menghapus petugas.'));
       }
 
       setMessage({ type: 'success', text: 'Petugas dan akun pengguna berhasil dihapus.' });
@@ -348,7 +368,7 @@ export default function PetugasPage() {
       setDeletingPetugas(null);
       fetchPetugas(pagination.current_page, search, statusFilter, areaFilter);
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Terjadi kesalahan.';
+      const msg = err instanceof Error ? terjemahkanError(err.message) : 'Terjadi kesalahan.';
       setMessage({ type: 'error', text: msg });
     } finally {
       setIsSubmitting(false);
@@ -394,24 +414,23 @@ export default function PetugasPage() {
 
       {/* Toolbar & Filters Card */}
       <div className="bg-white rounded-2xl border border-gray-200/80 shadow-xs mb-4 sm:mb-5 lg:mb-6 p-5">
-        <div className="flex flex-col lg:flex-row items-stretch lg:items-end justify-between gap-4">
+        <div className="flex flex-col gap-4">
           {/* Search Box */}
-          <div className="flex-1 min-w-[280px]">
-            <div className="relative">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Cari nama petugas, nomor telepon, atau area..."
-                value={search}
-                onChange={(e) => handleSearch(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-[#16a34a] focus:ring-3 focus:ring-[#16a34a]/15 transition-all text-gray-800 placeholder-gray-400"
-              />
-            </div>
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Cari nama petugas, nomor telepon, atau area..."
+              value={search}
+              onChange={(e) => handleSearch(e.target.value)}
+              className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+            />
           </div>
 
-          {/* Status Filter */}
-          <div className="w-full sm:w-[180px]">
-            <label className="block text-xs font-semibold text-gray-600 mb-1.5">Status</label>
+          <div className="flex flex-wrap items-end gap-4">
+            {/* Status Filter */}
+            <div className="w-full sm:w-[180px]">
+              <label className="block text-xs font-semibold text-gray-600 mb-1.5">Status</label>
             <div className="relative">
               <select
                 value={statusFilter}
@@ -465,6 +484,7 @@ export default function PetugasPage() {
               <Plus className="h-4 w-4 stroke-[2.5]" />
               Tambah Petugas
             </button>
+          </div>
           </div>
         </div>
       </div>
@@ -770,30 +790,44 @@ export default function PetugasPage() {
 
       {/* MODAL: Tambah / Edit Petugas */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4 overflow-y-auto">
-          <div className="bg-white rounded-2xl w-full max-w-xl shadow-2xl overflow-hidden my-8 animate-in fade-in zoom-in-95 duration-150">
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-white rounded-3xl w-full max-w-xl shadow-2xl max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-200">
             {/* Modal Header */}
-            <div className="flex items-center justify-between px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 border-b border-gray-100 bg-gray-50/50">
+            <div className="sticky top-0 bg-white border-b border-gray-100 px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 flex justify-between items-center z-10">
               <div>
-                <h2 className="text-lg font-bold text-gray-900">
+                <h3 className="text-[17px] font-bold text-gray-900">
                   {editingPetugas ? 'Edit Data Petugas' : 'Tambah Petugas Baru'}
-                </h2>
-                <p className="text-xs text-gray-500 mt-0.5">
+                </h3>
+                <p className="text-xs text-gray-400">
                   {editingPetugas
                     ? 'Perbarui informasi dan status akun petugas'
                     : 'Data akun user dan profil petugas akan otomatis tersinkronisasi.'}
                 </p>
               </div>
               <button
+                type="button"
                 onClick={() => setShowModal(false)}
-                className="p-2 rounded-lg sm:rounded-xl text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+                className="h-8 w-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-500 transition-colors"
               >
-                <X className="h-5 w-5" />
+                <X className="h-4 w-4" />
               </button>
             </div>
 
             {/* Modal Body */}
-            <form onSubmit={handleSubmit} className="p-6 space-y-5">
+            <form onSubmit={handleSubmit} className="p-6 space-y-5 text-[13.5px]">
+              {modalError && (
+                <div className="p-3.5 rounded-lg sm:rounded-xl flex items-start gap-2.5 bg-red-50 border border-red-200 text-red-700">
+                  <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0 text-red-600" />
+                  <span className="text-xs font-medium">{modalError}</span>
+                  <button
+                    type="button"
+                    onClick={() => setModalError(null)}
+                    className="ml-auto text-red-400 hover:text-red-600 flex-shrink-0"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
               {/* SECTION: Akun Pengguna (Hanya saat tambah) */}
               {!editingPetugas && (
                 <div className="rounded-lg sm:rounded-xl bg-emerald-50/50 p-4 border border-emerald-100 space-y-3">
@@ -945,18 +979,18 @@ export default function PetugasPage() {
               </div>
 
               {/* Modal Footer */}
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
+              <div className="border-t border-gray-100 px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 flex items-center justify-end gap-3 bg-gray-50/50">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg sm:rounded-xl transition-colors cursor-pointer"
+                  className="px-4 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-100 rounded-lg sm:rounded-xl transition-colors"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="flex items-center gap-2 bg-[#16a34a] hover:bg-[#15803d] text-white px-5 py-2 rounded-lg sm:rounded-xl text-sm font-semibold shadow-sm transition-all disabled:opacity-60 cursor-pointer"
+                  className="flex items-center gap-2 px-5 py-2 text-xs font-bold text-white bg-[#16a34a] hover:bg-[#15803d] rounded-lg sm:rounded-xl transition-colors disabled:opacity-60"
                 >
                   {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
                   {editingPetugas ? 'Simpan Perubahan' : 'Simpan Petugas'}
@@ -969,8 +1003,23 @@ export default function PetugasPage() {
 
       {/* MODAL: Detail Petugas */}
       {showDetailModal && selectedPetugas && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4">
-          <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl w-full max-w-xl shadow-2xl max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-200">
+            <div className="sticky top-0 bg-white border-b border-gray-100 px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 flex justify-between items-center z-10">
+              <div>
+                <h3 className="text-[17px] font-bold text-gray-900">Detail Petugas</h3>
+                <p className="text-xs text-gray-400">
+                  Informasi lengkap data petugas
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowDetailModal(false)}
+                className="h-8 w-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-500 transition-colors"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
             <div className="p-6 text-center border-b border-gray-100 bg-gray-50/50">
               <div className="mx-auto flex justify-center mb-3">
                 <div className="h-16 w-16">
@@ -1041,10 +1090,11 @@ export default function PetugasPage() {
               </div>
             </div>
 
-            <div className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 bg-gray-50/70 border-t border-gray-100 flex justify-end">
+            <div className="border-t border-gray-100 px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 flex items-center justify-end gap-3 bg-gray-50/50">
               <button
+                type="button"
                 onClick={() => setShowDetailModal(false)}
-                className="px-5 py-2 text-xs sm:text-sm font-semibold text-gray-700 bg-white border border-gray-200 rounded-lg sm:rounded-xl hover:bg-gray-100 transition-colors cursor-pointer"
+                className="px-4 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-100 rounded-lg sm:rounded-xl transition-colors"
               >
                 Tutup
               </button>
@@ -1055,28 +1105,30 @@ export default function PetugasPage() {
 
       {/* MODAL: Konfirmasi Hapus Petugas */}
       {showDeleteModal && deletingPetugas && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4">
-          <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl p-4 sm:p-5 lg:p-6 text-center animate-in fade-in zoom-in-95 duration-150">
-            <div className="h-12 w-12 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto mb-4">
-              <Trash2 className="h-6 w-6" />
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl animate-in fade-in zoom-in-95 duration-200 overflow-hidden">
+            <div className="p-6 text-center">
+              <div className="h-12 w-12 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto mb-4">
+                <Trash2 className="h-6 w-6" />
+              </div>
+
+              <h3 className="text-[17px] font-bold text-gray-900">
+                Hapus Data Petugas?
+              </h3>
+              <p className="text-xs text-gray-500 mt-1">
+                Apakah Anda yakin ingin menghapus petugas{' '}
+                <strong className="text-gray-800">
+                  {deletingPetugas.nama_petugas}
+                </strong>
+                ? Tindakan ini juga akan menghapus akun user terkait secara permanen.
+              </p>
             </div>
 
-            <h3 className="text-lg font-bold text-gray-900">
-              Hapus Data Petugas?
-            </h3>
-            <p className="text-sm text-gray-500 mt-2">
-              Apakah Anda yakin ingin menghapus petugas{' '}
-              <strong className="text-gray-800">
-                {deletingPetugas.nama_petugas}
-              </strong>
-              ? Tindakan ini juga akan menghapus akun user terkait secara permanen.
-            </p>
-
-            <div className="flex items-center justify-center gap-3 mt-6">
+            <div className="border-t border-gray-100 px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 flex items-center justify-end gap-3 bg-gray-50/50">
               <button
                 type="button"
                 onClick={() => setShowDeleteModal(false)}
-                className="px-5 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg sm:rounded-xl transition-colors cursor-pointer"
+                className="px-4 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-100 rounded-lg sm:rounded-xl transition-colors"
               >
                 Batal
               </button>
@@ -1084,7 +1136,7 @@ export default function PetugasPage() {
                 type="button"
                 onClick={handleDelete}
                 disabled={isSubmitting}
-                className="flex items-center gap-2 bg-rose-600 hover:bg-rose-700 text-white px-5 py-2 rounded-lg sm:rounded-xl text-sm font-semibold transition-all disabled:opacity-60 cursor-pointer"
+                className="flex items-center gap-2 px-5 py-2 text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 rounded-lg sm:rounded-xl transition-colors disabled:opacity-60"
               >
                 {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
                 Ya, Hapus
