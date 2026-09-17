@@ -21,11 +21,7 @@ export default function WargaPoinPage() {
 
   useEffect(() => {
     loadPoin();
-  }, []);
-
-  const handleFilter = () => {
-    loadPoin();
-  };
+  }, [tanggalMulai, tanggalAkhir, sort]);
 
   const handleReset = () => {
     setTanggalMulai('');
@@ -110,12 +106,6 @@ export default function WargaPoinPage() {
                   </select>
                 </div>
                 <div className="flex gap-2">
-                  <button
-                    onClick={handleFilter}
-                    className="flex-1 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
-                  >
-                    Filter
-                  </button>
                   <button
                     onClick={handleReset}
                     className="flex-1 px-4 py-2 bg-gray-200 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-300 transition-colors"

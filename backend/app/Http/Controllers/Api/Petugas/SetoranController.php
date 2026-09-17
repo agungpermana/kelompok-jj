@@ -57,8 +57,10 @@ class SetoranController extends Controller
             'konfirmasi_pengambilan' => 'required|in:ya,tidak',
             'catatan_penolakan' => 'required_if:konfirmasi_pengambilan,tidak|nullable|string|max:500',
             'detail_sampah' => 'required_if:konfirmasi_pengambilan,ya|array|nullable',
-            'detail_sampah.*.jenis_sampah_id' => 'required_with:detail_sampah|integer|exists:jenis_sampah,jenis_sampah_id',
+            'detail_sampah.*.jenis_sampah_id' => 'required_with:detail_sampah|integer|exists:jenis_sampah,jenis_sampah_id|distinct',
             'detail_sampah.*.berat_aktual' => 'required_with:detail_sampah|numeric|min:0.01'
+        ], [
+            'detail_sampah.*.jenis_sampah_id.distinct' => 'Setiap jenis sampah hanya boleh diinput satu kali. Jenis yang sudah ada tidak bisa ditambahkan lagi.',
         ]);
         $warga = $jadwal->pengajuanPenjemputan->warga;
         if (!$warga) return response()->json(['message' => 'Data warga pada pengajuan tidak ditemukan.'], 404);

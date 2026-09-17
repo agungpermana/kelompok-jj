@@ -10,7 +10,7 @@ use OpenApi\Attributes as OA;
 
 class SetoranController extends Controller
 {
-    #[OA\Get(path: "/warga/setoran", summary: "Daftar riwayat setoran sampah (Warga)", tags: ["Warga - Setoran"], security: [["bearerAuth" => []]], parameters: [new OA\Parameter(name: "status", in: "query", required: false, schema: new OA\Schema(type: "string", enum: ["semua","menunggu","disetujui","ditolak"])), new OA\Parameter(name: "bulan", in: "query", required: false, schema: new OA\Schema(type: "string")), new OA\Parameter(name: "sort", in: "query", required: false, schema: new OA\Schema(type: "string", enum: ["terbaru","terlama"]))], responses: [new OA\Response(response: 200, description: "Riwayat setoran berhasil diambil")])]
+    #[OA\Get(path: "/warga/setoran", summary: "Daftar riwayat setoran sampah (Warga)", tags: ["Warga - Setoran"], security: [["bearerAuth" => []]], parameters: [new OA\Parameter(name: "status", in: "query", required: false, schema: new OA\Schema(type: "string", enum: ["semua","menunggu","disetujui","ditolak","dibatalkan"])), new OA\Parameter(name: "bulan", in: "query", required: false, schema: new OA\Schema(type: "string")), new OA\Parameter(name: "sort", in: "query", required: false, schema: new OA\Schema(type: "string", enum: ["terbaru","terlama"]))], responses: [new OA\Response(response: 200, description: "Riwayat setoran berhasil diambil")])]
     public function index(Request $request)
     {
         $warga = $request->user()->warga;
@@ -30,7 +30,9 @@ class SetoranController extends Controller
             if ($status === 'menunggu_validasi' || $status === 'menunggu') {
                 $items = $items->filter(fn($it) => $it['status_validasi'] === 'menunggu' && !in_array($it['status_pengajuan'] ?? '', ['ditolak', 'dibatalkan']));
             } elseif ($status === 'ditolak') {
-                $items = $items->filter(fn($it) => $it['status_validasi'] === 'ditolak' || in_array($it['status_pengajuan'] ?? '', ['ditolak', 'dibatalkan']));
+                $items = $items->filter(fn($it) => $it['status_validasi'] === 'ditolak' || ($it['status_pengajuan'] ?? '') === 'ditolak');
+            } elseif ($status === 'dibatalkan') {
+                $items = $items->filter(fn($it) => ($it['status_pengajuan'] ?? '') === 'dibatalkan');
             } elseif ($status === 'disetujui') {
                 $items = $items->where('status_validasi', 'disetujui');
             }
@@ -41,11 +43,17 @@ class SetoranController extends Controller
         return response()->json(['message' => 'Riwayat setoran berhasil diambil.','data' => $items,'ringkasan' => ['total_setoran' => $totalSetoran,'total_berat_sampah' => $totalBerat,'total_poin_diterima' => $totalPoin,'menunggu_validasi' => $menungguValidasi]]);
     }
 
-    #[OA\Get(path: "/warga/setoran/{id}", summary: "Detail riwayat setoran sampah (Warga)", tags: ["Warga - Setoran"], security: [["bearerAuth" => []]], parameters: [new OA\Parameter(name: "id", in: "path", required: true, schema: new OA\Schema(type: "integer"))], responses: [new OA\Response(response: 200, description: "Detail setoran berhasil diambil")])]
+    #[OA\Get(path: "/warga/setoran/{id}", summary: "Detail riwayat setoran sampah (Warga)", tags: ["Warga - Setoran"], security: [["bearerAuth" => []]], parameters: [new OA\Parameter(name: "id", in: "path", required: true, schema: new OA\Schema(type: "integer")), new OA\Parameter(name: "tipe", in: "query", required: false, description: "Sumber data: 'pengajuan' atau 'setoran'. Mencegah tertukar saat ID pengajuan sama dengan ID transaksi lain.", schema: new OA\Schema(type: "string", enum: ["pengajuan", "setoran"]))], responses: [new OA\Response(response: 200, description: "Detail setoran berhasil diambil")])]
     public function show(Request $request, $id)
     {
         $warga = $request->user()->warga;
         if (!$warga) return response()->json(['message' => 'Profil warga tidak ditemukan.'], 404);
+        // Jika tipe diketahui, dahulukan sumber yang benar agar tidak tertukar
+        // saat ID pengajuan sama dengan ID transaksi setoran lain.
+        if ($request->query('tipe') === 'pengajuan') {
+            $pengajuan = PengajuanPenjemputan::where('pengajuan_id',$id)->where('warga_id',$warga->warga_id)->with(['detailPengajuanSampah.jenisSampah','jadwalPenjemputan.petugas','transaksiSetoran.detailSetoran.jenisSampah','transaksiSetoran.petugas','transaksiSetoran.validatorAdmin'])->first();
+            if ($pengajuan) return response()->json(['message' => 'Detail setoran berhasil diambil.','data' => $this->formatPengajuanToSetoran($pengajuan)]);
+        }
         $transaksi = TransaksiSetoran::where('setoran_id',$id)->where('warga_id',$warga->warga_id)->with(['detailSetoran.jenisSampah','petugas','validatorAdmin','jadwalPenjemputan','pengajuanPenjemputan.detailPengajuanSampah.jenisSampah'])->first();
         if ($transaksi) return response()->json(['message' => 'Detail setoran berhasil diambil.','data' => $this->formatTransaksiSetoran($transaksi)]);
         $pengajuan = PengajuanPenjemputan::where('pengajuan_id',$id)->where('warga_id',$warga->warga_id)->with(['detailPengajuanSampah.jenisSampah','jadwalPenjemputan.petugas','transaksiSetoran.detailSetoran.jenisSampah','transaksiSetoran.petugas','transaksiSetoran.validatorAdmin'])->first();
@@ -109,6 +117,7 @@ class SetoranController extends Controller
         return [
             'setoran_id' => $pengajuan->pengajuan_id,
             'pengajuan_id' => $pengajuan->pengajuan_id,
+            'sumber_data' => 'pengajuan',
             'jadwal_id' => $pengajuan->jadwalPenjemputan?->jadwal_id,
             'warga_id' => $pengajuan->warga_id,
             'petugas_id' => $pengajuan->jadwalPenjemputan?->petugas_id,
@@ -158,6 +167,7 @@ class SetoranController extends Controller
         return [
             'setoran_id' => $t->setoran_id,
             'pengajuan_id' => $t->pengajuan_id,
+            'sumber_data' => 'transaksi',
             'jadwal_id' => $t->jadwal_id,
             'warga_id' => $t->warga_id,
             'petugas_id' => $t->petugas_id,
