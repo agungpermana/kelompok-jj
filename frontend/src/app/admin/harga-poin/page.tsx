@@ -125,6 +125,18 @@ export default function HargaPoinPage() {
     setCurrentPage(1);
   }, [filter]);
 
+  // ID jenis sampah yang sudah punya tarif (tidak boleh dipilih lagi saat tambah)
+  const usedJenisSampahIds = useMemo(() => {
+    const ids = new Set<number>();
+    items.forEach((i) => {
+      if (i.jenisSampahId) ids.add(i.jenisSampahId);
+    });
+    if (formMode === 'edit' && selectedItem?.jenisSampahId) {
+      ids.delete(selectedItem.jenisSampahId);
+    }
+    return Array.from(ids);
+  }, [items, formMode, selectedItem]);
+
   // Handlers
   const handleOpenCreate = () => {
     setSelectedItem(null);
@@ -264,6 +276,7 @@ export default function HargaPoinPage() {
         initialItem={selectedItem}
         mode={formMode}
         availableJenisSampah={jenisSampahDB}
+        usedJenisSampahIds={usedJenisSampahIds}
         isSubmitting={isSubmitting}
       />
 

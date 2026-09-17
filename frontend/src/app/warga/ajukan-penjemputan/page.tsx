@@ -4,7 +4,6 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
-  Bell,
   ArrowRight,
   ArrowLeft,
   Plus,
@@ -38,6 +37,7 @@ import {
   DetailSampahInput,
   UserProfile,
 } from '@/services/wargaPengajuanService';
+import AdminHeader from '@/components/layout/header';
 
 
 // Helper to render waste type badge icon based on name/category
@@ -285,26 +285,11 @@ export default function PengajuanPenjemputanPage() {
   return (
     <div className="w-full pb-16 font-sans">
       {/* Top Header */}
-      <header className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-8">
-        <div className="min-w-0">
-          <h1 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 tracking-tight">
-            Pengajuan Penjemputan
-          </h1>
-          <p className="text-xs sm:text-sm text-gray-500 mt-1 line-clamp-2">
-            Ajukan penjemputan sampah yang sudah Anda pilah. Petugas kami akan mengambil sesuai jadwal.
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
-          {/* Notification with Badge 5 */}
-          <button className="relative flex h-9 sm:h-10 w-9 sm:w-10 items-center justify-center rounded-lg sm:rounded-xl bg-white border border-gray-200/90 text-gray-600 hover:bg-gray-50 transition-colors shadow-sm">
-            <Bell className="h-[18px] w-[18px]" strokeWidth={2} />
-            <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white shadow">
-              5
-            </span>
-          </button>
-        </div>
-      </header>
+      <AdminHeader
+        title="Pengajuan Penjemputan"
+        subtitle="Ajukan penjemputan sampah yang sudah Anda pilah. Petugas kami akan mengambil sesuai jadwal."
+        notifCount={5}
+      />
 
       {/* Loading State on Page Mount / Refresh */}
       {pageLoading ? (

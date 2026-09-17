@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import AdminHeader from '@/components/layout/header';
 import {
   Search,
@@ -51,6 +51,7 @@ const emptyForm = {
   jenis_kelamin: 'Laki-laki',
   alamat: '',
   no_telepon: '',
+  status: 'aktif',
 };
 
 // Terjemahkan sisa pesan error berbahasa Inggris ke bahasa Indonesia
@@ -90,6 +91,31 @@ export default function WargaPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [modalError, setModalError] = useState<string | null>(null);
+  const formRef = useRef<HTMLFormElement>(null);
+
+  // Kembali ke atas modal agar notifikasi terlihat
+  const scrollModalTop = () => {
+    formRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Pesan peringatan sesuai field yang belum diisi / tidak valid
+  const validasiForm = (): string | null => {
+    if (!editingWarga) {
+      if (!form.username.trim()) return 'Username wajib diisi.';
+      if (!form.email.trim()) return 'Email wajib diisi.';
+      if (!form.password) return 'Password wajib diisi.';
+      if (form.password.length < 6) return 'Password minimal 6 karakter.';
+    } else if (form.password && form.password.length < 6) {
+      return 'Password minimal 6 karakter.';
+    }
+    if (!form.nik.trim()) return 'NIK wajib diisi.';
+    if (form.nik.trim().length !== 16) return 'NIK harus terdiri dari 16 digit.';
+    if (!form.no_telepon.trim()) return 'Nomor telepon wajib diisi.';
+    if (form.no_telepon.trim().length !== 12) return 'Nomor telepon harus terdiri dari 12 digit.';
+    if (!form.nama_warga.trim()) return 'Nama warga wajib diisi.';
+    if (!form.alamat.trim()) return 'Alamat wajib diisi.';
+    return null;
+  };
 
   const token = typeof window !== 'undefined' ? localStorage.getItem('trashure_token') : null;
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
@@ -145,6 +171,7 @@ export default function WargaPage() {
       jenis_kelamin: warga.jenis_kelamin,
       alamat: warga.alamat,
       no_telepon: warga.no_telepon || '',
+      status: warga.user?.status || 'aktif',
     });
     setShowModal(true);
     setModalError(null);
@@ -159,6 +186,15 @@ export default function WargaPage() {
     e.preventDefault();
     setIsSubmitting(true);
     setModalError(null);
+
+    // Validasi tiap field dengan pesan spesifik, lalu kembali ke atas modal
+    const pesanError = validasiForm();
+    if (pesanError) {
+      setModalError(pesanError);
+      setIsSubmitting(false);
+      scrollModalTop();
+      return;
+    }
 
     try {
       const url = editingWarga
@@ -193,6 +229,7 @@ export default function WargaPage() {
     } catch (err: any) {
       // Tampilkan notif salah di dalam modal, bukan di halaman belakang
       setModalError(terjemahkanError(err.message));
+      scrollModalTop();
     } finally {
       setIsSubmitting(false);
     }
@@ -269,7 +306,6 @@ export default function WargaPage() {
           <table className="w-full">
             <thead>
               <tr className="bg-gray-50/80">
-                <th className="px-5 py-3 text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider">No</th>
                 <th className="px-5 py-3 text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider">NIK</th>
                 <th className="px-5 py-3 text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Nama</th>
                 <th className="px-5 py-3 text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Jenis Kelamin</th>
@@ -282,23 +318,20 @@ export default function WargaPage() {
             <tbody className="divide-y divide-gray-50">
               {isLoading ? (
                 <tr>
-                  <td colSpan={8} className="px-5 py-12 text-center text-sm text-gray-400">
+                  <td colSpan={7} className="px-5 py-12 text-center text-sm text-gray-400">
                     <Loader2 className="h-6 w-6 animate-spin mx-auto mb-2 text-gray-300" />
                     Memuat data...
                   </td>
                 </tr>
               ) : wargaList.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="px-5 py-12 text-center text-sm text-gray-400">
+                  <td colSpan={7} className="px-5 py-12 text-center text-sm text-gray-400">
                     Tidak ada data warga ditemukan.
                   </td>
                 </tr>
               ) : (
-                wargaList.map((warga, idx) => (
+                wargaList.map((warga) => (
                   <tr key={warga.warga_id} className="hover:bg-gray-50/50 transition-colors">
-                    <td className="px-5 py-3 text-sm text-gray-500">
-                      {(pagination.current_page - 1) * pagination.per_page + idx + 1}
-                    </td>
                     <td className="px-5 py-3 text-sm font-medium text-gray-700">{warga.nik}</td>
                     <td className="px-5 py-3 text-sm text-gray-700">{warga.nama_warga}</td>
                     <td className="px-5 py-3 text-sm text-gray-600">{warga.jenis_kelamin}</td>
@@ -392,7 +425,7 @@ export default function WargaPage() {
                 <X className="h-4 w-4" />
               </button>
             </div>
-            <form onSubmit={handleSubmit} className="p-6 space-y-5 text-[13.5px] max-h-[70vh] overflow-y-auto">
+            <form ref={formRef} onSubmit={handleSubmit} className="p-6 space-y-5 text-[13.5px] max-h-[70vh] overflow-y-auto">
               {modalError && (
                 <div className="p-3 rounded-lg sm:rounded-xl flex items-start gap-2.5 bg-red-50 border border-red-200 text-red-700">
                   <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
@@ -470,12 +503,17 @@ export default function WargaPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-gray-700 mb-1">No. Telepon</label>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">No. Telepon (12 digit)</label>
                   <input
                     type="text"
                     value={form.no_telepon}
-                    onChange={(e) => setForm({ ...form, no_telepon: e.target.value })}
+                    onChange={(e) => setForm({ ...form, no_telepon: e.target.value.replace(/\D/g, '').slice(0, 12) })}
+                    placeholder="contoh: 081234567890"
                     className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-[#16a34a] focus:ring-2 focus:ring-[#16a34a]/10"
+                    required
+                    minLength={12}
+                    maxLength={12}
+                    inputMode="numeric"
                   />
                 </div>
               </div>
@@ -489,6 +527,19 @@ export default function WargaPage() {
                   required
                 />
               </div>
+              {editingWarga && (
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">Status Akun</label>
+                  <select
+                    value={form.status}
+                    onChange={(e) => setForm({ ...form, status: e.target.value })}
+                    className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-[#16a34a] focus:ring-2 focus:ring-[#16a34a]/10 bg-white cursor-pointer"
+                  >
+                    <option value="aktif">Aktif</option>
+                    <option value="nonaktif">Nonaktif</option>
+                  </select>
+                </div>
+              )}
             </form>
             <div className="border-t border-gray-100 px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 flex items-center justify-end gap-3 bg-gray-50/50">
               <button

@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { X, Loader2, CheckCircle, Package } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { X, Loader2, CheckCircle, Package, AlertCircle } from 'lucide-react';
 import { HargaPoinItem, JenisSampahDB, StatusHarga } from '@/types/harga-poin';
 import { DB_JENIS_SAMPAH_LIST } from '@/data/harga-poin-initial';
 
@@ -12,6 +12,7 @@ interface HargaPoinFormModalProps {
   initialItem?: HargaPoinItem | null;
   mode: 'create' | 'edit';
   availableJenisSampah?: JenisSampahDB[];
+  usedJenisSampahIds?: number[];
   isSubmitting?: boolean;
 }
 
@@ -25,6 +26,7 @@ export default function HargaPoinFormModal({
   initialItem,
   mode,
   availableJenisSampah = DB_JENIS_SAMPAH_LIST,
+  usedJenisSampahIds = [],
   isSubmitting = false,
 }: HargaPoinFormModalProps) {
   const [selectedJenisId, setSelectedJenisId] = useState<number | ''>('');
@@ -34,6 +36,13 @@ export default function HargaPoinFormModal({
   const [status, setStatus] = useState<StatusHarga>('Aktif');
   const [keterangan, setKeterangan] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [formError, setFormError] = useState<string | null>(null);
+  const formRef = useRef<HTMLFormElement>(null);
+
+  // Kembali ke atas modal agar notifikasi terlihat
+  const scrollModalTop = () => {
+    formRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const selectedJenis = availableJenisSampah.find((j) => j.id === Number(selectedJenisId));
 
@@ -59,14 +68,17 @@ export default function HargaPoinFormModal({
       setKeterangan('');
     }
     setErrors({});
+    setFormError(null);
   }, [initialItem, mode, isOpen]);
 
   if (!isOpen) return null;
 
-  const validate = () => {
+  const susunErrorValidasi = () => {
     const err: Record<string, string> = {};
     if (!selectedJenisId) {
       err.jenisSampah = 'Silakan pilih jenis sampah dari database.';
+    } else if (mode === 'create' && usedJenisSampahIds.includes(Number(selectedJenisId))) {
+      err.jenisSampah = 'Jenis sampah ini sudah memiliki tarif. Pilih jenis sampah lain.';
     }
     if (hargaPerSatuan === '' || Number(hargaPerSatuan) <= 0) {
       err.hargaPerSatuan = 'Harga per satuan harus lebih dari 0.';
@@ -77,13 +89,21 @@ export default function HargaPoinFormModal({
     if (!berlakuMulai.trim()) {
       err.berlakuMulai = 'Tanggal berlaku wajib diisi.';
     }
-    setErrors(err);
-    return Object.keys(err).length === 0;
+    return err;
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validate()) return;
+    setFormError(null);
+    const err = susunErrorValidasi();
+    setErrors(err);
+    if (Object.keys(err).length > 0) {
+      // Tampilkan notif di banner atas + kembali ke atas modal
+      const pertama = Object.values(err)[0];
+      if (pertama) setFormError(pertama);
+      scrollModalTop();
+      return;
+    }
     if (!selectedJenis) return;
 
     onSave({
@@ -125,7 +145,16 @@ export default function HargaPoinFormModal({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-5 text-[13.5px] max-h-[70vh] overflow-y-auto">
+        <form ref={formRef} onSubmit={handleSubmit} className="p-6 space-y-5 text-[13.5px] max-h-[70vh] overflow-y-auto">
+          {formError && (
+            <div className="p-3 rounded-lg sm:rounded-xl flex items-start gap-2.5 bg-red-50 border border-red-200 text-red-700">
+              <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+              <span className="text-xs font-medium">{formError}</span>
+              <button type="button" onClick={() => setFormError(null)} className="ml-auto flex-shrink-0">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          )}
           <div>
             <label className="block text-xs font-semibold text-gray-700 mb-1">
               Pilih Jenis Sampah (Database) <span className="text-red-500">*</span>
@@ -139,11 +168,15 @@ export default function HargaPoinFormModal({
               className={`${inputClass} ${mode === 'edit' ? 'bg-gray-50 text-gray-600 cursor-not-allowed' : ''} ${errors.jenisSampah ? 'border-red-400' : ''}`}
             >
               <option value="">-- Pilih Jenis Sampah --</option>
-              {availableJenisSampah.map((jenis) => (
-                <option key={jenis.id} value={jenis.id}>
-                  {jenis.nama} ({jenis.kategori} - {jenis.satuan})
-                </option>
-              ))}
+              {availableJenisSampah.map((jenis) => {
+                const sudahDipakai = mode === 'create' && usedJenisSampahIds.includes(Number(jenis.id));
+                return (
+                  <option key={jenis.id} value={jenis.id} disabled={sudahDipakai}>
+                    {jenis.nama} ({jenis.kategori} - {jenis.satuan})
+                    {sudahDipakai ? ' (sudah ada harga)' : ''}
+                  </option>
+                );
+              })}
             </select>
             {errors.jenisSampah && (
               <p className="text-[11px] text-red-500 mt-1">{errors.jenisSampah}</p>

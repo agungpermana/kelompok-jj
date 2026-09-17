@@ -150,8 +150,8 @@ class PetugasController extends Controller
             'password' => ['required', 'string', Password::min(6)],
             'nama_petugas' => 'required|string|max:100',
             'jenis_kelamin' => 'required|string|max:20',
-            'alamat' => 'nullable|string',
-            'no_telepon' => 'nullable|string|max:20',
+            'alamat' => 'required|string',
+            'no_telepon' => 'required|string|size:12',
             'status' => 'nullable|string|in:aktif,nonaktif',
         ], [
             'username.required' => 'Username wajib diisi.',
@@ -165,7 +165,9 @@ class PetugasController extends Controller
             'nama_petugas.required' => 'Nama petugas wajib diisi.',
             'nama_petugas.max' => 'Nama petugas maksimal 100 karakter.',
             'jenis_kelamin.required' => 'Jenis kelamin wajib dipilih.',
-            'no_telepon.max' => 'Nomor telepon maksimal 20 karakter.',
+            'alamat.required' => 'Alamat wajib diisi.',
+            'no_telepon.required' => 'Nomor telepon wajib diisi.',
+            'no_telepon.size' => 'Nomor telepon harus terdiri dari 12 digit.',
             'status.in' => 'Status harus aktif atau nonaktif.',
         ]);
 
@@ -276,15 +278,17 @@ class PetugasController extends Controller
         $validated = $request->validate([
             'nama_petugas' => 'required|string|max:100',
             'jenis_kelamin' => 'required|string|max:20',
-            'alamat' => 'nullable|string',
-            'no_telepon' => 'nullable|string|max:20',
+            'alamat' => 'required|string',
+            'no_telepon' => 'required|string|size:12',
             'status' => 'nullable|string|in:aktif,nonaktif',
             'password' => ['nullable', 'string', Password::min(6)],
         ], [
             'nama_petugas.required' => 'Nama petugas wajib diisi.',
             'nama_petugas.max' => 'Nama petugas maksimal 100 karakter.',
             'jenis_kelamin.required' => 'Jenis kelamin wajib dipilih.',
-            'no_telepon.max' => 'Nomor telepon maksimal 20 karakter.',
+            'alamat.required' => 'Alamat wajib diisi.',
+            'no_telepon.required' => 'Nomor telepon wajib diisi.',
+            'no_telepon.size' => 'Nomor telepon harus terdiri dari 12 digit.',
             'status.in' => 'Status harus aktif atau nonaktif.',
             'password.min' => 'Password minimal 6 karakter.',
         ]);

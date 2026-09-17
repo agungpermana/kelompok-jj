@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import PetugasHeader from '@/components/layout/PetugasHeader';
+import PetugasHeader from '@/components/layout/header';
 import WasteIcon from '@/components/common/WasteIcon';
 import {
   Search,
@@ -684,7 +684,6 @@ export default function TugasSayaPage() {
       <PetugasHeader
         title="Tugas Saya"
         subtitle="Daftar penjemputan sampah yang telah dijadwalkan untuk Anda."
-        selectedDate="Kamis, 22 Agustus 2024"
       />
 
       {/* 4 Summary Stats Cards */}

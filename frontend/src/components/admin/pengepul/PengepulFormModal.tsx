@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { X, Loader2, AlertCircle } from 'lucide-react';
 import { PengepulFormData, PengepulItem, StatusUser } from '@/types/pengepul';
 
@@ -54,6 +54,12 @@ export default function PengepulFormModal({
   const [status, setStatus] = useState<StatusUser>('aktif');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [serverError, setServerError] = useState<string | null>(null);
+  const formRef = useRef<HTMLFormElement>(null);
+
+  // Kembali ke atas modal agar notifikasi terlihat (seperti form warga)
+  const scrollModalTop = () => {
+    formRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   useEffect(() => {
     if (initialItem && mode === 'edit') {
@@ -79,7 +85,7 @@ export default function PengepulFormModal({
 
   if (!isOpen) return null;
 
-  const validate = () => {
+  const susunErrorValidasi = () => {
     const err: Record<string, string> = {};
     if (mode === 'create' && !username.trim()) {
       err.username = 'Username wajib diisi.';
@@ -97,6 +103,19 @@ export default function PengepulFormModal({
     if (!namaPengepul.trim()) {
       err.namaPengepul = 'Nama pengepul wajib diisi.';
     }
+    if (!noTelepon.trim()) {
+      err.noTelepon = 'Nomor telepon wajib diisi.';
+    } else if (noTelepon.trim().length !== 12) {
+      err.noTelepon = 'Nomor telepon harus terdiri dari 12 digit.';
+    }
+    if (!alamat.trim()) {
+      err.alamat = 'Alamat wajib diisi.';
+    }
+    return err;
+  };
+
+  const validate = () => {
+    const err = susunErrorValidasi();
     setErrors(err);
     return Object.keys(err).length === 0;
   };
@@ -104,7 +123,15 @@ export default function PengepulFormModal({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setServerError(null);
-    if (!validate()) return;
+    const err = susunErrorValidasi();
+    setErrors(err);
+    if (Object.keys(err).length > 0) {
+      // Tampilkan di banner atas seperti form warga + kembali ke atas modal
+      const pertama = Object.values(err)[0];
+      if (pertama) setServerError(pertama);
+      scrollModalTop();
+      return;
+    }
 
     const payload: PengepulFormData = {
       username: username.trim(),
@@ -127,6 +154,7 @@ export default function PengepulFormModal({
       const mentah = err instanceof Error ? err.message : '';
       const msg = terjemahkanErrorLokal(mentah);
       setServerError(msg);
+      scrollModalTop();
     }
   };
 
@@ -153,7 +181,7 @@ export default function PengepulFormModal({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-5 text-[13.5px] max-h-[70vh] overflow-y-auto">
+        <form ref={formRef} onSubmit={handleSubmit} className="p-6 space-y-5 text-[13.5px] max-h-[70vh] overflow-y-auto">
           {serverError && (
             <div className="p-3 rounded-lg flex items-start gap-2.5 bg-red-50 border border-red-200 text-red-700">
               <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
@@ -291,29 +319,36 @@ export default function PengepulFormModal({
 
           <div>
             <label className="block text-xs font-semibold text-gray-700 mb-1">
-              No. Telepon
+              No. Telepon (12 digit)
             </label>
             <input
               type="text"
-              maxLength={20}
               value={noTelepon}
-              onChange={(e) => setNoTelepon(e.target.value)}
+              onChange={(e) => setNoTelepon(e.target.value.replace(/\D/g, '').slice(0, 12))}
               className={inputClass}
               placeholder="Contoh: 081234567892"
+              maxLength={12}
+              inputMode="numeric"
             />
+            {errors.noTelepon && (
+              <p className="text-[11px] text-red-500 mt-1">{errors.noTelepon}</p>
+            )}
           </div>
 
           <div>
             <label className="block text-xs font-semibold text-gray-700 mb-1">
-              Alamat
+              Alamat <span className="text-red-500">*</span>
             </label>
             <textarea
               rows={3}
               value={alamat}
               onChange={(e) => setAlamat(e.target.value)}
               className={`${inputClass} resize-none`}
-              placeholder="Alamat lokasi pengepul (opsional)..."
+              placeholder="Alamat lokasi pengepul..."
             />
+            {errors.alamat && (
+              <p className="text-[11px] text-red-500 mt-1">{errors.alamat}</p>
+            )}
           </div>
         </form>
 

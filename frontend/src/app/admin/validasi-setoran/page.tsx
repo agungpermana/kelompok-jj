@@ -111,14 +111,7 @@ export default function AdminValidasiSetoranPage() {
   const [catatanValidasi, setCatatanValidasi] = useState('');
   const [validationError, setValidationError] = useState<string | null>(null);
   const [validating, setValidating] = useState(false);
-  const [toastMessage, setToastMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
-
-  useEffect(() => {
-    if (toastMessage) {
-      const timer = setTimeout(() => setToastMessage(null), 4000);
-      return () => clearTimeout(timer);
-    }
-  }, [toastMessage]);
+  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   const fetchData = async () => {
     setLoading(true);
@@ -220,28 +213,24 @@ export default function AdminValidasiSetoranPage() {
       const resJson = await r.json();
 
       if (r.ok) {
+        const isSetuju = actionType === 'setujui';
         closeModal();
-        setToastMessage({
+        setMessage({
           type: 'success',
-          text:
-            actionType === 'setujui'
-              ? `Setoran STN-${String(selected.setoran_id).padStart(4, '0')} berhasil disetujui! +${selected.total_poin} poin telah ditambahkan ke warga.`
-              : `Setoran STN-${String(selected.setoran_id).padStart(4, '0')} telah ditolak.`,
+          text: isSetuju
+            ? `Setoran STN-${String(selected.setoran_id).padStart(4, '0')} berhasil disetujui! +${selected.total_poin} poin telah ditambahkan ke warga.`
+            : `Setoran STN-${String(selected.setoran_id).padStart(4, '0')} telah ditolak.`,
         });
         fetchData();
       } else {
-        setValidationError(resJson.message || 'Gagal memproses validasi.');
-        setToastMessage({
-          type: 'error',
-          text: resJson.message || 'Gagal memproses validasi setoran.',
-        });
+        const msg = resJson.message || 'Gagal memproses validasi.';
+        setValidationError(msg);
+        setMessage({ type: 'error', text: msg });
       }
     } catch {
-      setValidationError('Terjadi kendala jaringan saat menghubungi server.');
-      setToastMessage({
-        type: 'error',
-        text: 'Terjadi kendala jaringan saat menghubungi server.',
-      });
+      const msg = 'Terjadi kendala jaringan saat menghubungi server.';
+      setValidationError(msg);
+      setMessage({ type: 'error', text: msg });
     } finally {
       setValidating(false);
     }
@@ -253,6 +242,15 @@ export default function AdminValidasiSetoranPage() {
         title="Validasi Setoran"
         subtitle="Verifikasi hasil penjemputan sampah petugas — saat disetujui, poin warga & stok sampah gudang langsung bertambah otomatis."
       />
+
+      {/* Notifikasi seperti tambah warga */}
+      {message && (
+        <div className={`mb-4 p-3.5 rounded-lg sm:rounded-xl flex items-start gap-2.5 ${message.type === 'success' ? 'bg-green-50 border border-green-200 text-green-700' : 'bg-red-50 border border-red-200 text-red-700'}`}>
+          {message.type === 'success' ? <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0" /> : <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />}
+          <span className="text-sm">{message.text}</span>
+          <button onClick={() => setMessage(null)} className="ml-auto"><X className="w-4 h-4" /></button>
+        </div>
+      )}
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-4 sm:mb-5 lg:mb-6">
@@ -839,31 +837,6 @@ export default function AdminValidasiSetoranPage() {
         </div>
       )}
 
-      {/* Floating Toast Notification */}
-      {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 animate-in slide-in-from-bottom-5 fade-in duration-200">
-          <div
-            className={`flex items-center gap-2.5 px-4 py-3 rounded-2xl shadow-lg border text-xs font-semibold ${toastMessage.type === 'success'
-                ? 'bg-emerald-950 text-white border-emerald-800'
-                : 'bg-rose-950 text-white border-rose-800'
-              }`}
-          >
-            {toastMessage.type === 'success' ? (
-              <CheckCircle2 className="h-4 w-4 text-emerald-400" />
-            ) : (
-              <AlertCircle className="h-4 w-4 text-rose-400" />
-            )}
-            <span>{toastMessage.text}</span>
-            <button
-              type="button"
-              onClick={() => setToastMessage(null)}
-              className="ml-2 text-white/70 hover:text-white cursor-pointer"
-            >
-              <X className="h-3.5 w-3.5" />
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

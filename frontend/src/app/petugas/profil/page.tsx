@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import PetugasHeader from '@/components/layout/PetugasHeader';
+import PetugasHeader from '@/components/layout/header';
 import PetugasAvatar from '@/components/common/PetugasAvatar';
 import {
   fetchProfile,

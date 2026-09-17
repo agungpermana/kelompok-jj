@@ -8,13 +8,16 @@ export interface Breadcrumb {
   href?: string;
 }
 
-interface AdminHeaderProps {
+interface AppHeaderProps {
   title: string;
   subtitle?: string;
   breadcrumbs?: Breadcrumb[];
+  showNotif?: boolean;
+  notifCount?: number;
+  showDate?: boolean;
 }
 
-export default function AdminHeader({ title, subtitle, breadcrumbs }: AdminHeaderProps) {
+export default function AppHeader({ title, subtitle, breadcrumbs, showNotif = true, notifCount = 3, showDate = true }: AppHeaderProps) {
   const today = new Date();
   const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
   const months = [
@@ -38,19 +41,25 @@ export default function AdminHeader({ title, subtitle, breadcrumbs }: AdminHeade
         {/* Right: Actions */}
         <div className="flex items-center gap-2 sm:gap-3 lg:gap-4 flex-shrink-0">
           {/* Notification Bell */}
-          <button className="relative flex h-9 sm:h-10 w-9 sm:w-10 items-center justify-center rounded-lg sm:rounded-xl bg-white border border-gray-200 text-gray-500 hover:bg-gray-50 hover:text-gray-700 transition-colors shadow-sm flex-shrink-0">
-            <Bell className="h-4 sm:h-[18px] w-4 sm:w-[18px]" strokeWidth={1.8} />
-            <span className="absolute -top-1 -right-1 flex h-4 sm:h-5 min-w-4 sm:min-w-5 items-center justify-center rounded-full bg-[#16a34a] px-0.5 sm:px-1 text-[8px] sm:text-[10px] font-bold text-white shadow-sm">
-              3
-            </span>
-          </button>
+          {showNotif && (
+            <button className="relative flex h-9 sm:h-10 w-9 sm:w-10 items-center justify-center rounded-lg sm:rounded-xl bg-white border border-gray-200 text-gray-500 hover:bg-gray-50 hover:text-gray-700 transition-colors shadow-sm flex-shrink-0">
+              <Bell className="h-4 sm:h-[18px] w-4 sm:w-[18px]" strokeWidth={1.8} />
+              {notifCount > 0 && (
+                <span className="absolute -top-1 -right-1 flex h-4 sm:h-5 min-w-4 sm:min-w-5 items-center justify-center rounded-full bg-[#16a34a] px-0.5 sm:px-1 text-[8px] sm:text-[10px] font-bold text-white shadow-sm">
+                  {notifCount}
+                </span>
+              )}
+            </button>
+          )}
 
           {/* Date - Hidden on mobile */}
-          <div className="hidden sm:flex items-center gap-2 rounded-lg sm:rounded-xl bg-white border border-gray-200 px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-xs sm:text-sm text-gray-600 shadow-sm flex-shrink-0">
-            <CalendarDays className="h-3.5 sm:h-4 w-3.5 sm:w-4 text-gray-400 flex-shrink-0" strokeWidth={1.8} />
-            <span className="font-medium whitespace-nowrap text-xs sm:text-sm">{dateStr}</span>
-            <ChevronDown className="h-3 sm:h-3.5 w-3 sm:w-3.5 text-gray-400 flex-shrink-0" />
-          </div>
+          {showDate && (
+            <div className="hidden sm:flex items-center gap-2 rounded-lg sm:rounded-xl bg-white border border-gray-200 px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-xs sm:text-sm text-gray-600 shadow-sm flex-shrink-0">
+              <CalendarDays className="h-3.5 sm:h-4 w-3.5 sm:w-4 text-gray-400 flex-shrink-0" strokeWidth={1.8} />
+              <span className="font-medium whitespace-nowrap text-xs sm:text-sm">{dateStr}</span>
+              <ChevronDown className="h-3 sm:h-3.5 w-3 sm:w-3.5 text-gray-400 flex-shrink-0" />
+            </div>
+          )}
         </div>
       </header>
 

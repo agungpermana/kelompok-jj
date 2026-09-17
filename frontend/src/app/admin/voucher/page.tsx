@@ -132,7 +132,6 @@ export default function VoucherPage() {
   // Save Item to Database (Create or Update)
   const handleSaveItem = async (formData: Partial<VoucherItem>) => {
     setIsSubmitting(true);
-    setMessage(null);
     try {
       const payload = {
         namaVoucher: formData.namaVoucher || '',
@@ -155,7 +154,8 @@ export default function VoucherPage() {
       setIsFormModalOpen(false);
     } catch (err: any) {
       console.error('Save error:', err);
-      setMessage({ type: 'error', text: err.message || 'Gagal menyimpan data ke database.' });
+      // Lempar ke modal agar notif tampil di dalam modal, bukan di halaman belakang
+      throw err;
     } finally {
       setIsSubmitting(false);
     }
