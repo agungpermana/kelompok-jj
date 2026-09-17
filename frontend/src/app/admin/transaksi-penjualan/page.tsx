@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import AdminHeader from '@/components/layout/header';
-import { Search, RotateCcw, Plus, Trash2, Eye, X, DollarSign, Scale, ShoppingCart } from 'lucide-react';
+import { Search, RotateCcw, Plus, Trash2, Eye, X, DollarSign, Scale, ShoppingCart, AlertCircle, CheckCircle2 } from 'lucide-react';
 
 interface Pengepul {
   pengepul_id: number;
@@ -86,6 +86,10 @@ export default function TransaksiPenjualanPage() {
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
+
+  // Toast
+  const [pageAlert, setPageAlert] = useState({ type: 'success' as 'success' | 'error', message: '' });
+  const [modalAlert, setModalAlert] = useState({ type: 'error' as 'success' | 'error', message: '' });
 
   useEffect(() => {
     fetchData();
@@ -226,19 +230,19 @@ export default function TransaksiPenjualanPage() {
 
   const handleSubmit = async () => {
     if (!formPengepulId) {
-      alert('Pilih pengepul terlebih dahulu');
+      setModalAlert({ type: 'error', message: 'Pilih pengepul terlebih dahulu' });
       return;
     }
     if (!formMediaKonfirmasi) {
-      alert('Pilih media konfirmasi');
+      setModalAlert({ type: 'error', message: 'Pilih media konfirmasi' });
       return;
     }
     if (!formMetodeTransaksi) {
-      alert('Pilih metode transaksi');
+      setModalAlert({ type: 'error', message: 'Pilih metode transaksi' });
       return;
     }
     if (formDetail.some(d => d.jenis_sampah_id === 0 || d.jumlah_terjual <= 0)) {
-      alert('Lengkapi semua jenis sampah dan berat');
+      setModalAlert({ type: 'error', message: 'Lengkapi semua jenis sampah dan berat' });
       return;
     }
 
@@ -246,11 +250,12 @@ export default function TransaksiPenjualanPage() {
     for (const item of formDetail) {
       const jenis = jenisSampahList.find(j => j.jenis_sampah_id === item.jenis_sampah_id);
       if (jenis && item.jumlah_terjual > (jenis.stok_tersedia || 0)) {
-        alert(`Stok ${jenis.nama_jenis_sampah} tidak mencukupi. Stok tersedia: ${jenis.stok_tersedia} kg`);
+        setModalAlert({ type: 'error', message: `Stok ${jenis.nama_jenis_sampah} tidak mencukupi. Stok tersedia: ${jenis.stok_tersedia} kg` });
         return;
       }
     }
 
+    setModalAlert({ type: 'error', message: '' });
     try {
       setLoadingSubmit(true);
       const token = getToken();
@@ -277,16 +282,18 @@ export default function TransaksiPenjualanPage() {
       });
 
       if (response.ok) {
-        alert('Transaksi penjualan berhasil dibuat!');
         setShowForm(false);
+        setModalAlert({ type: 'error', message: '' });
         resetForm();
         fetchData();
+        setPageAlert({ type: 'success', message: 'Transaksi penjualan berhasil dibuat!' });
+        setTimeout(() => setPageAlert({ type: 'success', message: '' }), 3500);
       } else {
         const data = await response.json();
-        alert(data.message || 'Gagal membuat transaksi');
+        setModalAlert({ type: 'error', message: data.message || 'Gagal membuat transaksi' });
       }
     } catch {
-      alert('Terjadi kesalahan');
+      setModalAlert({ type: 'error', message: 'Terjadi kesalahan' });
     } finally {
       setLoadingSubmit(false);
     }
@@ -315,14 +322,17 @@ export default function TransaksiPenjualanPage() {
       });
 
       if (response.ok) {
-        alert('Transaksi berhasil dihapus');
         fetchData();
+        setPageAlert({ type: 'success', message: 'Transaksi berhasil dihapus' });
+        setTimeout(() => setPageAlert({ type: 'success', message: '' }), 3500);
       } else {
         const data = await response.json();
-        alert(data.message || 'Gagal menghapus transaksi');
+        setPageAlert({ type: 'error', message: data.message || 'Gagal menghapus transaksi' });
+        setTimeout(() => setPageAlert({ type: 'error', message: '' }), 3500);
       }
     } catch {
-      alert('Terjadi kesalahan');
+      setPageAlert({ type: 'error', message: 'Terjadi kesalahan' });
+      setTimeout(() => setPageAlert({ type: 'error', message: '' }), 3500);
     }
   };
 
@@ -336,6 +346,21 @@ export default function TransaksiPenjualanPage() {
         title="Transaksi Penjualan Sampah"
         subtitle="Catat transaksi penjualan sampah dari bank sampah ke pengepul."
       />
+
+      {pageAlert.message && (
+        <div className={`flex items-center gap-2 px-4 py-3 rounded-xl text-xs font-medium mb-4 ${
+          pageAlert.type === 'success'
+            ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+            : 'bg-red-50 text-red-700 border border-red-200'
+        }`}>
+          {pageAlert.type === 'success' ? (
+            <CheckCircle2 className="h-4 w-4 shrink-0" />
+          ) : (
+            <AlertCircle className="h-4 w-4 shrink-0" />
+          )}
+          {pageAlert.message}
+        </div>
+      )}
 
       {/* Statistik */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
@@ -550,6 +575,20 @@ export default function TransaksiPenjualanPage() {
             </div>
 
             <div className="overflow-y-auto p-6 space-y-4 flex-1 text-xs">
+              {modalAlert.message && (
+                <div className={`flex items-center gap-2 px-4 py-3 rounded-xl text-xs font-medium ${
+                  modalAlert.type === 'success'
+                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                    : 'bg-red-50 text-red-700 border border-red-200'
+                }`}>
+                  {modalAlert.type === 'success' ? (
+                    <CheckCircle2 className="h-4 w-4 shrink-0" />
+                  ) : (
+                    <AlertCircle className="h-4 w-4 shrink-0" />
+                  )}
+                  {modalAlert.message}
+                </div>
+              )}
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-semibold text-gray-700 mb-1">Pengepul <span className="text-red-500">*</span></label>
@@ -812,6 +851,7 @@ export default function TransaksiPenjualanPage() {
           </div>
         </div>
       )}
+
     </div>
   );
 }

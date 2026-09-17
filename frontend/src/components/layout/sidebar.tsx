@@ -109,7 +109,7 @@ export default function Sidebar({ menuSections, logo, profileCard }: SidebarProp
       <aside
         data-collapsed={collapsed ? 'true' : 'false'}
         className={`fixed top-0 left-0 z-40 flex h-screen flex-col bg-white border-r border-gray-200 transition-all duration-300 ease-in-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-          } lg:static lg:translate-x-0 ${sidebarWidth}`}
+          } lg:sticky lg:translate-x-0 ${sidebarWidth}`}
       >
         {/* Logo */}
         <div className={`flex items-center border-b border-gray-100 transition-all duration-300 ${collapsed ? 'justify-center px-2 py-3' : 'gap-2.5 px-4 sm:px-5 py-3 sm:py-4'
