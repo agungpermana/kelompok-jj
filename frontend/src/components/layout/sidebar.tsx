@@ -110,7 +110,7 @@ export default function Sidebar({ menuSections, logo, profileCard }: SidebarProp
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         } lg:static lg:translate-x-0 ${sidebarWidth}`}
       >
-        {/* Logo */}
+        {/* Logo dengan Close Button untuk Mobile */}
         <div className={`flex items-center border-b border-gray-100 transition-all duration-300 ${
           collapsed ? 'justify-center px-2 py-3' : 'gap-2.5 px-4 sm:px-5 py-3 sm:py-4'
         }`}>
@@ -224,8 +224,8 @@ export default function Sidebar({ menuSections, logo, profileCard }: SidebarProp
                                 href={child.href!}
                                 onClick={() => setSidebarOpen(false)}
                                 className={`flex items-center gap-1.5 sm:gap-2 rounded-md px-2 sm:px-2.5 py-1 sm:py-1.5 text-[11px] sm:text-[12.5px] font-medium transition-all duration-200 ${childActive
-                                    ? 'text-[#16a34a] bg-green-50'
-                                    : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700'
+                                  ? 'text-[#16a34a] bg-green-50'
+                                  : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700'
                                   }`}
                               >
                                 <child.icon className={`h-3.5 sm:h-[15px] w-3.5 sm:w-[15px] flex-shrink-0 ${childActive ? 'text-[#16a34a]' : 'text-gray-400'}`} strokeWidth={1.8} />
