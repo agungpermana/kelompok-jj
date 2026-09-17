@@ -53,6 +53,7 @@ export interface AdminProfileDetail {
   admin_id?: number;
   user_id?: number;
   nama_admin: string;
+  no_telepon?: string | null;
   created_at?: string;
   updated_at?: string;
 }
@@ -106,6 +107,7 @@ export interface UpdatePengepulPayload {
 
 export interface UpdateAdminPayload {
   nama_admin?: string;
+  no_telepon?: string;
   username?: string;
   email?: string;
   password?: string;

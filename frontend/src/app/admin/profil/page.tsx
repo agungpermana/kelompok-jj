@@ -11,6 +11,7 @@ import {
 import {
   User,
   Mail,
+  Phone,
   Shield,
   KeyRound,
   CheckCircle2,
@@ -30,6 +31,7 @@ export default function AdminProfilPage() {
 
   // Form states
   const [namaAdmin, setNamaAdmin] = useState('');
+  const [noTelepon, setNoTelepon] = useState('');
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -45,6 +47,7 @@ export default function AdminProfilPage() {
     setEmail(data.email || '');
     if (data.admin) {
       setNamaAdmin(data.admin.nama_admin || '');
+      setNoTelepon(data.admin.no_telepon || '');
     }
     setPassword('');
     setPasswordConfirmation('');
@@ -108,6 +111,7 @@ export default function AdminProfilPage() {
     setSaving(true);
     const payload: UpdateAdminPayload = {
       nama_admin: namaAdmin.trim(),
+      no_telepon: noTelepon.trim() || '',
       username: username.trim(),
       email: email.trim(),
       password: password || undefined,
@@ -248,6 +252,16 @@ export default function AdminProfilPage() {
 
                 <div className="flex items-center gap-3 text-gray-600">
                   <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gray-50 border border-gray-200/60 text-gray-500 flex-shrink-0">
+                    <Phone className="h-4 w-4" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[11px] text-gray-400 font-medium">No. Telepon</p>
+                    <p className="font-semibold text-gray-800 truncate">{noTelepon || 'Belum diisi'}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3 text-gray-600">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gray-50 border border-gray-200/60 text-gray-500 flex-shrink-0">
                     <Calendar className="h-4 w-4" />
                   </div>
                   <div className="flex-1 min-w-0">
@@ -308,6 +322,27 @@ export default function AdminProfilPage() {
                     />
                     {fieldErrors.nama_admin && (
                       <p className="text-[11px] text-rose-500 mt-1">{fieldErrors.nama_admin}</p>
+                    )}
+                  </div>
+
+                  {/* No. Telepon */}
+                  <div className="md:col-span-2">
+                    <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+                      Nomor Telepon / WhatsApp
+                    </label>
+                    <input
+                      type="tel"
+                      value={noTelepon}
+                      onChange={(e) => setNoTelepon(e.target.value)}
+                      placeholder="08xxxxxxxxxx"
+                      className={`w-full px-3.5 py-2.5 rounded-xl border text-xs text-gray-800 transition-all focus:outline-none focus:ring-2 ${
+                        fieldErrors.no_telepon
+                          ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-100'
+                          : 'border-gray-200 focus:border-[#16a34a] focus:ring-green-100'
+                      }`}
+                    />
+                    {fieldErrors.no_telepon && (
+                      <p className="text-[11px] text-rose-500 mt-1">{fieldErrors.no_telepon}</p>
                     )}
                   </div>
                 </div>

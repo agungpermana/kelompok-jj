@@ -9,9 +9,34 @@ use App\Models\JenisSampah;
 use App\Models\StokSampah;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use OpenApi\Attributes as OA;
 
+#[OA\Tag(
+    name: "Admin - Transaksi Penjualan",
+    description: "API transaksi penjualan sampah dari bank sampah ke pengepul."
+)]
 class TransaksiPenjualanController extends Controller
 {
+    #[OA\Get(
+        path: "/admin/penjualan/jenis-sampah",
+        summary: "Daftar jenis sampah untuk transaksi penjualan",
+        description: "Mengambil daftar jenis sampah beserta harga jual aktif dan stok tersedia untuk form transaksi penjualan.",
+        tags: ["Admin - Transaksi Penjualan"],
+        security: [["bearerAuth" => []]],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Daftar jenis sampah berhasil diambil",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "message", type: "string", example: "Daftar jenis sampah berhasil diambil."),
+                        new OA\Property(property: "data", type: "array", items: new OA\Items(type: "object")),
+                    ],
+                ),
+            ),
+            new OA\Response(response: 401, description: "Unauthenticated"),
+        ],
+    )]
     public function jenisSampah()
     {
         $data = JenisSampah::with(['hargaSampah' => function ($q) {
@@ -41,6 +66,33 @@ class TransaksiPenjualanController extends Controller
         ]);
     }
 
+    #[OA\Get(
+        path: "/admin/penjualan",
+        summary: "Daftar transaksi penjualan",
+        description: "Mengambil daftar transaksi penjualan dengan filter status, tanggal, pengepul, dan pencarian.",
+        tags: ["Admin - Transaksi Penjualan"],
+        security: [["bearerAuth" => []]],
+        parameters: [
+            new OA\Parameter(name: "status", in: "query", required: false, description: "Filter status transaksi", schema: new OA\Schema(type: "string", enum: ["semua", "selesai", "diajukan", "dibatalkan"])),
+            new OA\Parameter(name: "dari", in: "query", required: false, description: "Filter tanggal dari (YYYY-MM-DD)", schema: new OA\Schema(type: "string", format: "date")),
+            new OA\Parameter(name: "sampai", in: "query", required: false, description: "Filter tanggal sampai (YYYY-MM-DD)", schema: new OA\Schema(type: "string", format: "date")),
+            new OA\Parameter(name: "pengepul_id", in: "query", required: false, description: "Filter berdasarkan pengepul", schema: new OA\Schema(type: "integer")),
+            new OA\Parameter(name: "search", in: "query", required: false, description: "Pencarian berdasarkan nama pengepul", schema: new OA\Schema(type: "string")),
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Daftar transaksi penjualan berhasil diambil",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "message", type: "string", example: "Daftar transaksi penjualan berhasil diambil."),
+                        new OA\Property(property: "data", type: "array", items: new OA\Items(type: "object")),
+                    ],
+                ),
+            ),
+            new OA\Response(response: 401, description: "Unauthenticated"),
+        ],
+    )]
     public function index(Request $request)
     {
         $query = TransaksiPenjualan::with(['pengepul', 'admin', 'detailPenjualan.jenisSampah'])
@@ -78,6 +130,30 @@ class TransaksiPenjualanController extends Controller
         ]);
     }
 
+    #[OA\Get(
+        path: "/admin/penjualan/{id}",
+        summary: "Detail transaksi penjualan",
+        description: "Mengambil detail transaksi penjualan berdasarkan ID.",
+        tags: ["Admin - Transaksi Penjualan"],
+        security: [["bearerAuth" => []]],
+        parameters: [
+            new OA\Parameter(name: "id", in: "path", required: true, description: "ID transaksi penjualan", schema: new OA\Schema(type: "integer")),
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Detail transaksi penjualan berhasil diambil",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "message", type: "string", example: "Detail transaksi penjualan berhasil diambil."),
+                        new OA\Property(property: "data", type: "object"),
+                    ],
+                ),
+            ),
+            new OA\Response(response: 404, description: "Transaksi penjualan tidak ditemukan"),
+            new OA\Response(response: 401, description: "Unauthenticated"),
+        ],
+    )]
     public function show($id)
     {
         $penjualan = TransaksiPenjualan::with(['pengepul', 'admin', 'detailPenjualan.jenisSampah'])
@@ -93,6 +169,54 @@ class TransaksiPenjualanController extends Controller
         ]);
     }
 
+    #[OA\Post(
+        path: "/admin/penjualan",
+        summary: "Buat transaksi penjualan baru",
+        description: "Membuat transaksi penjualan sampah ke pengepul. Stok sampah akan dikurangi secara otomatis.",
+        tags: ["Admin - Transaksi Penjualan"],
+        security: [["bearerAuth" => []]],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ["pengepul_id", "tanggal_transaksi", "media_konfirmasi", "metode_transaksi", "detail"],
+                properties: [
+                    new OA\Property(property: "pengepul_id", type: "integer", description: "ID pengepul", example: 1),
+                    new OA\Property(property: "tanggal_transaksi", type: "string", format: "date", description: "Tanggal transaksi", example: "2026-09-17"),
+                    new OA\Property(property: "media_konfirmasi", type: "string", maxLength: 50, description: "Media konfirmasi", example: "WhatsApp"),
+                    new OA\Property(property: "metode_transaksi", type: "string", maxLength: 50, description: "Metode transaksi", example: "Tunai"),
+                    new OA\Property(property: "catatan", type: "string", maxLength: 500, nullable: true, description: "Catatan transaksi"),
+                    new OA\Property(
+                        property: "detail",
+                        type: "array",
+                        minItems: 1,
+                        description: "Detail item penjualan",
+                        items: new OA\Items(
+                            type: "object",
+                            required: ["jenis_sampah_id", "jumlah_terjual"],
+                            properties: [
+                                new OA\Property(property: "jenis_sampah_id", type: "integer", description: "ID jenis sampah", example: 1),
+                                new OA\Property(property: "jumlah_terjual", type: "number", format: "float", description: "Jumlah terjual (kg)", example: 10.5),
+                            ],
+                        ),
+                    ),
+                ],
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: 201,
+                description: "Transaksi penjualan berhasil dibuat",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "message", type: "string", example: "Transaksi penjualan berhasil dibuat."),
+                        new OA\Property(property: "data", type: "object"),
+                    ],
+                ),
+            ),
+            new OA\Response(response: 422, description: "Validasi error"),
+            new OA\Response(response: 401, description: "Unauthenticated"),
+        ],
+    )]
     public function store(Request $request)
     {
         $request->validate([
@@ -176,6 +300,29 @@ class TransaksiPenjualanController extends Controller
         ], 201);
     }
 
+    #[OA\Delete(
+        path: "/admin/penjualan/{id}",
+        summary: "Hapus transaksi penjualan",
+        description: "Menghapus transaksi penjualan dan mengembalikan stok sampah.",
+        tags: ["Admin - Transaksi Penjualan"],
+        security: [["bearerAuth" => []]],
+        parameters: [
+            new OA\Parameter(name: "id", in: "path", required: true, description: "ID transaksi penjualan", schema: new OA\Schema(type: "integer")),
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Transaksi penjualan berhasil dihapus",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "message", type: "string", example: "Transaksi penjualan berhasil dihapus."),
+                    ],
+                ),
+            ),
+            new OA\Response(response: 404, description: "Transaksi penjualan tidak ditemukan"),
+            new OA\Response(response: 401, description: "Unauthenticated"),
+        ],
+    )]
     public function destroy($id)
     {
         $penjualan = TransaksiPenjualan::with('detailPenjualan')->find($id);

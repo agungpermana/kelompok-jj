@@ -282,6 +282,13 @@ class AuthController extends Controller
             $rules['jenis_kelamin'] = 'nullable|in:L,P';
             $rules['no_telepon'] = 'nullable|string|max:20';
             $rules['alamat'] = 'nullable|string';
+        } elseif ($user->role === 'pengepul') {
+            $rules['nama_pengepul'] = 'required|string|max:100';
+            $rules['no_telepon'] = 'nullable|string|max:20';
+            $rules['alamat'] = 'nullable|string';
+        } elseif ($user->role === 'admin') {
+            $rules['nama_admin'] = 'required|string|max:100';
+            $rules['no_telepon'] = 'nullable|string|max:20';
         }
 
         $validated = $request->validate($rules);
@@ -311,6 +318,17 @@ class AuthController extends Controller
                 'jenis_kelamin' => array_key_exists('jenis_kelamin', $validated) ? $validated['jenis_kelamin'] : $user->petugas->jenis_kelamin,
                 'no_telepon' => array_key_exists('no_telepon', $validated) ? $validated['no_telepon'] : $user->petugas->no_telepon,
                 'alamat' => array_key_exists('alamat', $validated) ? $validated['alamat'] : $user->petugas->alamat,
+            ]);
+        } elseif ($user->role === 'pengepul' && $user->pengepul) {
+            $user->pengepul->update([
+                'nama_pengepul' => $validated['nama_pengepul'] ?? $user->pengepul->nama_pengepul,
+                'no_telepon' => array_key_exists('no_telepon', $validated) ? $validated['no_telepon'] : $user->pengepul->no_telepon,
+                'alamat' => array_key_exists('alamat', $validated) ? $validated['alamat'] : $user->pengepul->alamat,
+            ]);
+        } elseif ($user->role === 'admin' && $user->admin) {
+            $user->admin->update([
+                'nama_admin' => $validated['nama_admin'] ?? $user->admin->nama_admin,
+                'no_telepon' => array_key_exists('no_telepon', $validated) ? $validated['no_telepon'] : $user->admin->no_telepon,
             ]);
         }
 

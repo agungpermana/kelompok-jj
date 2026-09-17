@@ -11,9 +11,30 @@ use App\Models\PenukaranPoin;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
+use OpenApi\Attributes as OA;
 
+#[OA\Tag(
+    name: "Admin - Laporan PDF",
+    description: "API download laporan dalam format PDF."
+)]
 class LaporanController extends Controller
 {
+    #[OA\Get(
+        path: "/admin/laporan/setoran",
+        summary: "Download laporan setoran (PDF)",
+        description: "Mengunduh laporan transaksi setoran sampah dalam format PDF.",
+        tags: ["Admin - Laporan PDF"],
+        security: [["bearerAuth" => []]],
+        parameters: [
+            new OA\Parameter(name: "dari", in: "query", required: false, description: "Tanggal dari (YYYY-MM-DD)", schema: new OA\Schema(type: "string", format: "date")),
+            new OA\Parameter(name: "sampai", in: "query", required: false, description: "Tanggal sampai (YYYY-MM-DD)", schema: new OA\Schema(type: "string", format: "date")),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: "PDF laporan setoran", content: new OA\MediaType(mediaType: "application/pdf")),
+            new OA\Response(response: 401, description: "Unauthenticated"),
+            new OA\Response(response: 422, description: "Validasi error"),
+        ],
+    )]
     public function setoran(Request $request)
     {
         $request->validate([
@@ -46,6 +67,22 @@ class LaporanController extends Controller
         return $pdf->download('laporan-setoran.pdf');
     }
 
+    #[OA\Get(
+        path: "/admin/laporan/penjemputan",
+        summary: "Download laporan penjemputan (PDF)",
+        description: "Mengunduh laporan penjemputan sampah dalam format PDF.",
+        tags: ["Admin - Laporan PDF"],
+        security: [["bearerAuth" => []]],
+        parameters: [
+            new OA\Parameter(name: "dari", in: "query", required: false, description: "Tanggal dari (YYYY-MM-DD)", schema: new OA\Schema(type: "string", format: "date")),
+            new OA\Parameter(name: "sampai", in: "query", required: false, description: "Tanggal sampai (YYYY-MM-DD)", schema: new OA\Schema(type: "string", format: "date")),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: "PDF laporan penjemputan", content: new OA\MediaType(mediaType: "application/pdf")),
+            new OA\Response(response: 401, description: "Unauthenticated"),
+            new OA\Response(response: 422, description: "Validasi error"),
+        ],
+    )]
     public function penjemputan(Request $request)
     {
         $request->validate([
@@ -80,6 +117,22 @@ class LaporanController extends Controller
         return $pdf->download('laporan-penjemputan.pdf');
     }
 
+    #[OA\Get(
+        path: "/admin/laporan/penjualan",
+        summary: "Download laporan penjualan (PDF)",
+        description: "Mengunduh laporan transaksi penjualan sampah dalam format PDF.",
+        tags: ["Admin - Laporan PDF"],
+        security: [["bearerAuth" => []]],
+        parameters: [
+            new OA\Parameter(name: "dari", in: "query", required: false, description: "Tanggal dari (YYYY-MM-DD)", schema: new OA\Schema(type: "string", format: "date")),
+            new OA\Parameter(name: "sampai", in: "query", required: false, description: "Tanggal sampai (YYYY-MM-DD)", schema: new OA\Schema(type: "string", format: "date")),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: "PDF laporan penjualan", content: new OA\MediaType(mediaType: "application/pdf")),
+            new OA\Response(response: 401, description: "Unauthenticated"),
+            new OA\Response(response: 422, description: "Validasi error"),
+        ],
+    )]
     public function penjualan(Request $request)
     {
         $request->validate([
@@ -110,6 +163,17 @@ class LaporanController extends Controller
         return $pdf->download('laporan-penjualan.pdf');
     }
 
+    #[OA\Get(
+        path: "/admin/laporan/stok",
+        summary: "Download laporan stok sampah (PDF)",
+        description: "Mengunduh laporan stok sampah dalam format PDF.",
+        tags: ["Admin - Laporan PDF"],
+        security: [["bearerAuth" => []]],
+        responses: [
+            new OA\Response(response: 200, description: "PDF laporan stok", content: new OA\MediaType(mediaType: "application/pdf")),
+            new OA\Response(response: 401, description: "Unauthenticated"),
+        ],
+    )]
     public function stok(Request $request)
     {
         $data = StokSampah::with('jenisSampah')
@@ -128,6 +192,22 @@ class LaporanController extends Controller
         return $pdf->download('laporan-stok.pdf');
     }
 
+    #[OA\Get(
+        path: "/admin/laporan/poin",
+        summary: "Download laporan penukaran poin (PDF)",
+        description: "Mengunduh laporan penukaran poin dalam format PDF.",
+        tags: ["Admin - Laporan PDF"],
+        security: [["bearerAuth" => []]],
+        parameters: [
+            new OA\Parameter(name: "dari", in: "query", required: false, description: "Tanggal dari (YYYY-MM-DD)", schema: new OA\Schema(type: "string", format: "date")),
+            new OA\Parameter(name: "sampai", in: "query", required: false, description: "Tanggal sampai (YYYY-MM-DD)", schema: new OA\Schema(type: "string", format: "date")),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: "PDF laporan penukaran poin", content: new OA\MediaType(mediaType: "application/pdf")),
+            new OA\Response(response: 401, description: "Unauthenticated"),
+            new OA\Response(response: 422, description: "Validasi error"),
+        ],
+    )]
     public function poin(Request $request)
     {
         $request->validate([

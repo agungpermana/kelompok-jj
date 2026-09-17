@@ -77,7 +77,8 @@ export default function Sidebar({ menuSections, logo, profileCard }: SidebarProp
       localStorage.removeItem('trashure_token');
       localStorage.removeItem('trashure_user');
       document.cookie = 'trashure_token=; path=/; max-age=0';
-      router.push('/login');
+      document.cookie = 'trashure_role=; path=/; max-age=0';
+      router.push('/');
     }
   };
 

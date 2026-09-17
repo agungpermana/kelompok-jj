@@ -11,9 +11,56 @@ use App\Models\PengajuanPenjemputan;
 use App\Models\JadwalPenjemputan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use OpenApi\Attributes as OA;
 
+#[OA\Tag(
+    name: "Admin - Dashboard",
+    description: "Dashboard admin - ringkasan aktivitas bank sampah."
+)]
 class AdminDashboardController extends Controller
 {
+    #[OA\Get(
+        path: "/admin/dashboard",
+        summary: "Dashboard admin",
+        description: "Mengambil data dashboard admin: statistik, grafik setoran, komposisi sampah, pengajuan terbaru, setoran menunggu validasi, dan aktivitas terbaru.",
+        tags: ["Admin - Dashboard"],
+        security: [["bearerAuth" => []]],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Dashboard berhasil diambil",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "message", type: "string", example: "Dashboard admin berhasil diambil."),
+                        new OA\Property(
+                            property: "data",
+                            type: "object",
+                            properties: [
+                                new OA\Property(
+                                    property: "stats",
+                                    type: "object",
+                                    properties: [
+                                        new OA\Property(property: "total_warga", type: "integer", example: 50),
+                                        new OA\Property(property: "total_petugas", type: "integer", example: 10),
+                                        new OA\Property(property: "setoran_7_hari", type: "number", format: "float", example: 125.5),
+                                        new OA\Property(property: "persen_setoran", type: "number", format: "float", example: 12.5),
+                                        new OA\Property(property: "transaksi_hari_ini", type: "integer", example: 5),
+                                    ],
+                                ),
+                                new OA\Property(property: "grafik_setoran", type: "array", items: new OA\Items(type: "object")),
+                                new OA\Property(property: "komposisi_sampah", type: "array", items: new OA\Items(type: "object")),
+                                new OA\Property(property: "total_komposisi", type: "number", format: "float"),
+                                new OA\Property(property: "pengajuan_terbaru", type: "array", items: new OA\Items(type: "object")),
+                                new OA\Property(property: "setoran_menunggu", type: "array", items: new OA\Items(type: "object")),
+                                new OA\Property(property: "aktivitas_terbaru", type: "array", items: new OA\Items(type: "object")),
+                            ],
+                        ),
+                    ],
+                ),
+            ),
+            new OA\Response(response: 401, description: "Unauthenticated"),
+        ],
+    )]
     public function index(Request $request)
     {
         $now = now();

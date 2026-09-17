@@ -60,7 +60,7 @@ class PenukaranPoinController extends Controller
                 content: new OA\JsonContent(
                     properties: [
                         new OA\Property(property: "message", type: "string"),
-                        new OA\Property(property: "data", type: "array"),
+                        new OA\Property(property: "data", type: "array", items: new OA\Items(type: "object")),
                         new OA\Property(property: "summary", type: "object"),
                         new OA\Property(property: "pagination", type: "object"),
                     ]

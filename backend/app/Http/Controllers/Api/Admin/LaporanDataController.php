@@ -10,7 +10,12 @@ use App\Models\StokSampah;
 use App\Models\PenukaranPoin;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use OpenApi\Attributes as OA;
 
+#[OA\Tag(
+    name: "Admin - Laporan Data",
+    description: "API data laporan dalam format JSON untuk ditampilkan di halaman laporan admin."
+)]
 class LaporanDataController extends Controller
 {
     private function getDateRange(Request $request): array
@@ -26,6 +31,32 @@ class LaporanDataController extends Controller
         return [Carbon::parse($bulan)->startOfMonth(), Carbon::parse($bulan)->endOfMonth()];
     }
 
+    #[OA\Get(
+        path: "/admin/laporan-data/setoran",
+        summary: "Data laporan setoran (JSON)",
+        description: "Mengambil data laporan transaksi setoran dalam format JSON.",
+        tags: ["Admin - Laporan Data"],
+        security: [["bearerAuth" => []]],
+        parameters: [
+            new OA\Parameter(name: "bulan", in: "query", required: false, description: "Filter bulan (YYYY-MM)", schema: new OA\Schema(type: "string", example: "2026-09")),
+            new OA\Parameter(name: "dari", in: "query", required: false, description: "Tanggal dari (YYYY-MM-DD)", schema: new OA\Schema(type: "string", format: "date")),
+            new OA\Parameter(name: "sampai", in: "query", required: false, description: "Tanggal sampai (YYYY-MM-DD)", schema: new OA\Schema(type: "string", format: "date")),
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Data laporan setoran berhasil diambil",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "data", type: "array", items: new OA\Items(type: "object")),
+                        new OA\Property(property: "summary", type: "object"),
+                        new OA\Property(property: "range", type: "object"),
+                    ],
+                ),
+            ),
+            new OA\Response(response: 401, description: "Unauthenticated"),
+        ],
+    )]
     public function setoran(Request $request)
     {
         [$start, $end] = $this->getDateRange($request);
@@ -54,6 +85,32 @@ class LaporanDataController extends Controller
         ]);
     }
 
+    #[OA\Get(
+        path: "/admin/laporan-data/penjemputan",
+        summary: "Data laporan penjemputan (JSON)",
+        description: "Mengambil data laporan penjemputan dalam format JSON.",
+        tags: ["Admin - Laporan Data"],
+        security: [["bearerAuth" => []]],
+        parameters: [
+            new OA\Parameter(name: "bulan", in: "query", required: false, description: "Filter bulan (YYYY-MM)", schema: new OA\Schema(type: "string", example: "2026-09")),
+            new OA\Parameter(name: "dari", in: "query", required: false, description: "Tanggal dari (YYYY-MM-DD)", schema: new OA\Schema(type: "string", format: "date")),
+            new OA\Parameter(name: "sampai", in: "query", required: false, description: "Tanggal sampai (YYYY-MM-DD)", schema: new OA\Schema(type: "string", format: "date")),
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Data laporan penjemputan berhasil diambil",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "data", type: "array", items: new OA\Items(type: "object")),
+                        new OA\Property(property: "summary", type: "object"),
+                        new OA\Property(property: "range", type: "object"),
+                    ],
+                ),
+            ),
+            new OA\Response(response: 401, description: "Unauthenticated"),
+        ],
+    )]
     public function penjemputan(Request $request)
     {
         [$start, $end] = $this->getDateRange($request);
@@ -80,6 +137,32 @@ class LaporanDataController extends Controller
         ]);
     }
 
+    #[OA\Get(
+        path: "/admin/laporan-data/penjualan",
+        summary: "Data laporan penjualan (JSON)",
+        description: "Mengambil data laporan transaksi penjualan dalam format JSON.",
+        tags: ["Admin - Laporan Data"],
+        security: [["bearerAuth" => []]],
+        parameters: [
+            new OA\Parameter(name: "bulan", in: "query", required: false, description: "Filter bulan (YYYY-MM)", schema: new OA\Schema(type: "string", example: "2026-09")),
+            new OA\Parameter(name: "dari", in: "query", required: false, description: "Tanggal dari (YYYY-MM-DD)", schema: new OA\Schema(type: "string", format: "date")),
+            new OA\Parameter(name: "sampai", in: "query", required: false, description: "Tanggal sampai (YYYY-MM-DD)", schema: new OA\Schema(type: "string", format: "date")),
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Data laporan penjualan berhasil diambil",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "data", type: "array", items: new OA\Items(type: "object")),
+                        new OA\Property(property: "summary", type: "object"),
+                        new OA\Property(property: "range", type: "object"),
+                    ],
+                ),
+            ),
+            new OA\Response(response: 401, description: "Unauthenticated"),
+        ],
+    )]
     public function penjualan(Request $request)
     {
         [$start, $end] = $this->getDateRange($request);
@@ -121,6 +204,26 @@ class LaporanDataController extends Controller
         ]);
     }
 
+    #[OA\Get(
+        path: "/admin/laporan-data/stok",
+        summary: "Data laporan stok sampah (JSON)",
+        description: "Mengambil data laporan stok sampah dalam format JSON.",
+        tags: ["Admin - Laporan Data"],
+        security: [["bearerAuth" => []]],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Data laporan stok berhasil diambil",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "data", type: "array", items: new OA\Items(type: "object")),
+                        new OA\Property(property: "summary", type: "object"),
+                    ],
+                ),
+            ),
+            new OA\Response(response: 401, description: "Unauthenticated"),
+        ],
+    )]
     public function stok(Request $request)
     {
         $data = StokSampah::with('jenisSampah')
@@ -142,6 +245,32 @@ class LaporanDataController extends Controller
         ]);
     }
 
+    #[OA\Get(
+        path: "/admin/laporan-data/poin",
+        summary: "Data laporan penukaran poin (JSON)",
+        description: "Mengambil data laporan penukaran poin dalam format JSON.",
+        tags: ["Admin - Laporan Data"],
+        security: [["bearerAuth" => []]],
+        parameters: [
+            new OA\Parameter(name: "bulan", in: "query", required: false, description: "Filter bulan (YYYY-MM)", schema: new OA\Schema(type: "string", example: "2026-09")),
+            new OA\Parameter(name: "dari", in: "query", required: false, description: "Tanggal dari (YYYY-MM-DD)", schema: new OA\Schema(type: "string", format: "date")),
+            new OA\Parameter(name: "sampai", in: "query", required: false, description: "Tanggal sampai (YYYY-MM-DD)", schema: new OA\Schema(type: "string", format: "date")),
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Data laporan penukaran poin berhasil diambil",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "data", type: "array", items: new OA\Items(type: "object")),
+                        new OA\Property(property: "summary", type: "object"),
+                        new OA\Property(property: "range", type: "object"),
+                    ],
+                ),
+            ),
+            new OA\Response(response: 401, description: "Unauthenticated"),
+        ],
+    )]
     public function poin(Request $request)
     {
         [$start, $end] = $this->getDateRange($request);

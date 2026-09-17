@@ -55,8 +55,10 @@ export default function LoginForm() {
       if (data.token) {
         localStorage.setItem("trashure_token", data.token);
         localStorage.setItem("trashure_user", JSON.stringify(data.user));
-        document.cookie = `trashure_token=${data.token}; path=/; max-age=${data.expires_in || 86400
-          }; SameSite=Lax`;
+        const role = data.user?.role || "warga";
+        const maxAge = data.expires_in || 86400;
+        document.cookie = `trashure_token=${data.token}; path=/; max-age=${maxAge}; SameSite=Lax`;
+        document.cookie = `trashure_role=${role}; path=/; max-age=${maxAge}; SameSite=Lax`;
       }
 
       setSuccessMessage("Login berhasil! Mengalihkan...");
