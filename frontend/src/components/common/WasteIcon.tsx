@@ -1,4 +1,5 @@
 import React from 'react';
+import { Wine, Package, Boxes, ShoppingBag, Leaf } from 'lucide-react';
 
 interface WasteIconProps {
   type: string;
@@ -6,108 +7,51 @@ interface WasteIconProps {
   className?: string;
 }
 
+// Ikon sampah mengikuti gaya warga (WasteBadgeIcon):
+// badge kotak berwarna + ikon Lucide berdasarkan nama jenis sampah.
 export default function WasteIcon({ type, size = 16, className = '' }: WasteIconProps) {
   const lower = (type || '').toLowerCase();
 
-  if (lower.includes('plastik')) {
-    // Blue bottle icon
+  // Samakan skala badge dengan size yang diminta
+  // (warga memakai h-8 w-8 + ikon h-4 untuk daftar, h-11 untuk katalog)
+  const badgeSize = size <= 14 ? 'h-7 w-7' : size >= 18 ? 'h-9 w-9' : 'h-8 w-8';
+  const iconSize = size <= 14 ? 'h-3.5 w-3.5' : size >= 18 ? 'h-[18px] w-[18px]' : 'h-4 w-4';
+
+  if (lower.includes('botol') || lower.includes('pet')) {
     return (
-      <svg
-        width={size}
-        height={size}
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="#2563EB"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className={className}
-      >
-        <rect x="9" y="2" width="6" height="3" rx="1" />
-        <path d="M10 5v2c-2 1-3 3-3 6v6a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-6c0-3-1-5-3-6V5" />
-        <line x1="9" y1="13" x2="15" y2="13" />
-      </svg>
+      <div className={`flex ${badgeSize} items-center justify-center rounded-lg bg-blue-50 text-blue-500 border border-blue-100 flex-shrink-0 ${className}`}>
+        <Wine className={iconSize} />
+      </div>
     );
   }
 
-  if (lower.includes('kertas') || lower.includes('kardus') || lower.includes('box')) {
-    // Amber/brown paper/box icon
+  if (lower.includes('kardus') || lower.includes('kertas') || lower.includes('koran')) {
     return (
-      <svg
-        width={size}
-        height={size}
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="#D97706"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className={className}
-      >
-        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-        <polyline points="14 2 14 8 20 8" />
-        <line x1="16" y1="13" x2="8" y2="13" />
-        <line x1="16" y1="17" x2="8" y2="17" />
-      </svg>
+      <div className={`flex ${badgeSize} items-center justify-center rounded-lg bg-amber-50 text-amber-600 border border-amber-100 flex-shrink-0 ${className}`}>
+        <Package className={iconSize} />
+      </div>
     );
   }
 
-  if (lower.includes('logam') || lower.includes('besi') || lower.includes('aluminium') || lower.includes('kaleng')) {
-    // Slate/metal cylinder icon
+  if (lower.includes('kaleng') || lower.includes('aluminium') || lower.includes('besi') || lower.includes('logam')) {
     return (
-      <svg
-        width={size}
-        height={size}
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="#64748B"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className={className}
-      >
-        <ellipse cx="12" cy="5" rx="8" ry="3" />
-        <path d="M4 5v14c0 1.66 3.58 3 8 3s8-1.34 8-3V5" />
-        <path d="M4 12c0 1.66 3.58 3 8 3s8-1.34 8-3" />
-      </svg>
+      <div className={`flex ${badgeSize} items-center justify-center rounded-lg bg-slate-100 text-slate-600 border border-slate-200 flex-shrink-0 ${className}`}>
+        <Boxes className={iconSize} />
+      </div>
     );
   }
 
-  if (lower.includes('kaca') || lower.includes('beling')) {
-    // Green glass bottle/cup icon
+  if (lower.includes('plastik') || lower.includes('kresek')) {
     return (
-      <svg
-        width={size}
-        height={size}
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="#059669"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className={className}
-      >
-        <path d="M8 2h8v3l-2 3v12a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2V8L8 5V2z" />
-        <line x1="8" y1="2" x2="16" y2="2" />
-      </svg>
+      <div className={`flex ${badgeSize} items-center justify-center rounded-lg bg-pink-50 text-pink-500 border border-pink-100 flex-shrink-0 ${className}`}>
+        <ShoppingBag className={iconSize} />
+      </div>
     );
   }
 
-  // Default trash/recycling icon
   return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="#6B7280"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-    >
-      <polyline points="3 6 5 6 21 6" />
-      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-    </svg>
+    <div className={`flex ${badgeSize} items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 border border-emerald-100 flex-shrink-0 ${className}`}>
+      <Leaf className={iconSize} />
+    </div>
   );
 }

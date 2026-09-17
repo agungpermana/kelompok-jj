@@ -19,24 +19,23 @@ export default function PengepulFilter({
 }: PengepulFilterProps) {
   return (
     <div className="bg-white rounded-2xl p-4 border border-gray-200/80 shadow-sm mb-6">
-      <div className="flex flex-col lg:flex-row items-stretch lg:items-end justify-between gap-4">
+      <div className="flex flex-col gap-4">
+        {/* Search Bar */}
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <input
+            type="text"
+            value={filter.search}
+            onChange={(e) =>
+              onFilterChange({ ...filter, search: e.target.value })
+            }
+            placeholder="Cari nama pengepul atau no. telepon..."
+            className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+          />
+        </div>
+
         {/* Left Side: Search + Dropdown Filters */}
-        <div className="flex flex-1 flex-wrap items-end gap-3.5">
-          {/* Search Bar */}
-          <div className="relative flex-1 min-w-[220px]">
-            <div className="relative">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <input
-                type="text"
-                value={filter.search}
-                onChange={(e) =>
-                  onFilterChange({ ...filter, search: e.target.value })
-                }
-                placeholder="Cari nama pengepul atau no. telepon..."
-                className="w-full h-11 pl-10 pr-4 text-sm text-gray-800 bg-white border border-gray-200 rounded-xl placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#16a34a]/20 focus:border-[#16a34a] transition-all"
-              />
-            </div>
-          </div>
+        <div className="flex flex-wrap items-end gap-3.5">
 
           {/* Status Dropdown */}
           <div className="min-w-[150px]">

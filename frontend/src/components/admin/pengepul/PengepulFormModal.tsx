@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { X, Loader2 } from 'lucide-react';
+import { X, Loader2, AlertCircle } from 'lucide-react';
 import { PengepulFormData, PengepulItem, StatusUser } from '@/types/pengepul';
 
 interface PengepulFormModalProps {
@@ -11,7 +11,7 @@ interface PengepulFormModalProps {
     id?: number | string;
     payload: PengepulFormData;
     status?: StatusUser;
-  }) => void;
+  }) => Promise<void>;
   initialItem?: PengepulItem | null;
   mode: 'create' | 'edit';
   isSubmitting?: boolean;
@@ -24,6 +24,18 @@ const STATUS_OPTIONS: { value: StatusUser; label: string }[] = [
 
 const inputClass =
   'w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-[#16a34a] focus:ring-2 focus:ring-[#16a34a]/10';
+
+// Terjemahkan sisa pesan error berbahasa Inggris ke bahasa Indonesia
+function terjemahkanErrorLokal(pesan?: string, fallback = 'Gagal menyimpan data. Silakan periksa kembali isian Anda.'): string {
+  if (!pesan) return fallback;
+  const p = pesan.trim();
+  if (/the given data was invalid/i.test(p)) return 'Data yang dimasukkan tidak valid. Silakan periksa kembali isian Anda.';
+  if (/failed to fetch|networkerror|network request failed/i.test(p)) return 'Gagal terhubung ke server. Periksa koneksi internet Anda.';
+  if (/unauthenticated/i.test(p)) return 'Sesi Anda telah berakhir. Silakan masuk kembali.';
+  if (/no query results for model/i.test(p)) return 'Data tidak ditemukan.';
+  if (/^the .* (field|must|is|has|should)/i.test(p)) return 'Data yang dimasukkan tidak valid. Silakan periksa kembali isian Anda.';
+  return p;
+}
 
 export default function PengepulFormModal({
   isOpen,
@@ -41,6 +53,7 @@ export default function PengepulFormModal({
   const [noTelepon, setNoTelepon] = useState('');
   const [status, setStatus] = useState<StatusUser>('aktif');
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [serverError, setServerError] = useState<string | null>(null);
 
   useEffect(() => {
     if (initialItem && mode === 'edit') {
@@ -61,6 +74,7 @@ export default function PengepulFormModal({
       setStatus('aktif');
     }
     setErrors({});
+    setServerError(null);
   }, [initialItem, mode, isOpen]);
 
   if (!isOpen) return null;
@@ -87,8 +101,9 @@ export default function PengepulFormModal({
     return Object.keys(err).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setServerError(null);
     if (!validate()) return;
 
     const payload: PengepulFormData = {
@@ -100,37 +115,54 @@ export default function PengepulFormModal({
       noTelepon: noTelepon.trim(),
     };
 
-    onSave({
-      ...(initialItem ? { id: initialItem.id } : {}),
-      payload,
-      ...(mode === 'edit' ? { status } : {}),
-    });
-    onClose();
+    try {
+      await onSave({
+        ...(initialItem ? { id: initialItem.id } : {}),
+        payload,
+        ...(mode === 'edit' ? { status } : {}),
+      });
+      // Modal ditutup oleh parent setelah simpan sukses.
+      // Jangan tutup di sini agar notif salah bisa tampil di dalam modal.
+    } catch (err: unknown) {
+      const mentah = err instanceof Error ? err.message : '';
+      const msg = terjemahkanErrorLokal(mentah);
+      setServerError(msg);
+    }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <div className="bg-white rounded-2xl w-full max-w-lg shadow-xl mx-4">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+    <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+      <div className="bg-white rounded-3xl w-full max-w-xl shadow-2xl max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-200">
+        <div className="sticky top-0 bg-white border-b border-gray-100 px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 flex justify-between items-center z-10">
           <div>
-            <h2 className="text-lg font-bold text-gray-900">
+            <h3 className="text-[17px] font-bold text-gray-900">
               {mode === 'create' ? 'Tambah Pengepul' : 'Edit Pengepul'}
-            </h2>
-            <p className="text-[11px] text-gray-400 mt-0.5">
+            </h3>
+            <p className="text-xs text-gray-400">
               {mode === 'create'
                 ? 'Akun pengguna (users) dibuat otomatis saat pengepul ditambahkan.'
                 : 'Username dan email tidak dapat diubah.'}
             </p>
           </div>
           <button
+            type="button"
             onClick={onClose}
-            className="p-1.5 rounded-lg text-gray-400 hover:bg-gray-100"
+            className="h-8 w-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-500 transition-colors"
           >
-            <X className="h-5 w-5" />
+            <X className="h-4 w-4" />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="px-6 py-4 space-y-4 max-h-[70vh] overflow-y-auto">
+        <form onSubmit={handleSubmit} className="p-6 space-y-5 text-[13.5px] max-h-[70vh] overflow-y-auto">
+          {serverError && (
+            <div className="p-3 rounded-lg flex items-start gap-2.5 bg-red-50 border border-red-200 text-red-700">
+              <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+              <span className="text-xs font-medium">{serverError}</span>
+              <button type="button" onClick={() => setServerError(null)} className="ml-auto flex-shrink-0">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          )}
           {mode === 'create' && (
             <>
               <div>
@@ -285,12 +317,12 @@ export default function PengepulFormModal({
           </div>
         </form>
 
-        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100">
+        <div className="border-t border-gray-100 px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 flex items-center justify-end gap-3 bg-gray-50/50">
           <button
             type="button"
             onClick={onClose}
             disabled={isSubmitting}
-            className="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-60"
+            className="px-4 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-100 rounded-lg sm:rounded-xl transition-colors disabled:opacity-60"
           >
             Batal
           </button>
@@ -298,7 +330,7 @@ export default function PengepulFormModal({
             type="button"
             onClick={handleSubmit}
             disabled={isSubmitting}
-            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-[#16a34a] hover:bg-[#15803d] rounded-lg disabled:opacity-60 transition-colors"
+            className="flex items-center gap-2 px-5 py-2 text-xs font-bold text-white bg-[#16a34a] hover:bg-[#15803d] rounded-lg sm:rounded-xl disabled:opacity-60 transition-colors"
           >
             {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
             {mode === 'create' ? 'Tambah' : 'Simpan Perubahan'}

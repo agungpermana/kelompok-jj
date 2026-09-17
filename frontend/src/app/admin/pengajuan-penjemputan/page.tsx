@@ -15,7 +15,7 @@ export default function PengajuanPenjemputanPage() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isLoadingPetugas, setIsLoadingPetugas] = useState<boolean>(false);
 
-  const [filter, setFilter] = useState({ search: '', status: '' });
+  const [filter, setFilter] = useState({ search: '', status: '', tanggalDari: '', tanggalSampai: '' });
   const [currentPage, setCurrentPage] = useState<number>(1);
   const itemsPerPage = 10;
 
@@ -60,12 +60,19 @@ export default function PengajuanPenjemputanPage() {
         const query = filter.search.toLowerCase();
         const matchName = item.warga?.nama_warga.toLowerCase().includes(query) || false;
         const matchAddress = item.alamat_penjemputan.toLowerCase().includes(query) || false;
-        const matchId = `#${item.pengajuan_id}`.toLowerCase().includes(query) || false;
-        if (!matchName && !matchAddress && !matchId) return false;
+        if (!matchName && !matchAddress) return false;
       }
 
       if (filter.status && item.status_pengajuan !== filter.status) {
         return false;
+      }
+
+      // Filter rentang tanggal pengajuan (berdasarkan tanggal saja, abaikan jam)
+      if (filter.tanggalDari || filter.tanggalSampai) {
+        const tanggalItem = item.tanggal_pengajuan?.slice(0, 10);
+        if (!tanggalItem) return false;
+        if (filter.tanggalDari && tanggalItem < filter.tanggalDari) return false;
+        if (filter.tanggalSampai && tanggalItem > filter.tanggalSampai) return false;
       }
 
       return true;

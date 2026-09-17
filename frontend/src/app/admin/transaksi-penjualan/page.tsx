@@ -372,17 +372,18 @@ export default function TransaksiPenjualanPage() {
       </div>
 
       {/* Toolbar */}
-      <div className="flex flex-col lg:flex-row gap-3 mb-5">
-        <div className="relative flex-1">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-          <input
-            value={search}
-            onChange={e => { setSearch(e.target.value); setCurrentPage(1); }}
-            placeholder="Cari nama pengepul atau no. transaksi..."
-            className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-[13px] placeholder:text-gray-400 focus:outline-none focus:border-[#16a34a] focus:ring-4 focus:ring-green-100"
-          />
-        </div>
-        <div className="flex flex-wrap gap-3">
+      <div className="bg-white rounded-2xl p-5 mb-5 border border-gray-100">
+        <div className="flex flex-col gap-4">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <input
+              value={search}
+              onChange={e => { setSearch(e.target.value); setCurrentPage(1); }}
+              placeholder="Cari nama pengepul atau no. transaksi..."
+              className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+            />
+          </div>
+          <div className="flex flex-wrap items-center gap-3">
           <select
             value={statusFilter}
             onChange={e => { setStatusFilter(e.target.value); setCurrentPage(1); }}
@@ -419,6 +420,7 @@ export default function TransaksiPenjualanPage() {
             <Plus className="h-4 w-4" />
             Transaksi Baru
           </button>
+          </div>
         </div>
       </div>
 
@@ -532,24 +534,23 @@ export default function TransaksiPenjualanPage() {
 
       {/* Modal Form Transaksi Baru */}
       {showForm && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-3xl max-w-2xl w-full shadow-2xl border border-gray-100 overflow-hidden flex flex-col max-h-[90vh]">
-            <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-2xl flex items-center justify-center bg-[#f0fdf4] text-[#16a34a] border border-green-100">
-                  <Plus className="h-5 w-5" />
-                </div>
-                <div>
-                  <h2 className="text-base font-bold text-gray-900">Transaksi Penjualan Baru</h2>
-                  <p className="text-xs text-gray-500 mt-0.5">Isi data penjualan sampah ke pengepul</p>
-                </div>
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-xl w-full shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-200">
+            <div className="sticky top-0 bg-white border-b border-gray-100 px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 flex justify-between items-center z-10">
+              <div>
+                <h3 className="text-[17px] font-bold text-gray-900">Transaksi Penjualan Baru</h3>
+                <p className="text-xs text-gray-400">Isi data penjualan sampah ke pengepul</p>
               </div>
-              <button onClick={() => setShowForm(false)} className="h-8 w-8 rounded-xl flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100">
+              <button
+                type="button"
+                onClick={() => setShowForm(false)}
+                className="h-8 w-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-500 transition-colors"
+              >
                 <X className="h-4 w-4" />
               </button>
             </div>
 
-            <div className="overflow-y-auto p-6 space-y-4 flex-1 text-xs">
+            <div className="overflow-y-auto p-6 space-y-5 flex-1 text-[13.5px]">
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-semibold text-gray-700 mb-1">Pengepul <span className="text-red-500">*</span></label>
@@ -688,17 +689,19 @@ export default function TransaksiPenjualanPage() {
               </div>
             </div>
 
-            <div className="border-t border-gray-100 px-6 py-4 flex justify-end gap-2 bg-gray-50/50">
+            <div className="border-t border-gray-100 px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 flex items-center justify-end gap-3 bg-gray-50/50">
               <button
+                type="button"
                 onClick={() => setShowForm(false)}
-                className="px-4 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-100 rounded-xl"
+                className="px-4 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-100 rounded-lg sm:rounded-xl transition-colors"
               >
                 Batal
               </button>
               <button
+                type="button"
                 onClick={handleSubmit}
                 disabled={loadingSubmit}
-                className="px-5 py-2 text-xs font-bold text-white bg-[#16a34a] hover:bg-[#15803d] rounded-xl disabled:opacity-50"
+                className="px-5 py-2 text-xs font-bold text-white bg-[#16a34a] hover:bg-[#15803d] rounded-lg sm:rounded-xl transition-colors disabled:opacity-50"
               >
                 {loadingSubmit ? 'Menyimpan...' : 'Simpan Transaksi'}
               </button>
@@ -709,26 +712,25 @@ export default function TransaksiPenjualanPage() {
 
       {/* Modal Detail */}
       {showDetail && selected && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-3xl max-w-2xl w-full shadow-2xl border border-gray-100 overflow-hidden flex flex-col max-h-[90vh]">
-            <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-2xl flex items-center justify-center bg-blue-50 text-blue-600 border border-blue-100">
-                  <Eye className="h-5 w-5" />
-                </div>
-                <div>
-                  <h2 className="text-base font-bold text-gray-900">Detail Transaksi Penjualan</h2>
-                  <p className="text-xs text-gray-500 font-mono mt-0.5">
-                    PJL-{String(selected.penjualan_id).padStart(4, '0')}
-                  </p>
-                </div>
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-xl w-full shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-200">
+            <div className="sticky top-0 bg-white border-b border-gray-100 px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 flex justify-between items-center z-10">
+              <div>
+                <h3 className="text-[17px] font-bold text-gray-900">Detail Transaksi Penjualan</h3>
+                <p className="text-xs text-gray-400">
+                  ID Penjualan: #{selected.penjualan_id}
+                </p>
               </div>
-              <button onClick={() => setShowDetail(false)} className="h-8 w-8 rounded-xl flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100">
+              <button
+                type="button"
+                onClick={() => setShowDetail(false)}
+                className="h-8 w-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-500 transition-colors"
+              >
                 <X className="h-4 w-4" />
               </button>
             </div>
 
-            <div className="overflow-y-auto p-6 space-y-4 flex-1 text-xs">
+            <div className="overflow-y-auto p-6 space-y-5 flex-1 text-[13.5px]">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 p-3.5 bg-gray-50/70 rounded-2xl border border-gray-100">
                 <div>
                   <p className="text-[11px] text-gray-400 font-medium">Pengepul</p>
@@ -808,6 +810,16 @@ export default function TransaksiPenjualanPage() {
                   <DollarSign className="h-5 w-5" />
                 </div>
               </div>
+            </div>
+
+            <div className="border-t border-gray-100 px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 flex items-center justify-end gap-3 bg-gray-50/50">
+              <button
+                type="button"
+                onClick={() => setShowDetail(false)}
+                className="px-4 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-100 rounded-lg sm:rounded-xl transition-colors"
+              >
+                Tutup
+              </button>
             </div>
           </div>
         </div>

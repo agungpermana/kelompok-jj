@@ -13,7 +13,6 @@ import {
   Pie,
   Cell,
 } from 'recharts';
-import { ChevronDown } from 'lucide-react';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
@@ -68,12 +67,8 @@ export function SetoranChart({ data }: { data: GrafikItem[] }) {
 
   return (
     <div className="bg-white rounded-lg sm:rounded-xl border border-gray-200/80 p-3 sm:p-4 lg:p-5 shadow-sm">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 mb-3 sm:mb-4">
+      <div className="mb-3 sm:mb-4">
         <h3 className="text-xs sm:text-sm font-bold text-gray-800">Grafik Setoran Sampah (kg)</h3>
-        <button className="flex items-center gap-1 rounded-lg border border-gray-200 px-2 sm:px-2.5 py-1 sm:py-1.5 text-[11px] sm:text-xs text-gray-500 hover:bg-gray-50 transition-colors whitespace-nowrap">
-          7 Hari Terakhir
-          <ChevronDown className="h-2.5 sm:h-3 w-2.5 sm:w-3" />
-        </button>
       </div>
 
       <div className="h-[150px] sm:h-[180px] lg:h-[200px]">
