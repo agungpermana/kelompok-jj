@@ -60,7 +60,8 @@ export default function HargaPoinTable({
 
   return (
     <div className="bg-white rounded-lg sm:rounded-xl border border-gray-200/80 shadow-sm overflow-hidden">
-      <div className="overflow-x-auto">
+      {/* Desktop Table - hidden on mobile */}
+      <div className="hidden lg:block overflow-x-auto">
         <table className="w-full">
           <thead>
             <tr className="bg-gray-50/80">
@@ -173,6 +174,80 @@ export default function HargaPoinTable({
             )}
           </tbody>
         </table>
+      </div>
+
+      {/* Mobile Cards - visible only on mobile */}
+      <div className="lg:hidden">
+        {isLoading ? (
+          <div className="p-8 text-center text-sm text-gray-400">
+            <Loader2 className="h-6 w-6 animate-spin mx-auto mb-2 text-gray-300" />
+            Memuat data...
+          </div>
+        ) : items.length === 0 ? (
+          <div className="p-8 text-center text-sm text-gray-400">
+            Tidak ada data harga & poin ditemukan.
+          </div>
+        ) : (
+          <div className="space-y-4 p-4">
+            {items.map((item, idx) => {
+              const rowNumber = startIndex + idx + 1;
+              return (
+                <div key={item.id} className="border border-gray-200 rounded-lg p-4 bg-gray-50/30">
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold text-gray-900 text-sm truncate">{item.namaJenisSampah}</h3>
+                      <p className="text-xs text-gray-500 mt-0.5">#{rowNumber} • {item.kategori}</p>
+                    </div>
+                    <StatusBadge status={item.status} />
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-y-2 text-xs mb-3">
+                    <div>
+                      <span className="text-gray-500 block">Satuan:</span>
+                      <span className="text-gray-700 font-medium">{item.satuan}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-500 block">Harga:</span>
+                      <span className="text-green-700 font-bold">{formatRupiah(item.hargaPerSatuan)}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-500 block">Poin:</span>
+                      <span className="text-gray-900 font-medium">{item.nilaiPoinPerSatuan}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-500 block">Berlaku:</span>
+                      <span className="text-gray-700">{item.berlakuMulai}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-end gap-2 pt-3 border-t border-gray-200">
+                    <button
+                      onClick={() => onView(item)}
+                      className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                    >
+                      <Eye className="h-3.5 w-3.5" />
+                      Detail
+                    </button>
+                    <button
+                      onClick={() => onEdit(item)}
+                      className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
+                    >
+                      <Pencil className="h-3.5 w-3.5" />
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => onDelete(item)}
+                      className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                      Hapus
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 px-2 sm:px-3 lg:px-5 py-2 sm:py-2.5 lg:py-3 border-t border-gray-100">

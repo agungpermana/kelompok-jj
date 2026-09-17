@@ -498,8 +498,9 @@ export default function PetugasPage() {
           </p>
         </div>
 
-        {/* Table Content */}
-        <div className="overflow-x-auto">
+        {/* Desktop Table & Mobile Cards */}
+        {/* Desktop Table - hidden on mobile */}
+        <div className="hidden lg:block overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-gray-50/70 border-b border-gray-100">
@@ -630,6 +631,91 @@ export default function PetugasPage() {
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile Cards - visible only on mobile */}
+        <div className="lg:hidden space-y-4 px-2">
+          {isLoading ? (
+            <div className="text-center py-16 text-sm text-gray-400">
+              <Loader2 className="h-7 w-7 animate-spin mx-auto mb-3 text-[#16a34a]" />
+              Memuat data petugas...
+            </div>
+          ) : petugasList.length === 0 ? (
+            <div className="text-center py-16 text-sm text-gray-400">
+              <div className="flex flex-col items-center justify-center">
+                <User className="h-9 w-9 text-gray-300 mb-2" />
+                <p className="font-medium text-gray-500">Tidak ada data petugas ditemukan.</p>
+                <p className="text-xs text-gray-400 mt-1">Coba sesuaikan kata kunci pencarian atau filter.</p>
+              </div>
+            </div>
+          ) : (
+            petugasList.map((petugas, idx) => {
+              const rowNumber = (pagination.current_page - 1) * pagination.per_page + idx + 1;
+              const isAktif = petugas.user?.status === 'aktif';
+
+              return (
+                <div key={petugas.petugas_id} className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
+                  <div className="flex items-start gap-3 mb-3">
+                    <PetugasAvatar nama={petugas.nama_petugas} jenisKelamin={petugas.jenis_kelamin} />
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold text-gray-900 text-sm truncate">{petugas.nama_petugas}</h3>
+                      <p className="text-xs text-gray-500 mt-0.5">Petugas #{rowNumber}</p>
+                    </div>
+                    <span
+                      className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold flex-shrink-0 ${
+                        isAktif ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-600'
+                      }`}
+                    >
+                      {isAktif ? 'Aktif' : 'Nonaktif'}
+                    </span>
+                  </div>
+                  
+                  <div className="space-y-2 text-xs">
+                    <div className="flex justify-between">
+                      <span className="text-gray-500">No. Telepon:</span>
+                      <span className="text-gray-700 font-medium">{petugas.no_telepon || '-'}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-500">Jenis Kelamin:</span>
+                      <span className="text-gray-700">{petugas.jenis_kelamin}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-500">Tgl. Bergabung:</span>
+                      <span className="text-gray-700">{formatDate(petugas.created_at)}</span>
+                    </div>
+                    <div className="pt-1">
+                      <div className="text-gray-500 mb-1">Area Tugas:</div>
+                      <div className="text-gray-700 text-xs leading-relaxed">{petugas.alamat || '-'}</div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-end gap-2 mt-4 pt-3 border-t border-gray-100">
+                    <button
+                      onClick={() => openDetailModal(petugas)}
+                      className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-emerald-600 bg-emerald-50 rounded-lg hover:bg-emerald-100 transition-colors"
+                    >
+                      <Eye className="h-3.5 w-3.5" />
+                      Detail
+                    </button>
+                    <button
+                      onClick={() => openEditModal(petugas)}
+                      className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
+                    >
+                      <Edit2 className="h-3.5 w-3.5" />
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => openDeleteModal(petugas)}
+                      className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-rose-600 bg-rose-50 rounded-lg hover:bg-rose-100 transition-colors"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                      Hapus
+                    </button>
+                  </div>
+                </div>
+              );
+            })
+          )}
         </div>
 
         {/* Pagination Controls */}
