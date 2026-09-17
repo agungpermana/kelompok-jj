@@ -108,7 +108,7 @@ export default function Sidebar({ menuSections, logo, profileCard }: SidebarProp
         data-collapsed={collapsed ? 'true' : 'false'}
         className={`fixed top-0 left-0 z-40 flex h-screen flex-col bg-white border-r border-gray-200 transition-all duration-300 ease-in-out ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        } lg:static lg:translate-x-0 ${sidebarWidth}`}
+        } lg:sticky lg:top-0 lg:translate-x-0 shrink-0 ${sidebarWidth}`}
       >
         {/* Logo dengan Close Button untuk Mobile */}
         <div className={`flex items-center border-b border-gray-100 transition-all duration-300 ${

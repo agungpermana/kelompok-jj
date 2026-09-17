@@ -9,7 +9,7 @@ function PetugasLayoutInner({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex min-h-screen bg-[#f4f6f8]">
-      <div style={{ '--sidebar-w': collapsed ? '72px' : '260px' } as React.CSSProperties}>
+      <div className="shrink-0" style={{ '--sidebar-w': collapsed ? '72px' : '260px' } as React.CSSProperties}>
         <Sidebar menuSections={petugasMenus} />
       </div>
       <main className="flex-1 p-3 sm:p-4 lg:p-5 xl:p-6 mt-12 lg:mt-0 min-w-0 overflow-x-hidden">
