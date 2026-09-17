@@ -235,6 +235,18 @@ class PengepulController extends Controller
             'nama_pengepul' => 'required|string|max:100',
             'alamat' => 'nullable|string',
             'no_telepon' => 'nullable|string|max:20',
+        ], [
+            'username.required' => 'Username wajib diisi.',
+            'username.unique' => 'Username sudah digunakan, gunakan username lain.',
+            'username.max' => 'Username maksimal 50 karakter.',
+            'email.required' => 'Email wajib diisi.',
+            'email.email' => 'Format email tidak valid.',
+            'email.unique' => 'Email sudah digunakan, gunakan email lain.',
+            'password.required' => 'Password wajib diisi.',
+            'password.min' => 'Password minimal 6 karakter.',
+            'nama_pengepul.required' => 'Nama pengepul wajib diisi.',
+            'nama_pengepul.max' => 'Nama pengepul maksimal 100 karakter.',
+            'no_telepon.max' => 'Nomor telepon maksimal 20 karakter.',
         ]);
 
         DB::beginTransaction();
@@ -363,6 +375,12 @@ class PengepulController extends Controller
             'no_telepon' => 'nullable|string|max:20',
             'password' => ['nullable', 'string', Password::min(6)],
             'status' => 'nullable|string|in:aktif,nonaktif',
+        ], [
+            'nama_pengepul.required' => 'Nama pengepul wajib diisi.',
+            'nama_pengepul.max' => 'Nama pengepul maksimal 100 karakter.',
+            'no_telepon.max' => 'Nomor telepon maksimal 20 karakter.',
+            'password.min' => 'Password minimal 6 karakter.',
+            'status.in' => 'Status harus aktif atau nonaktif.',
         ]);
 
         DB::beginTransaction();

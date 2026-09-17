@@ -84,21 +84,37 @@ class LaporanDataController extends Controller
     {
         [$start, $end] = $this->getDateRange($request);
 
-        $data = TransaksiPenjualan::with('pengepul')
+        $data = TransaksiPenjualan::with('pengepul', 'detailPenjualan.jenisSampah')
             ->whereBetween('tanggal_transaksi', [$start, $end])
             ->orderBy('tanggal_transaksi', 'desc')
             ->get();
 
         return response()->json([
-            'data' => $data->map(fn ($item) => [
-                'penjualan_id' => $item->penjualan_id,
-                'tanggal' => $item->tanggal_transaksi->format('d/m/Y'),
-                'nama_pengepul' => $item->pengepul->nama_pengepul ?? '-',
-                'total' => (float) $item->total_penjualan,
-                'status' => $item->status_transaksi,
-            ]),
+            'data' => $data->map(function ($item) {
+                $totalBerat = $item->detailPenjualan->sum('jumlah_terjual');
+
+                return [
+                    'penjualan_id' => $item->penjualan_id,
+                    'tanggal' => $item->tanggal_transaksi->format('d/m/Y'),
+                    'nama_pengepul' => $item->pengepul->nama_pengepul ?? '-',
+                    'media_konfirmasi' => $item->media_konfirmasi ?? '-',
+                    'metode_transaksi' => $item->metode_transaksi ?? '-',
+                    'detail_penjualan' => $item->detailPenjualan->map(fn ($d) => [
+                        'detail_penjualan_id' => $d->detail_penjualan_id,
+                        'jenis_sampah_id' => $d->jenis_sampah_id,
+                        'nama_jenis_sampah' => $d->jenisSampah->nama_jenis_sampah ?? '-',
+                        'jumlah_terjual' => (float) $d->jumlah_terjual,
+                        'harga_satuan' => (float) $d->harga_satuan,
+                        'subtotal' => (float) $d->subtotal,
+                    ]),
+                    'total_berat' => (float) $totalBerat,
+                    'total' => (float) $item->total_penjualan,
+                    'status' => $item->status_transaksi,
+                ];
+            }),
             'summary' => [
                 'total' => $data->count(),
+                'total_berat' => (float) $data->sum(fn ($item) => $item->detailPenjualan->sum('jumlah_terjual')),
                 'total_penjualan' => (float) $data->sum('total_penjualan'),
             ],
             'range' => ['dari' => $start->format('Y-m-d'), 'sampai' => $end->format('Y-m-d')],

@@ -31,31 +31,41 @@
     <table>
         <thead>
             <tr>
-                <th>No</th>
+                <th>No. Transaksi</th>
                 <th>Tanggal</th>
                 <th>Pengepul</th>
-                <th>Status</th>
-                <th>Total Penjualan</th>
+                <th>Media</th>
+                <th>Metode</th>
+                <th>Jenis Sampah</th>
+                <th>Total Berat</th>
+                <th>Total Harga</th>
             </tr>
         </thead>
         <tbody>
             @forelse($data as $item)
+            @php
+                $totalBerat = $item->detailPenjualan->sum('jumlah_terjual');
+            @endphp
             <tr>
-                <td>{{ $loop->iteration }}</td>
+                <td>PJL-{{ str_pad($item->penjualan_id, 4, '0', STR_PAD_LEFT) }}</td>
                 <td>{{ $item->tanggal_transaksi->format('d/m/Y') }}</td>
                 <td>{{ $item->pengepul->nama_pengepul ?? '-' }}</td>
-                <td>{{ $item->status_transaksi ?? '-' }}</td>
+                <td>{{ $item->media_konfirmasi ?? '-' }}</td>
+                <td>{{ $item->metode_transaksi ?? '-' }}</td>
+                <td>{{ $item->detailPenjualan->pluck('jenisSampah.nama_jenis_sampah')->implode(', ') ?: '-' }}</td>
+                <td>{{ number_format($totalBerat, 1, ',', '.') }} kg</td>
                 <td>Rp {{ number_format($item->total_penjualan, 0, ',', '.') }}</td>
             </tr>
             @empty
             <tr>
-                <td colspan="5" style="text-align:center;">Tidak ada data</td>
+                <td colspan="7" style="text-align:center;">Tidak ada data</td>
             </tr>
             @endforelse
         </tbody>
     </table>
     <div class="summary">
         <p><strong>Total Transaksi:</strong> {{ $data->count() }}</p>
+        <p><strong>Total Berat:</strong> {{ number_format($data->sum(fn($item) => $item->detailPenjualan->sum('jumlah_terjual')), 1, ',', '.') }} kg</p>
         <p><strong>Total Penjualan:</strong> Rp {{ number_format($totalPenjualan, 0, ',', '.') }}</p>
     </div>
     <div class="footer">

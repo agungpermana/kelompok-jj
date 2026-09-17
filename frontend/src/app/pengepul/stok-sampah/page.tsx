@@ -13,7 +13,7 @@ import {
   RefreshCw,
   MessageCircle,
 } from 'lucide-react';
-import { detectIconType } from '@/services/hargaPoinService';
+import WasteIcon from '@/components/common/WasteIcon';
 
 interface StokItem {
   stok_id: number;
@@ -226,10 +226,10 @@ export default function StokSampahPage() {
       </div>
 
       {/* Filter Toolbar */}
-      <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 mb-5">
-        <div className="flex flex-wrap items-center gap-3 flex-1">
-          <div className="relative min-w-[260px] flex-1 max-w-[360px]">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+      <div className="bg-white rounded-2xl p-5 mb-5 border border-gray-100">
+        <div className="flex flex-col gap-4">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
               type="text"
               value={searchQuery}
@@ -238,18 +238,20 @@ export default function StokSampahPage() {
                 setCurrentPage(1);
               }}
               placeholder="Cari jenis sampah..."
-              className="w-full pl-10 pr-4 py-2.5 rounded-lg sm:rounded-xl bg-white border border-gray-200 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 shadow-2xs transition"
+              className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
             />
           </div>
-        </div>
 
-        <button
-          onClick={() => hubungiAdmin()}
-          className="flex items-center justify-center gap-2 bg-[#16a34a] hover:bg-[#15803d] text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-sm transition-colors"
-        >
-          <MessageCircle className="h-4 w-4" />
-          Hubungi Admin
-        </button>
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              onClick={() => hubungiAdmin()}
+              className="flex items-center justify-center gap-2 bg-[#16a34a] hover:bg-[#15803d] text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-sm transition-colors"
+            >
+              <MessageCircle className="h-4 w-4" />
+              Hubungi Admin
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* Summary */}
@@ -290,7 +292,6 @@ export default function StokSampahPage() {
               ) : (
                 currentItems.map((item, idx) => {
                   const itemIndex = startIndex + idx + 1;
-                  const iconType = detectIconType(item.nama_jenis_sampah);
                   return (
                     <tr key={item.stok_id || item.jenis_sampah_id || idx} className="hover:bg-gray-50/50 transition-colors">
                       <td className="py-3 px-5 text-center text-xs font-medium text-gray-500">
@@ -298,21 +299,7 @@ export default function StokSampahPage() {
                       </td>
                       <td className="py-3 px-5">
                         <div className="flex items-center gap-3">
-                          <span
-                            className={`relative flex h-9 sm:h-10 w-9 sm:w-10 flex-shrink-0 items-center justify-center rounded-lg sm:rounded-xl text-lg ${iconType === 'botol-plastik' ? 'bg-blue-50' :
-                              iconType === 'kardus' || iconType === 'kertas-hvs' || iconType === 'koran' ? 'bg-amber-50' :
-                                iconType === 'aluminium' || iconType === 'kaleng' || iconType === 'besi' ? 'bg-slate-100' :
-                                  iconType === 'kaca-bening' || iconType === 'kaca-warna' || iconType === 'kaca-pecah' ? 'bg-cyan-50' :
-                                    iconType === 'gelas-plastik' || iconType === 'kresek' ? 'bg-sky-50' :
-                                      'bg-green-50'
-                              }`}
-                          >
-                            {iconType === 'botol-plastik' || iconType === 'gelas-plastik' || iconType === 'kresek' ? '🧴' :
-                              iconType === 'kardus' || iconType === 'kertas-hvs' || iconType === 'koran' ? '📦' :
-                                iconType === 'aluminium' || iconType === 'kaleng' || iconType === 'besi' ? '🛢️' :
-                                  iconType === 'kaca-bening' || iconType === 'kaca-warna' || iconType === 'kaca-pecah' ? '🍾' :
-                                    '♻️'}
-                          </span>
+                          <WasteIcon type={item.nama_jenis_sampah} size={20} />
                           <div>
                             <span className="font-semibold text-gray-800 text-sm block">
                               {item.nama_jenis_sampah}

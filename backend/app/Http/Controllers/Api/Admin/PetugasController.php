@@ -153,6 +153,20 @@ class PetugasController extends Controller
             'alamat' => 'nullable|string',
             'no_telepon' => 'nullable|string|max:20',
             'status' => 'nullable|string|in:aktif,nonaktif',
+        ], [
+            'username.required' => 'Username wajib diisi.',
+            'username.unique' => 'Username sudah digunakan, gunakan username lain.',
+            'username.max' => 'Username maksimal 50 karakter.',
+            'email.required' => 'Email wajib diisi.',
+            'email.email' => 'Format email tidak valid.',
+            'email.unique' => 'Email sudah digunakan, gunakan email lain.',
+            'password.required' => 'Password wajib diisi.',
+            'password.min' => 'Password minimal 6 karakter.',
+            'nama_petugas.required' => 'Nama petugas wajib diisi.',
+            'nama_petugas.max' => 'Nama petugas maksimal 100 karakter.',
+            'jenis_kelamin.required' => 'Jenis kelamin wajib dipilih.',
+            'no_telepon.max' => 'Nomor telepon maksimal 20 karakter.',
+            'status.in' => 'Status harus aktif atau nonaktif.',
         ]);
 
         DB::beginTransaction();
@@ -266,6 +280,13 @@ class PetugasController extends Controller
             'no_telepon' => 'nullable|string|max:20',
             'status' => 'nullable|string|in:aktif,nonaktif',
             'password' => ['nullable', 'string', Password::min(6)],
+        ], [
+            'nama_petugas.required' => 'Nama petugas wajib diisi.',
+            'nama_petugas.max' => 'Nama petugas maksimal 100 karakter.',
+            'jenis_kelamin.required' => 'Jenis kelamin wajib dipilih.',
+            'no_telepon.max' => 'Nomor telepon maksimal 20 karakter.',
+            'status.in' => 'Status harus aktif atau nonaktif.',
+            'password.min' => 'Password minimal 6 karakter.',
         ]);
 
         DB::beginTransaction();

@@ -222,26 +222,35 @@ export default function LaporanPage() {
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-gray-100 bg-gray-50/50">
-              <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs uppercase">No</th>
+              <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs uppercase">No. Transaksi</th>
               <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs uppercase">Tanggal</th>
               <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs uppercase">Pengepul</th>
-              <th className="text-right px-4 py-3 font-semibold text-gray-600 text-xs uppercase">Total</th>
-              <th className="text-center px-4 py-3 font-semibold text-gray-600 text-xs uppercase">Status</th>
+              <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs uppercase">Media</th>
+              <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs uppercase">Metode</th>
+              <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs uppercase">Jenis Sampah</th>
+              <th className="text-right px-4 py-3 font-semibold text-gray-600 text-xs uppercase">Total Berat</th>
+              <th className="text-right px-4 py-3 font-semibold text-gray-600 text-xs uppercase">Total Harga</th>
             </tr>
           </thead>
           <tbody>
-            {data.map((item, idx) => (
+            {data.map((item) => (
               <tr key={item.penjualan_id} className="border-b border-gray-50 hover:bg-gray-50/50">
-                <td className="px-4 py-3 text-gray-700">{idx + 1}</td>
+                <td className="px-4 py-3 font-bold text-gray-900">PJL-{String(item.penjualan_id).padStart(4, '0')}</td>
                 <td className="px-4 py-3 text-gray-700">{item.tanggal}</td>
-                <td className="px-4 py-3 font-medium text-gray-800">{item.nama_pengepul}</td>
-                <td className="px-4 py-3 text-right font-semibold text-[#16a34a]">{formatRupiah(item.total)}</td>
-                <td className="px-4 py-3 text-center">
-                  <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-semibold ${
-                    item.status === 'selesai' ? 'bg-emerald-50 text-emerald-700' :
-                    'bg-yellow-50 text-yellow-700'
-                  }`}>{item.status}</span>
+                <td className="px-4 py-3 font-semibold text-gray-800">{item.nama_pengepul}</td>
+                <td className="px-4 py-3 text-gray-600">{item.media_konfirmasi}</td>
+                <td className="px-4 py-3 text-gray-600">{item.metode_transaksi}</td>
+                <td className="px-4 py-3">
+                  <div className="flex flex-wrap gap-1">
+                    {item.detail_penjualan?.map((d: any) => (
+                      <span key={d.detail_penjualan_id} className="inline-flex px-2 py-0.5 bg-gray-100 text-gray-600 text-[10px] rounded-md">
+                        {d.nama_jenis_sampah}
+                      </span>
+                    ))}
+                  </div>
                 </td>
+                <td className="px-4 py-3 text-right font-semibold text-gray-900">{safeToFixed(item.total_berat, 1)} kg</td>
+                <td className="px-4 py-3 text-right font-semibold text-[#16a34a]">{formatRupiah(item.total)}</td>
               </tr>
             ))}
           </tbody>
@@ -430,6 +439,7 @@ export default function LaporanPage() {
         {activeTab === 'penjualan' && (
           <>
             <SummaryCard label="Total Transaksi" value={summary.total || 0} />
+            <SummaryCard label="Total Berat" value={`${safeToFixed(summary.total_berat, 1)} kg`} />
             <SummaryCard label="Total Penjualan" value={formatRupiah(summary.total_penjualan || 0)} />
           </>
         )}

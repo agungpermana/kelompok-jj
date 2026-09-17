@@ -968,13 +968,13 @@ export default function PengajuanPenjemputanPage() {
 
             {/* Search Input */}
             <div className="relative">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
               <input
                 type="text"
                 value={catalogSearch}
                 onChange={(e) => setCatalogSearch(e.target.value)}
                 placeholder="Cari jenis sampah (misal: Kardus, Botol, Kaca)..."
-                className="w-full bg-gray-50 border border-gray-200 rounded-lg sm:rounded-xl pl-10 pr-4 py-2 text-xs font-medium text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-[#16a34a] transition"
+                className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
               />
             </div>
 

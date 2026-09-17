@@ -37,6 +37,26 @@ interface ApiErrorResponse {
   message?: string;
 }
 
+export function terjemahkanErrorPengepul(pesan?: string, fallback = 'Terjadi kesalahan. Silakan periksa kembali data yang dimasukkan.'): string {
+  if (!pesan) return fallback;
+  const p = pesan.trim();
+  if (/the given data was invalid/i.test(p)) return 'Data yang dimasukkan tidak valid. Silakan periksa kembali isian Anda.';
+  if (/failed to fetch|networkerror|network request failed/i.test(p)) return 'Gagal terhubung ke server. Periksa koneksi internet Anda.';
+  if (/unauthenticated/i.test(p)) return 'Sesi Anda telah berakhir. Silakan masuk kembali.';
+  if (/no query results for model/i.test(p)) return 'Data tidak ditemukan.';
+  if (/^the .* (field|must|is|has|should)/i.test(p)) return 'Data yang dimasukkan tidak valid. Silakan periksa kembali isian Anda.';
+  return p;
+}
+
+function ambilPesanError(json: Record<string, unknown>, fallback: string): string {
+  const errors = (json.errors ?? null) as Record<string, string[]> | null;
+  if (errors) {
+    const pertama = Object.values(errors).flat().filter(Boolean)[0];
+    if (pertama) return terjemahkanErrorPengepul(pertama);
+  }
+  return terjemahkanErrorPengepul((json.message as string | undefined) || '', fallback);
+}
+
 export async function getAdminToken(): Promise<string | null> {
   if (typeof window === 'undefined') return null;
   const token = localStorage.getItem('trashure_token');
@@ -167,16 +187,7 @@ export async function createPengepulInDB(
 
   const json: ApiSuccessResponse = await res.json();
   if (!res.ok) {
-    const message =
-      (json as ApiErrorResponse).message || 'Gagal menambahkan pengepul ke database.';
-    const errors = ((json as Record<string, unknown>).errors ?? null) as
-      | Record<string, string[]>
-      | null;
-    if (errors) {
-      const firstError = Object.values(errors).flat()[0];
-      throw new Error(firstError || message);
-    }
-    throw new Error(message);
+    throw new Error(ambilPesanError(json as unknown as Record<string, unknown>, 'Gagal menambahkan pengepul ke database.'));
   }
   return json.data ?? {};
 }
@@ -210,16 +221,7 @@ export async function updatePengepulInDB(
 
   const json: ApiSuccessResponse = await res.json();
   if (!res.ok) {
-    const message =
-      (json as ApiErrorResponse).message || 'Gagal memperbarui pengepul di database.';
-    const errors = ((json as Record<string, unknown>).errors ?? null) as
-      | Record<string, string[]>
-      | null;
-    if (errors) {
-      const firstError = Object.values(errors).flat()[0];
-      throw new Error(firstError || message);
-    }
-    throw new Error(message);
+    throw new Error(ambilPesanError(json as unknown as Record<string, unknown>, 'Gagal memperbarui pengepul di database.'));
   }
   return json.data ?? {};
 }
@@ -242,7 +244,7 @@ export async function deletePengepulFromDB(
 
   const json: { message?: string } = await res.json();
   if (!res.ok) {
-    throw new Error(json.message || 'Gagal menghapus pengepul dari database.');
+    throw new Error(terjemahkanErrorPengepul(json.message, 'Gagal menghapus pengepul dari database.'));
   }
   return { message: json.message || 'Data pengepul berhasil dihapus.' };
 }
