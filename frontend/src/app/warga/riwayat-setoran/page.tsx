@@ -700,7 +700,7 @@ export default function RiwayatSetoranPage() {
 
                         <div>
                           <p className="text-[11px] text-gray-400 font-medium">
-                            {isMenunggu ? 'Poin Perkiraan' : 'Poin Diterima'}
+                            {isMenunggu ? 'Poin Sementara' : 'Poin Diterima'}
                           </p>
                           <p
                             className={`text-sm font-extrabold ${isDisetujui
@@ -712,7 +712,9 @@ export default function RiwayatSetoranPage() {
                           >
                             {isDitolak
                               ? '0 poin'
-                              : `${formatNumber((item as any).total_poin ?? item.total_poin_sementara)} poin`}
+                              : isMenunggu
+                                ? `${formatNumber(item.total_poin_sementara)} poin`
+                                : `${formatNumber(item.total_poin)} poin`}
                           </p>
                         </div>
                       </div>
@@ -957,11 +959,15 @@ export default function RiwayatSetoranPage() {
                   </span>
                 </div>
                 <div>
-                  <span className="text-gray-400 block font-medium">Poin Setoran</span>
+                  <span className="text-gray-400 block font-medium">
+                    {selectedSetoran.status_validasi === 'menunggu' ? 'Poin Sementara' : 'Poin Setoran'}
+                  </span>
                   <span className="font-bold text-[#16a34a]">
-                    {selectedSetoran.status_validasi === 'menunggu'
-                      ? 'Menunggu Validasi'
-                      : `${formatNumber((selectedSetoran as any).total_poin ?? selectedSetoran.total_poin_sementara)} poin`}
+                    {selectedSetoran.status_validasi === 'ditolak'
+                      ? '0 poin'
+                      : selectedSetoran.status_validasi === 'menunggu'
+                        ? `${formatNumber(selectedSetoran.total_poin_sementara)} poin`
+                        : `${formatNumber(selectedSetoran.total_poin)} poin`}
                   </span>
                 </div>
                 <div>
@@ -1043,7 +1049,9 @@ export default function RiwayatSetoranPage() {
                             <td className="py-3 px-3 text-right font-bold text-gray-900">
                               {selectedSetoran.status_validasi === 'ditolak'
                                 ? '0 poin'
-                                : `${formatNumber((d as any).poin ?? d.poin_sementara)} poin`}
+                                : selectedSetoran.status_validasi === 'menunggu'
+                                  ? `${formatNumber(d.poin_sementara ?? d.poin)} poin`
+                                  : `${formatNumber(d.poin)} poin`}
                             </td>
                           </tr>
                         ))

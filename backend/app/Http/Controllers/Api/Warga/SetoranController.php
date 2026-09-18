@@ -133,6 +133,7 @@ class SetoranController extends Controller
             'total_berat_aktual' => (float)$pengajuan->perkiraan_total_berat,
             'total_poin' => 0,
             'poin' => 0,
+            'total_poin_sementara' => 0,
             'detail_setoran' => $detailSetoran,
             'petugas' => $pengajuan->jadwalPenjemputan?->petugas ? [
                 'petugas_id' => $pengajuan->jadwalPenjemputan->petugas->petugas_id,
