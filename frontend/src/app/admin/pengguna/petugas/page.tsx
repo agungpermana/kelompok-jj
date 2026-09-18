@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import AdminHeader from '@/components/layout/header';
+import { apiFetch } from '@/lib/api';
 import {
   Search,
   Plus,
@@ -184,9 +185,6 @@ export default function PetugasPage() {
     return null;
   };
 
-  const token = typeof window !== 'undefined' ? localStorage.getItem('trashure_token') : null;
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
-
   const fetchPetugas = useCallback(
     async (page = 1, searchQuery = '', status = '', area = '') => {
       try {
@@ -195,12 +193,7 @@ export default function PetugasPage() {
         if (status) params.append('status', status);
         if (area) params.append('area', area);
 
-        const res = await fetch(`${apiUrl}/admin/petugas?${params}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: 'application/json',
-          },
-        });
+        const res = await apiFetch(`/admin/petugas?${params}`);
 
         if (!res.ok) {
           throw new Error('Gagal mengambil data dari server.');
@@ -221,7 +214,7 @@ export default function PetugasPage() {
         setIsLoading(false);
       }
     },
-    [apiUrl, token]
+    []
   );
 
   useEffect(() => {
@@ -233,12 +226,7 @@ export default function PetugasPage() {
         if (statusFilter) params.append('status', statusFilter);
         if (areaFilter) params.append('area', areaFilter);
 
-        const res = await fetch(`${apiUrl}/admin/petugas?${params}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: 'application/json',
-          },
-        });
+        const res = await apiFetch(`/admin/petugas?${params}`);
 
         if (!res.ok) {
           throw new Error('Gagal mengambil data dari server.');
@@ -268,7 +256,7 @@ export default function PetugasPage() {
     return () => {
       ignore = true;
     };
-  }, [apiUrl, token, search, statusFilter, areaFilter]);
+  }, [search, statusFilter, areaFilter]);
 
   // Extract unique areas for the Area filter dropdown
   const uniqueAreas = useMemo(() => {
@@ -334,8 +322,8 @@ export default function PetugasPage() {
 
     try {
       const url = editingPetugas
-        ? `${apiUrl}/admin/petugas/${editingPetugas.petugas_id}`
-        : `${apiUrl}/admin/petugas`;
+        ? `/admin/petugas/${editingPetugas.petugas_id}`
+        : `/admin/petugas`;
 
       const method = editingPetugas ? 'PUT' : 'POST';
 
@@ -344,12 +332,10 @@ export default function PetugasPage() {
         delete body.password;
       }
 
-      const res = await fetch(url, {
+      const res = await apiFetch(url, {
         method,
         headers: {
-          Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
-          Accept: 'application/json',
         },
         body: JSON.stringify(body),
       });
@@ -382,12 +368,8 @@ export default function PetugasPage() {
     setIsSubmitting(true);
 
     try {
-      const res = await fetch(`${apiUrl}/admin/petugas/${deletingPetugas.petugas_id}`, {
+      const res = await apiFetch(`/admin/petugas/${deletingPetugas.petugas_id}`, {
         method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          Accept: 'application/json',
-        },
       });
 
       const data = await res.json();

@@ -1,6 +1,5 @@
 import { PengepulFormData, PengepulItem, PengepulUpdateData, PengepulUser, StatusUser } from '@/types/pengepul';
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+import { apiFetch } from '@/lib/api';
 
 interface PengepulPagination {
   current_page: number;
@@ -59,33 +58,7 @@ function ambilPesanError(json: Record<string, unknown>, fallback: string): strin
 
 export async function getAdminToken(): Promise<string | null> {
   if (typeof window === 'undefined') return null;
-  const token = localStorage.getItem('trashure_token');
-  if (token) return token;
-
-  try {
-    const res = await fetch(`${API_BASE_URL}/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-      body: JSON.stringify({
-        login: 'admin@trashure.test',
-        password: 'password',
-      }),
-    });
-    if (res.ok) {
-      const data = await res.json();
-      if (data.token) {
-        localStorage.setItem('trashure_token', data.token);
-        localStorage.setItem('trashure_user', JSON.stringify(data.user));
-        return data.token;
-      }
-    }
-  } catch (err) {
-    console.warn('Auto admin login failed:', err);
-  }
-  return null;
+  return localStorage.getItem('trashure_token');
 }
 
 function mapUser(row: RawPengepulUser): PengepulUser {
@@ -118,23 +91,13 @@ export async function getPengepulFromDB(params?: {
   page?: number;
   per_page?: number;
 }): Promise<{ items: PengepulItem[]; pagination: PengepulPagination }> {
-  const token = await getAdminToken();
-  const headers: HeadersInit = {
-    Accept: 'application/json',
-  };
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
-
   const query = new URLSearchParams();
   if (params?.search) query.append('search', params.search);
   if (params?.status) query.append('status', params.status);
   if (params?.page) query.append('page', String(params.page));
   query.append('per_page', String(params?.per_page || 10));
 
-  const res = await fetch(`${API_BASE_URL}/admin/pengepul?${query.toString()}`, {
-    headers,
-  });
+  const res = await apiFetch(`/admin/pengepul?${query.toString()}`);
 
   if (!res.ok) {
     throw new Error('Gagal mengambil data pengepul dari database.');
@@ -163,18 +126,11 @@ export async function getPengepulFromDB(params?: {
 export async function createPengepulInDB(
   payload: PengepulFormData
 ): Promise<Record<string, unknown>> {
-  const token = await getAdminToken();
-  const headers: HeadersInit = {
-    'Content-Type': 'application/json',
-    Accept: 'application/json',
-  };
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
-
-  const res = await fetch(`${API_BASE_URL}/admin/pengepul`, {
+  const res = await apiFetch('/admin/pengepul', {
     method: 'POST',
-    headers,
+    headers: {
+      'Content-Type': 'application/json',
+    },
     body: JSON.stringify({
       username: payload.username,
       email: payload.email,
@@ -196,15 +152,6 @@ export async function updatePengepulInDB(
   pengepulId: number | string,
   payload: PengepulUpdateData
 ): Promise<Record<string, unknown>> {
-  const token = await getAdminToken();
-  const headers: HeadersInit = {
-    'Content-Type': 'application/json',
-    Accept: 'application/json',
-  };
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
-
   const body: Record<string, string | null> = {
     nama_pengepul: payload.namaPengepul,
     alamat: payload.alamat || null,
@@ -213,9 +160,11 @@ export async function updatePengepulInDB(
   if (payload.password) body.password = payload.password;
   if (payload.status) body.status = payload.status;
 
-  const res = await fetch(`${API_BASE_URL}/admin/pengepul/${pengepulId}`, {
+  const res = await apiFetch(`/admin/pengepul/${pengepulId}`, {
     method: 'PUT',
-    headers,
+    headers: {
+      'Content-Type': 'application/json',
+    },
     body: JSON.stringify(body),
   });
 
@@ -229,17 +178,8 @@ export async function updatePengepulInDB(
 export async function deletePengepulFromDB(
   pengepulId: number | string
 ): Promise<{ message: string }> {
-  const token = await getAdminToken();
-  const headers: HeadersInit = {
-    Accept: 'application/json',
-  };
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
-
-  const res = await fetch(`${API_BASE_URL}/admin/pengepul/${pengepulId}`, {
+  const res = await apiFetch(`/admin/pengepul/${pengepulId}`, {
     method: 'DELETE',
-    headers,
   });
 
   const json: { message?: string } = await res.json();

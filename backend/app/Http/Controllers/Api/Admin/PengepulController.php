@@ -455,8 +455,15 @@ class PengepulController extends Controller
         DB::beginTransaction();
 
         try {
+            $penjualanIds = \App\Models\TransaksiPenjualan::where('pengepul_id', $pengepul->pengepul_id)
+                ->pluck('penjualan_id');
+
+            if ($penjualanIds->isNotEmpty()) {
+                \App\Models\DetailPenjualan::whereIn('penjualan_id', $penjualanIds)->delete();
+                \App\Models\TransaksiPenjualan::whereIn('penjualan_id', $penjualanIds)->delete();
+            }
+
             $pengepul->user->delete();
-            $pengepul->delete();
 
             DB::commit();
 

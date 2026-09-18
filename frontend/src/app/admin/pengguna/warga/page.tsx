@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import AdminHeader from '@/components/layout/header';
+import { apiFetch } from '@/lib/api';
 import {
   Search,
   Plus,
@@ -117,18 +118,13 @@ export default function WargaPage() {
     return null;
   };
 
-  const token = typeof window !== 'undefined' ? localStorage.getItem('trashure_token') : null;
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
-
   const fetchWarga = useCallback(async (page = 1, searchQuery = '') => {
     setIsLoading(true);
     try {
       const params = new URLSearchParams({ page: String(page) });
       if (searchQuery) params.append('search', searchQuery);
 
-      const res = await fetch(`${apiUrl}/admin/warga?${params}`, {
-        headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
-      });
+      const res = await apiFetch(`/admin/warga?${params}`);
       const data = await res.json();
       setWargaList(data.data);
       setPagination({
@@ -142,7 +138,7 @@ export default function WargaPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [apiUrl, token]);
+  }, []);
 
   useEffect(() => {
     fetchWarga(1, search);
@@ -198,20 +194,18 @@ export default function WargaPage() {
 
     try {
       const url = editingWarga
-        ? `${apiUrl}/admin/warga/${editingWarga.warga_id}`
-        : `${apiUrl}/admin/warga`;
+        ? `/admin/warga/${editingWarga.warga_id}`
+        : `/admin/warga`;
 
       const method = editingWarga ? 'PUT' : 'POST';
 
       const body: Record<string, string> = { ...form };
       if (editingWarga && !body.password) delete body.password;
 
-      const res = await fetch(url, {
+      const res = await apiFetch(url, {
         method,
         headers: {
-          Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
-          Accept: 'application/json',
         },
         body: JSON.stringify(body),
       });
@@ -240,9 +234,8 @@ export default function WargaPage() {
     setIsSubmitting(true);
 
     try {
-      const res = await fetch(`${apiUrl}/admin/warga/${deletingWarga.warga_id}`, {
+      const res = await apiFetch(`/admin/warga/${deletingWarga.warga_id}`, {
         method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
       });
 
       const data = await res.json();
@@ -265,6 +258,11 @@ export default function WargaPage() {
       <AdminHeader
         title="Data Warga"
         subtitle="Kelola data warga bank sampah."
+        breadcrumbs={[
+          { label: 'Dashboard', href: '/admin/dashboard' },
+          { label: 'Master Data' },
+          { label: 'Warga' },
+        ]}
       />
 
       {message && (

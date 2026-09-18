@@ -358,8 +358,18 @@ class PetugasController extends Controller
         DB::beginTransaction();
 
         try {
+            $setoranIds = \App\Models\TransaksiSetoran::where('petugas_id', $petugas->petugas_id)
+                ->pluck('setoran_id');
+
+            if ($setoranIds->isNotEmpty()) {
+                \App\Models\DetailSetoran::whereIn('setoran_id', $setoranIds)->delete();
+                \App\Models\TransaksiSetoran::whereIn('setoran_id', $setoranIds)->delete();
+            }
+
+            \App\Models\JadwalPenjemputan::where('petugas_id', $petugas->petugas_id)->delete();
+
             if ($petugas->user) {
-                $petugas->user->delete(); // Karena foreign key cascadeOnDelete, petugas juga akan terhapus atau dihapus eksplisit
+                $petugas->user->delete();
             } else {
                 $petugas->delete();
             }

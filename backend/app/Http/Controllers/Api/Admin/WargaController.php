@@ -412,8 +412,26 @@ class WargaController extends Controller
         DB::beginTransaction();
 
         try {
+            $setoranIds = \App\Models\TransaksiSetoran::where('warga_id', $warga->warga_id)
+                ->pluck('setoran_id');
+
+            if ($setoranIds->isNotEmpty()) {
+                \App\Models\DetailSetoran::whereIn('setoran_id', $setoranIds)->delete();
+                \App\Models\TransaksiSetoran::whereIn('setoran_id', $setoranIds)->delete();
+            }
+
+            \App\Models\PenukaranPoin::where('warga_id', $warga->warga_id)->delete();
+
+            $pengajuanIds = \App\Models\PengajuanPenjemputan::where('warga_id', $warga->warga_id)
+                ->pluck('pengajuan_id');
+
+            if ($pengajuanIds->isNotEmpty()) {
+                \App\Models\DetailPengajuanSampah::whereIn('pengajuan_id', $pengajuanIds)->delete();
+                \App\Models\JadwalPenjemputan::whereIn('pengajuan_id', $pengajuanIds)->delete();
+                \App\Models\PengajuanPenjemputan::whereIn('pengajuan_id', $pengajuanIds)->delete();
+            }
+
             $warga->user->delete();
-            $warga->delete();
 
             DB::commit();
 
