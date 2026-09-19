@@ -29,6 +29,8 @@ class SetoranController extends Controller
         if ($status && $status !== 'semua') {
             if ($status === 'menunggu_validasi' || $status === 'menunggu') {
                 $items = $items->filter(fn($it) => $it['status_validasi'] === 'menunggu' && !in_array($it['status_pengajuan'] ?? '', ['ditolak', 'dibatalkan']));
+            } elseif ($status === 'diajukan') {
+                $items = $items->filter(fn($it) => ($it['status_pengajuan'] ?? '') === 'diajukan');
             } elseif ($status === 'ditolak') {
                 $items = $items->filter(fn($it) => $it['status_validasi'] === 'ditolak' || ($it['status_pengajuan'] ?? '') === 'ditolak');
             } elseif ($status === 'dibatalkan') {
@@ -102,10 +104,11 @@ class SetoranController extends Controller
             ] : null
         ])->values()->all();
 
-        $isDitolak = in_array($pengajuan->status_pengajuan, ['dibatalkan', 'ditolak']);
+        $isDibatalkan = $pengajuan->status_pengajuan === 'dibatalkan';
+        $isDitolak = $pengajuan->status_pengajuan === 'ditolak';
 
         $catatanValidasi = null;
-        if ($pengajuan->status_pengajuan === 'dibatalkan') {
+        if ($isDibatalkan) {
             $catatanValidasi = 'Pengajuan dibatalkan oleh warga';
             if ($pengajuan->catatan && preg_match('/Pembatalan:\s*(.+)$/i', $pengajuan->catatan, $cm)) {
                 $catatanValidasi .= ' (Alasan: ' . trim($cm[1]) . ')';
@@ -127,7 +130,7 @@ class SetoranController extends Controller
             'perkiraan_waktu_jemput' => $pref['waktu'],
             'tanggal_diajukan' => $pengajuan->tanggal_pengajuan?->format('Y-m-d H:i:s') ?? $pengajuan->created_at?->format('Y-m-d H:i:s'),
             'konfirmasi_pengambilan' => '0',
-            'status_validasi' => ($isDitolak ? 'ditolak' : 'menunggu'),
+            'status_validasi' => ($isDibatalkan ? 'dibatalkan' : ($isDitolak ? 'ditolak' : 'belum_disetor')),
             'catatan_validasi' => $catatanValidasi,
             'tanggal_validasi' => null,
             'total_berat_aktual' => (float)$pengajuan->perkiraan_total_berat,

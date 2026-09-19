@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect, useMemo } from 'react';
 import PetugasHeader from '@/components/layout/header';
-import WasteIcon from '@/components/common/WasteIcon';
+
 import { Search, RotateCcw, CheckCircle2, Clock, XCircle, Minus, Calendar, Eye, Loader2, FileText, MapPin, Phone, User as UserIcon } from 'lucide-react';
 
 interface DetailAktual { detail_setoran_id?: number; jenis_sampah_id: number; berat_aktual: number; jenis_sampah: { jenis_sampah_id: number; nama_jenis_sampah: string; }; }
@@ -188,7 +188,7 @@ export default function RiwayatPenjemputanPage() {
                     <td className="px-5 py-4"><div className="flex items-center gap-3"><div className={`h-8 w-8 rounded-full flex items-center justify-center flex-shrink-0 ${isSelesai ? 'bg-[#f0fdf4] text-[#16a34a]' : isBatal ? 'bg-[#fef2f2] text-[#dc2626]' : 'bg-[#eff6ff] text-[#2563eb]'}`}><Calendar size={14} /></div><div><p className="text-[13px] font-semibold text-gray-900">{new Date(j.tanggal_penjemputan).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}</p><p className="text-[11px] text-gray-500">{j.waktu_penjemputan?.slice(0, 5)}</p></div></div></td>
                     <td className="px-5 py-4"><p className="text-[13px] font-semibold text-gray-900">{j.pengajuan_penjemputan?.warga?.nama_warga}</p><p className="text-[11px] text-gray-500">{j.pengajuan_penjemputan?.warga?.no_telepon}</p></td>
                     <td className="px-5 py-4 text-[12px] text-gray-700 max-w-[160px] truncate">{j.pengajuan_penjemputan?.alamat_penjemputan}</td>
-                    <td className="px-5 py-4"><div className="space-y-1">{getSampahDisplay(j).map((d, i) => <div key={i} className="flex items-center gap-2 text-[12px] text-gray-700"><WasteIcon type={d.nama} size={14} />{d.nama}{d.isAktual && <span className="text-[9px] font-semibold text-emerald-600 bg-emerald-50 border border-emerald-100 rounded-full px-1.5 py-px">aktual</span>}</div>)}</div></td>
+                    <td className="px-5 py-4"><div className="space-y-1">{getSampahDisplay(j).map((d, i) => <div key={i} className="flex items-center gap-2 text-[12px] text-gray-700">{d.nama}{d.isAktual && <span className="text-[9px] font-semibold text-emerald-600 bg-emerald-50 border border-emerald-100 rounded-full px-1.5 py-px">aktual</span>}</div>)}</div></td>
                     <td className="px-5 py-4 text-[13px] font-semibold text-gray-900">{Number(getBeratDisplay(j) || 0).toFixed(1).replace('.', ',')} kg</td>
                     <td className="px-5 py-4">{isSelesai ? <span className="inline-flex px-2.5 py-1 rounded-lg bg-[#f0fdf4] text-[#15803d] text-[11px] font-semibold border border-green-100">Selesai</span> : isBatal ? <span className="inline-flex px-2.5 py-1 rounded-lg bg-[#fef2f2] text-[#b91c1c] text-[11px] font-semibold border border-red-100">Dibatalkan</span> : <span className="inline-flex px-2.5 py-1 rounded-lg bg-[#eff6ff] text-[#1d4ed8] text-[11px] font-semibold border border-blue-100">Dalam Proses</span>}</td>
                     <td className="px-5 py-4"><button onClick={() => { setSelected(j); setShowDetail(true); }} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg sm:rounded-xl border border-green-200 text-[#16a34a] bg-white hover:bg-green-50 text-[12px] font-medium"><Eye size={14} />Lihat Detail</button></td>
@@ -248,7 +248,6 @@ export default function RiwayatPenjemputanPage() {
                         <div className="space-y-1">
                           {getSampahDisplay(j).map((d, i) => (
                             <div key={i} className="flex items-center gap-2 text-xs text-gray-700">
-                              <WasteIcon type={d.nama} size={12} />
                               <span>{d.nama}</span>
                               {d.isAktual && (
                                 <span className="text-[9px] font-semibold text-emerald-600 bg-emerald-50 border border-emerald-100 rounded-full px-1.5 py-px">aktual</span>
@@ -387,7 +386,6 @@ export default function RiwayatPenjemputanPage() {
                       className="flex items-center justify-between p-3 rounded-lg sm:rounded-xl border border-gray-100 bg-gray-50/50"
                     >
                       <div className="flex items-center gap-2">
-                        <WasteIcon type={d.nama} size={18} />
                         <span className="font-semibold text-gray-800">{d.nama}</span>
                         {d.isAktual && (
                           <span className="text-[10px] font-semibold text-emerald-600 bg-emerald-50 border border-emerald-100 rounded-full px-1.5 py-0.5">

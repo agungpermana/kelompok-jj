@@ -53,7 +53,7 @@ export function PengajuanTable({ data }: { data: PengajuanRow[] }) {
     <div className="bg-white rounded-lg sm:rounded-xl border border-gray-200/80 shadow-sm overflow-hidden">
       <div className="flex items-center justify-between px-3 sm:px-4 lg:px-5 py-2.5 sm:py-3 lg:py-4 border-b border-gray-100">
         <h3 className="text-xs sm:text-sm font-bold text-gray-800">Pengajuan Penjemputan</h3>
-        <a href="#" className="text-[10px] sm:text-xs font-medium text-[#16a34a] hover:text-[#15803d] flex items-center gap-1 transition-colors whitespace-nowrap">
+        <a href="/admin/pengajuan-penjemputan" className="text-[10px] sm:text-xs font-medium text-[#16a34a] hover:text-[#15803d] flex items-center gap-1 transition-colors whitespace-nowrap">
           Lihat Semua <ExternalLink className="h-2.5 sm:h-3 w-2.5 sm:w-3" />
         </a>
       </div>
@@ -116,7 +116,7 @@ export function SetoranValidasiList({ data }: { data: SetoranRow[] }) {
     <div className="bg-white rounded-xl border border-gray-200/80 shadow-sm overflow-hidden">
       <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
         <h3 className="text-sm font-bold text-gray-800">Setoran Menunggu Validasi</h3>
-        <a href="/admin/setoran-sampah" className="text-xs font-medium text-[#16a34a] hover:text-[#15803d] flex items-center gap-1 transition-colors">
+        <a href="/admin/validasi-setoran" className="text-xs font-medium text-[#16a34a] hover:text-[#15803d] flex items-center gap-1 transition-colors">
           Lihat Semua <ExternalLink className="h-3 w-3" />
         </a>
       </div>

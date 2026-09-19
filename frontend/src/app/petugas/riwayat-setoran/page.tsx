@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect, useMemo } from 'react';
 import PetugasHeader from '@/components/layout/header';
-import WasteIcon from '@/components/common/WasteIcon';
+
 import { Search, RotateCcw, FileText, Scale, Star, CheckCircle2, XCircle, Eye, Loader2, MapPin, Phone, User as UserIcon } from 'lucide-react';
 
 interface DetailSetoran { detail_setoran_id: number; jenis_sampah_id: number; berat_aktual: number; harga_satuan: number; nilai_poin_per_satuan: number; poin: number; poin_sementara?: number; jenis_sampah: { jenis_sampah_id: number; nama_jenis_sampah: string; }; }
@@ -46,8 +46,13 @@ export default function RiwayatSetoranPage() {
         if (!warga.includes(q) && !jenis.includes(q) && !no.includes(q)) return false;
       }
       if (statusFilter !== 'Semua Status') {
-        const map: Record<string, string> = { 'Terverifikasi': 'disetujui', 'Menunggu Validasi': 'menunggu', 'Ditolak': 'ditolak' };
-        if (s.status_validasi !== map[statusFilter]) return false;
+        const map: Record<string, string> = { 'Diajukan': 'diajukan', 'Terverifikasi': 'disetujui', 'Menunggu Validasi': 'menunggu', 'Ditolak': 'ditolak' };
+        if (statusFilter === 'Diajukan') {
+          const sp = (s as any).status_pengajuan?.toLowerCase();
+          if (sp !== 'diajukan') return false;
+        } else {
+          if (s.status_validasi !== map[statusFilter]) return false;
+        }
       }
       if (tanggalDari || tanggalSampai) {
         const d = String(s.tanggal_setoran || '').slice(0, 10);
@@ -99,7 +104,7 @@ export default function RiwayatSetoranPage() {
         <div className="flex flex-col gap-4">
           <div className="relative"><Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" /><input value={search} onChange={e => { setSearch(e.target.value); setCurrentPage(1); }} placeholder="Cari nama warga, jenis sampah, atau no. transaksi..." className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500" /></div>
           <div className="flex flex-wrap items-center gap-3">
-            <div className="flex items-center bg-white border border-gray-200 rounded-2xl px-3 py-2 shadow-sm text-[13px]"><span className="text-gray-400 mr-2 text-xs">Status Validasi</span><select value={statusFilter} onChange={e => { setStatusFilter(e.target.value); setCurrentPage(1); }} className="bg-transparent font-medium text-gray-800 focus:outline-none cursor-pointer"><option>Semua Status</option><option>Terverifikasi</option><option>Menunggu Validasi</option><option>Ditolak</option></select></div>
+            <div className="flex items-center bg-white border border-gray-200 rounded-2xl px-3 py-2 shadow-sm text-[13px]"><span className="text-gray-400 mr-2 text-xs">Status Validasi</span><select value={statusFilter} onChange={e => { setStatusFilter(e.target.value); setCurrentPage(1); }} className="bg-transparent font-medium text-gray-800 focus:outline-none cursor-pointer"><option>Semua Status</option><option>Diajukan</option><option>Terverifikasi</option><option>Menunggu Validasi</option><option>Ditolak</option></select></div>
             <div className="flex items-center gap-2 text-sm text-gray-600">
               <span className="text-xs font-medium text-gray-500">Dari Tanggal</span>
               <input type="date" value={tanggalDari} max={tanggalSampai || undefined} onChange={e => { setTanggalDari(e.target.value); setCurrentPage(1); }} className="px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500" />
@@ -135,9 +140,9 @@ export default function RiwayatSetoranPage() {
                   <td className="px-5 py-4 align-top"><p className="text-[13px] font-bold text-gray-900">STN-2024-0822-{String(s.setoran_id).padStart(3, '0')}</p><p className="text-[11px] text-gray-400 mt-1">Dari Pengajuan</p><p className="text-[11px] font-semibold text-[#16a34a]">PGJ-2024-0822-{String(s.pengajuan_id).padStart(3, '0')}</p></td>
                   <td className="px-5 py-4 align-top"><p className="text-[13px] font-semibold text-gray-900">{s.warga.nama_warga}</p><p className="text-[11px] text-gray-500">{s.warga.no_telepon || '-'}</p><p className="text-[11px] text-gray-400">{s.warga.alamat?.split('/')[0]?.trim()}</p></td>
                   <td className="px-5 py-4 align-top text-[12px] text-gray-700">{new Date(s.tanggal_setoran).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}<br /><span className="text-gray-400">{new Date(s.tanggal_setoran).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</span></td>
-                  <td className="px-5 py-4 align-top"><div className="space-y-1.5">{(s.detail_setoran || []).map(d => <div key={d.detail_setoran_id} className="flex items-center justify-between gap-3 text-[12px]"><span className="flex items-center gap-2"><WasteIcon type={d.jenis_sampah.nama_jenis_sampah} size={16} />{d.jenis_sampah.nama_jenis_sampah}</span><span className="font-medium text-gray-700">{Number(d.berat_aktual).toFixed(1).replace('.', ',')} kg</span></div>)}</div></td>
+                  <td className="px-5 py-4 align-top"><div className="space-y-1.5">{(s.detail_setoran || []).map(d => <div key={d.detail_setoran_id} className="flex items-center justify-between gap-3 text-[12px]"><span className="flex items-center gap-2">{d.jenis_sampah.nama_jenis_sampah}</span><span className="font-medium text-gray-700">{Number(d.berat_aktual).toFixed(1).replace('.', ',')} kg</span></div>)}</div></td>
                   <td className="px-5 py-4 align-top text-[13px] font-semibold text-gray-900">{Number(s.total_berat_aktual).toFixed(1).replace('.', ',')} kg</td>
-                  <td className="px-5 py-4 align-top text-center"><p className="text-[14px] font-bold text-gray-900">{(s as any).total_poin ?? s.total_poin_sementara}</p></td>
+                  <td className="px-5 py-4 align-top text-center"><p className="text-[14px] font-bold text-gray-900">{s.status_validasi === 'menunggu' ? s.total_poin_sementara : (s as any).total_poin ?? s.total_poin_sementara}</p></td>
                   <td className="px-5 py-4 align-top">
                     {s.status_validasi === 'disetujui' && <><span className="inline-flex px-2.5 py-1 rounded-lg bg-[#f0fdf4] text-[#15803d] text-[11px] font-semibold border border-green-100">Terverifikasi</span><p className="text-[10px] text-gray-400 mt-1">Oleh Admin<br />{s.tanggal_validasi ? new Date(s.tanggal_validasi).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + new Date(s.tanggal_validasi).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : '-'}</p></>}
                     {s.status_validasi === 'menunggu' && <><span className="inline-flex px-2.5 py-1 rounded-lg bg-[#fffbeb] text-[#92400e] text-[11px] font-semibold border border-amber-100">Menunggu Validasi</span><p className="text-[10px] text-gray-400 mt-1">Menunggu Admin<br />{new Date(s.tanggal_setoran).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}</p></>}
@@ -194,7 +199,7 @@ export default function RiwayatSetoranPage() {
                       <div>
                         <span className="text-gray-500 block mb-1">Total Berat:</span>
                         <p className="text-gray-900 font-bold">{Number(s.total_berat_aktual).toFixed(1).replace('.', ',')} kg</p>
-                        <p className="text-blue-600 font-semibold text-xs">{(s as any).total_poin ?? s.total_poin_sementara} poin</p>
+                        <p className="text-blue-600 font-semibold text-xs">{s.status_validasi === 'menunggu' ? `${s.total_poin_sementara} poin sementara` : `${(s as any).total_poin ?? s.total_poin_sementara} poin`}</p>
                       </div>
                     </div>
                     <div>
@@ -203,7 +208,6 @@ export default function RiwayatSetoranPage() {
                         {(s.detail_setoran || []).map(d => (
                           <div key={d.detail_setoran_id} className="flex items-center justify-between gap-2 text-xs bg-white rounded-md p-2 border">
                             <div className="flex items-center gap-2 min-w-0 flex-1">
-                              <WasteIcon type={d.jenis_sampah.nama_jenis_sampah} size={14} />
                               <span className="text-gray-700 truncate">{d.jenis_sampah.nama_jenis_sampah}</span>
                             </div>
                             <span className="font-medium text-gray-900 flex-shrink-0">{Number(d.berat_aktual).toFixed(1).replace('.', ',')} kg</span>
@@ -340,7 +344,7 @@ export default function RiwayatSetoranPage() {
                     <span>Rincian Jenis Sampah</span>
                   </h4>
                   <span className="text-xs text-gray-500">
-                    Total Poin: {(selected as any).total_poin ?? selected.total_poin_sementara ?? 0} poin
+                    Total Poin: {selected.status_validasi === 'menunggu' ? `${selected.total_poin_sementara ?? 0} poin sementara` : `${(selected as any).total_poin ?? selected.total_poin_sementara ?? 0} poin`}
                   </span>
                 </div>
                 <div className="space-y-2">
@@ -350,11 +354,10 @@ export default function RiwayatSetoranPage() {
                       className="flex items-center justify-between p-3 rounded-lg sm:rounded-xl border border-gray-100 bg-gray-50/50"
                     >
                       <div className="flex items-center gap-2">
-                        <WasteIcon type={d.jenis_sampah?.nama_jenis_sampah || 'Sampah'} size={18} />
                         <span className="font-semibold text-gray-800">{d.jenis_sampah?.nama_jenis_sampah}</span>
                       </div>
                       <span className="font-bold text-gray-900">
-                        {Number(d.berat_aktual).toFixed(1).replace('.', ',')} kg • {(d as any).poin ?? d.poin_sementara ?? 0} poin
+                        {Number(d.berat_aktual).toFixed(1).replace('.', ',')} kg • {selected.status_validasi === 'menunggu' ? `${d.poin_sementara ?? 0} poin sementara` : `${(d as any).poin ?? d.poin_sementara ?? 0} poin`}
                       </span>
                     </div>
                   ))}

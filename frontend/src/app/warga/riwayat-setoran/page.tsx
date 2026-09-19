@@ -17,9 +17,6 @@ import {
   Info,
   MessageCircle,
   X,
-  Package,
-  Boxes,
-  Wine,
   Leaf,
   Layers,
   Search,
@@ -104,44 +101,6 @@ function formatIndoTime(dateStr?: string | null): string {
   }
 }
 
-// Waste icon badge component
-function WasteBadgeIcon({ name }: { name: string }) {
-  const lower = name.toLowerCase();
-  if (lower.includes('botol') || lower.includes('pet')) {
-    return (
-      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-blue-500 border border-blue-100 flex-shrink-0">
-        <Wine className="h-4 w-4" />
-      </div>
-    );
-  }
-  if (lower.includes('kardus') || lower.includes('kertas') || lower.includes('koran')) {
-    return (
-      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-50 text-amber-600 border border-amber-100 flex-shrink-0">
-        <Package className="h-4 w-4" />
-      </div>
-    );
-  }
-  if (lower.includes('kaleng') || lower.includes('aluminium') || lower.includes('besi') || lower.includes('logam')) {
-    return (
-      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 text-slate-600 border border-slate-200 flex-shrink-0">
-        <Boxes className="h-4 w-4" />
-      </div>
-    );
-  }
-  if (lower.includes('plastik') || lower.includes('kresek')) {
-    return (
-      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-pink-50 text-pink-500 border border-pink-100 flex-shrink-0">
-        <ShoppingBag className="h-4 w-4" />
-      </div>
-    );
-  }
-  return (
-    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 border border-emerald-100 flex-shrink-0">
-      <Leaf className="h-4 w-4" />
-    </div>
-  );
-}
-
 export default function RiwayatSetoranPage() {
   const [data, setData] = useState<SetoranItem[]>([]);
   const [ringkasan, setRingkasan] = useState<RingkasanSetoran>(DEFAULT_RINGKASAN);
@@ -149,7 +108,7 @@ export default function RiwayatSetoranPage() {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
 
   // Filters
-  const [activeTab, setActiveTab] = useState<'semua' | 'menunggu' | 'disetujui' | 'ditolak' | 'dibatalkan'>('semua');
+  const [activeTab, setActiveTab] = useState<'semua' | 'diajukan' | 'menunggu' | 'disetujui' | 'ditolak' | 'dibatalkan'>('semua');
   const [sortOrder, setSortOrder] = useState<'terbaru' | 'terlama'>('terbaru');
   const [dariTanggal, setDariTanggal] = useState('');
   const [sampaiTanggal, setSampaiTanggal] = useState('');
@@ -218,20 +177,22 @@ export default function RiwayatSetoranPage() {
 
   // Jumlah per status untuk ditampilkan di dropdown filter
   const statusCounts = useMemo(() => {
-    const counts = { semua: data.length, menunggu: 0, disetujui: 0, ditolak: 0, dibatalkan: 0 };
+    const counts = { semua: data.length, diajukan: 0, menunggu: 0, disetujui: 0, ditolak: 0, dibatalkan: 0 };
     data.forEach((item) => {
       const status = item.status_validasi?.toLowerCase();
       const statusPengajuan = item.status_pengajuan?.toLowerCase();
       if (statusPengajuan === 'dibatalkan') counts.dibatalkan += 1;
       else if (status === 'ditolak' || statusPengajuan === 'ditolak') counts.ditolak += 1;
-      else if (status === 'disetujui') counts.disetujui += 1;
+      else if (statusPengajuan === 'diajukan') counts.diajukan += 1;
       else if (status === 'menunggu') counts.menunggu += 1;
+      else if (status === 'disetujui') counts.disetujui += 1;
     });
     return counts;
   }, [data]);
 
   const statusOptions: Array<{ value: typeof activeTab; label: string }> = [
     { value: 'semua', label: 'Semua Data' },
+    { value: 'diajukan', label: 'Diajukan' },
     { value: 'menunggu', label: 'Menunggu Validasi' },
     { value: 'disetujui', label: 'Disetujui' },
     { value: 'ditolak', label: 'Ditolak' },
@@ -247,12 +208,13 @@ export default function RiwayatSetoranPage() {
       if (activeTab !== 'semua') {
         const status = item.status_validasi?.toLowerCase();
         const statusPengajuan = item.status_pengajuan?.toLowerCase();
-        const isDibatalkan = statusPengajuan === 'dibatalkan';
+        const isDibatalkan = statusPengajuan === 'dibatalkan' || status === 'dibatalkan';
         const isDitolak = status === 'ditolak' || statusPengajuan === 'ditolak';
 
-        if (activeTab === 'menunggu' && (status !== 'menunggu' || isDitolak || isDibatalkan)) return false;
+        if (activeTab === 'diajukan' && statusPengajuan !== 'diajukan') return false;
+        if (activeTab === 'menunggu' && status !== 'menunggu') return false;
         if (activeTab === 'disetujui' && status !== 'disetujui') return false;
-        if (activeTab === 'ditolak' && (!isDitolak || isDibatalkan)) return false;
+        if (activeTab === 'ditolak' && !isDitolak) return false;
         if (activeTab === 'dibatalkan' && !isDibatalkan) return false;
       }
 
@@ -666,9 +628,6 @@ export default function RiwayatSetoranPage() {
                                 className="flex items-center justify-between gap-2 text-xs"
                               >
                                 <div className="flex items-center gap-2 truncate">
-                                  <WasteBadgeIcon
-                                    name={d.jenis_sampah?.nama_jenis_sampah || 'Sampah'}
-                                  />
                                   <span className="font-semibold text-gray-800 truncate">
                                     {d.jenis_sampah?.nama_jenis_sampah || 'Sampah'}
                                   </span>
@@ -1027,9 +986,6 @@ export default function RiwayatSetoranPage() {
                           <tr key={d.detail_setoran_id} className="hover:bg-gray-50/50">
                             <td className="py-3 px-3">
                               <div className="flex items-center gap-2.5">
-                                <WasteBadgeIcon
-                                  name={d.jenis_sampah?.nama_jenis_sampah || 'Sampah'}
-                                />
                                 <div>
                                   <p className="font-semibold text-gray-800">
                                     {d.jenis_sampah?.nama_jenis_sampah || 'Sampah Terpilah'}
@@ -1073,7 +1029,9 @@ export default function RiwayatSetoranPage() {
                         <td className="py-2.5 px-3 text-right text-[#16a34a]">
                           {selectedSetoran.status_validasi === 'ditolak'
                             ? '0 poin'
-                            : `${formatNumber(selectedSetoran.total_poin_sementara)} poin`}
+                            : selectedSetoran.status_validasi === 'menunggu'
+                              ? `${formatNumber(selectedSetoran.total_poin_sementara)} poin`
+                              : `${formatNumber(selectedSetoran.total_poin)} poin`}
                         </td>
                       </tr>
                     </tfoot>

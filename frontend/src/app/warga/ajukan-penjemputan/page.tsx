@@ -21,10 +21,7 @@ import {
   Check,
   Search,
   X,
-  Package,
   Boxes,
-  ShoppingBag,
-  Wine,
   ShieldCheck,
   CalendarCheck,
   ChevronDown
@@ -39,44 +36,6 @@ import {
 } from '@/services/wargaPengajuanService';
 import AdminHeader from '@/components/layout/header';
 
-
-// Helper to render waste type badge icon based on name/category
-function WasteBadgeIcon({ name }: { name: string }) {
-  const lower = name.toLowerCase();
-  if (lower.includes('botol') || lower.includes('pet')) {
-    return (
-      <div className="flex h-11 w-11 items-center justify-center rounded-lg sm:rounded-xl bg-blue-50 text-blue-500 border border-blue-100 flex-shrink-0">
-        <Wine className="h-5 w-5" />
-      </div>
-    );
-  }
-  if (lower.includes('kardus') || lower.includes('kertas') || lower.includes('koran')) {
-    return (
-      <div className="flex h-11 w-11 items-center justify-center rounded-lg sm:rounded-xl bg-amber-50 text-amber-600 border border-amber-100 flex-shrink-0">
-        <Package className="h-5 w-5" />
-      </div>
-    );
-  }
-  if (lower.includes('kaleng') || lower.includes('aluminium') || lower.includes('besi') || lower.includes('logam')) {
-    return (
-      <div className="flex h-11 w-11 items-center justify-center rounded-lg sm:rounded-xl bg-slate-100 text-slate-600 border border-slate-200 flex-shrink-0">
-        <Boxes className="h-5 w-5" />
-      </div>
-    );
-  }
-  if (lower.includes('plastik') || lower.includes('kresek')) {
-    return (
-      <div className="flex h-11 w-11 items-center justify-center rounded-lg sm:rounded-xl bg-pink-50 text-pink-500 border border-pink-100 flex-shrink-0">
-        <ShoppingBag className="h-5 w-5" />
-      </div>
-    );
-  }
-  return (
-    <div className="flex h-11 w-11 items-center justify-center rounded-lg sm:rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100 flex-shrink-0">
-      <Leaf className="h-5 w-5" />
-    </div>
-  );
-}
 
 export default function PengajuanPenjemputanPage() {
   const router = useRouter();
@@ -460,7 +419,6 @@ export default function PengajuanPenjemputanPage() {
                           >
                             {/* Jenis Sampah with Icon */}
                             <div className="md:col-span-6 flex items-center gap-3 pr-3">
-                              <WasteBadgeIcon name={item.nama_jenis_sampah} />
                               <div className="truncate flex-1 min-w-0">
                                 <p className="text-xs sm:text-sm font-semibold text-gray-900 truncate">
                                   {item.nama_jenis_sampah}
@@ -977,7 +935,6 @@ export default function PengajuanPenjemputanPage() {
                     className="flex items-center justify-between p-3 rounded-lg sm:rounded-xl border border-gray-100 hover:border-green-300 hover:bg-green-50/40 cursor-pointer transition group"
                   >
                     <div className="flex items-center gap-3">
-                      <WasteBadgeIcon name={c.nama_jenis_sampah} />
                       <div>
                         <p className="text-xs sm:text-sm font-semibold text-gray-900 group-hover:text-[#16a34a] transition">
                           {c.nama_jenis_sampah}

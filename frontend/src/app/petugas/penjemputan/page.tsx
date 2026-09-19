@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import PetugasHeader from '@/components/layout/header';
-import WasteIcon from '@/components/common/WasteIcon';
+
 import {
   Search,
   RotateCcw,
@@ -936,7 +936,6 @@ export default function TugasSayaPage() {
                           {sampahDisplay.map((sampah, idx) => {
                             return (
                               <div key={idx} className="flex items-center gap-2">
-                                <WasteIcon type={sampah.nama} size={16} />
                                 <span className="text-[13px] text-gray-700 font-medium">
                                   {sampah.nama}
                                 </span>
@@ -1045,7 +1044,6 @@ export default function TugasSayaPage() {
                         <div className="space-y-1">
                           {sampahDisplay.map((sampah, idx) => (
                             <div key={idx} className="flex items-center gap-2 text-xs">
-                              <WasteIcon type={sampah.nama} size={12} />
                               <span className="text-gray-700">{sampah.nama}</span>
                               {sampah.isAktual && (
                                 <span className="text-[9px] font-semibold text-emerald-600 bg-emerald-50 border border-emerald-100 rounded-full px-1.5 py-px">
@@ -1216,7 +1214,6 @@ export default function TugasSayaPage() {
                       className="flex items-center justify-between p-3 rounded-lg sm:rounded-xl border border-gray-100 bg-gray-50/50"
                     >
                       <div className="flex items-center gap-2">
-                        <WasteIcon type={item.nama} size={18} />
                         <span className="font-semibold text-gray-800">{item.nama}</span>
                         {item.isAktual && (
                           <span className="text-[10px] font-semibold text-emerald-600 bg-emerald-50 border border-emerald-100 rounded-full px-1.5 py-0.5">
