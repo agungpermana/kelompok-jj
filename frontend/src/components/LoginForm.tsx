@@ -77,9 +77,11 @@ export default function LoginForm() {
           router.push("/warga/dashboard");
         }
       }, 900);
-    } catch (err: any) {
+    } catch (err: unknown) {
       setErrorMessage(
-        err.message || "Terjadi kesalahan koneksi ke server. Pastikan backend aktif."
+        err instanceof Error
+          ? err.message
+          : "Terjadi kesalahan koneksi ke server. Pastikan backend aktif."
       );
     } finally {
       setIsLoading(false);
@@ -87,27 +89,27 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="w-full max-w-[440px] bg-white rounded-[24px] shadow-[0_12px_45px_rgba(0,0,0,0.07)] border border-gray-100/80 p-7 sm:p-9 relative z-10 transition-all">
-      {/* Top Logo Badge — sama seperti sidebar admin */}
-      <div className="flex justify-center mb-4">
-        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#22c55e] to-[#16a34a] shadow-md shadow-green-200 flex items-center justify-center">
-          <Leaf className="w-7 h-7 text-white" strokeWidth={2.5} />
+    <div className="w-full max-w-[450px] lg:max-w-[470px] bg-white rounded-[28px] sm:rounded-[32px] shadow-[0_20px_60px_rgba(0,0,0,0.06)] border border-gray-100/90 p-7 sm:p-9 relative z-10 transition-all">
+      {/* Top Logo Badge — Green squircle with white Leaf icon */}
+      <div className="flex justify-center mb-3.5">
+        <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-[#16a34a] shadow-md shadow-green-200/80 flex items-center justify-center">
+          <Leaf className="w-6 h-6 sm:w-7 sm:h-7 text-white" strokeWidth={2.4} />
         </div>
       </div>
 
       {/* Header Titles */}
-      <div className="text-center mb-6">
-        <h1 className="text-[23px] sm:text-[25px] font-bold text-gray-900 tracking-tight">
+      <div className="text-center mb-5 sm:mb-6">
+        <h2 className="text-2xl sm:text-[26px] font-bold text-gray-900 tracking-tight">
           Selamat Datang
-        </h1>
-        <p className="text-[13px] sm:text-sm text-gray-500 mt-1">
+        </h2>
+        <p className="text-xs sm:text-sm text-gray-500 mt-1">
           Masuk untuk mengakses akun Anda
         </p>
       </div>
 
       {/* Error Alert */}
       {errorMessage && (
-        <div className="mb-5 p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs sm:text-sm flex items-start gap-2.5 animate-in fade-in duration-200">
+        <div className="mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs sm:text-sm flex items-start gap-2.5 animate-in fade-in duration-200">
           <AlertCircle className="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" />
           <span className="flex-1 leading-snug">{errorMessage}</span>
         </div>
@@ -115,7 +117,7 @@ export default function LoginForm() {
 
       {/* Success Alert */}
       {successMessage && (
-        <div className="mb-5 p-3.5 rounded-xl bg-green-50 border border-green-200 text-green-700 text-xs sm:text-sm flex items-center gap-2.5 animate-in fade-in duration-200">
+        <div className="mb-4 p-3 rounded-xl bg-green-50 border border-green-200 text-green-700 text-xs sm:text-sm flex items-center gap-2.5 animate-in fade-in duration-200">
           <CheckCircle2 className="w-4 h-4 text-green-600 flex-shrink-0" />
           <span className="flex-1 font-medium">{successMessage}</span>
         </div>
@@ -127,12 +129,12 @@ export default function LoginForm() {
         <div>
           <label
             htmlFor="loginInput"
-            className="block text-xs sm:text-[13px] font-semibold text-gray-800 mb-1.5"
+            className="block text-xs sm:text-[13px] font-semibold text-gray-700 mb-1.5"
           >
             Email atau Username
           </label>
           <div className="relative flex items-center">
-            <User className="w-4 h-4 text-gray-400 absolute left-3.5 pointer-events-none" />
+            <User className="w-4 h-4 text-gray-400 absolute left-4 pointer-events-none" />
             <input
               id="loginInput"
               type="text"
@@ -141,7 +143,7 @@ export default function LoginForm() {
               placeholder="Masukkan email atau username"
               autoComplete="username"
               required
-              className="w-full pl-10 pr-4 py-2.5 sm:py-3 bg-white border border-gray-200 rounded-xl text-xs sm:text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#167e41] focus:ring-4 focus:ring-[#167e41]/10 transition-all"
+              className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-xl text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#16a34a] focus:ring-4 focus:ring-[#16a34a]/10 transition-all"
             />
           </div>
         </div>
@@ -150,12 +152,12 @@ export default function LoginForm() {
         <div>
           <label
             htmlFor="passwordInput"
-            className="block text-xs sm:text-[13px] font-semibold text-gray-800 mb-1.5"
+            className="block text-xs sm:text-[13px] font-semibold text-gray-700 mb-1.5"
           >
             Password
           </label>
           <div className="relative flex items-center">
-            <Lock className="w-4 h-4 text-gray-400 absolute left-3.5 pointer-events-none" />
+            <Lock className="w-4 h-4 text-gray-400 absolute left-4 pointer-events-none" />
             <input
               id="passwordInput"
               type={showPassword ? "text" : "password"}
@@ -164,7 +166,7 @@ export default function LoginForm() {
               placeholder="Masukkan password"
               autoComplete="current-password"
               required
-              className="w-full pl-10 pr-11 py-2.5 sm:py-3 bg-white border border-gray-200 rounded-xl text-xs sm:text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#167e41] focus:ring-4 focus:ring-[#167e41]/10 transition-all"
+              className="w-full pl-11 pr-11 py-3 bg-white border border-gray-200 rounded-xl text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#16a34a] focus:ring-4 focus:ring-[#16a34a]/10 transition-all"
             />
             <button
               type="button"
@@ -182,7 +184,7 @@ export default function LoginForm() {
           </div>
         </div>
 
-        {/* Lupa Password */}
+        {/* Lupa Password Link */}
         <div className="flex justify-end pt-0.5">
           <a
             href="#lupa-password"
@@ -192,7 +194,7 @@ export default function LoginForm() {
                 "Silakan hubungi administrator bank sampah Trashure untuk me-reset password akun Anda."
               );
             }}
-            className="text-xs sm:text-[13px] font-semibold text-[#167e41] hover:text-[#115e30] transition-colors"
+            className="text-xs sm:text-[13px] font-medium text-[#15803d] hover:underline transition-colors"
           >
             Lupa Password?
           </a>
@@ -203,7 +205,7 @@ export default function LoginForm() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full py-3 sm:py-3.5 px-4 bg-[#167e41] hover:bg-[#126936] active:scale-[0.99] disabled:opacity-75 disabled:cursor-not-allowed text-white font-semibold text-sm sm:text-[15px] rounded-xl flex items-center justify-center gap-2 shadow-[0_4px_16px_rgba(22,126,65,0.28)] transition-all cursor-pointer"
+            className="w-full py-3 sm:py-3.5 px-4 bg-[#15803d] hover:bg-[#166534] active:scale-[0.99] disabled:opacity-75 disabled:cursor-not-allowed text-white font-semibold text-sm sm:text-base rounded-xl flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer"
           >
             {isLoading ? (
               <div className="flex items-center gap-2">
@@ -238,6 +240,21 @@ export default function LoginForm() {
           </button>
         </div>
       </form>
+
+      {/* Belum punya akun note */}
+      <div className="mt-5 text-center text-xs sm:text-[13px] text-gray-500">
+        Belum punya akun?{" "}
+        <a
+          href="#hubungi-admin"
+          onClick={(e) => {
+            e.preventDefault();
+            alert("Silakan hubungi administrator bank sampah Trashure di lingkungan Anda untuk pendaftaran akun.");
+          }}
+          className="font-semibold text-[#15803d] hover:underline cursor-pointer"
+        >
+          Hubungi admin
+        </a>
+      </div>
     </div>
   );
 }
