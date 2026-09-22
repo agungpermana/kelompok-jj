@@ -333,8 +333,10 @@ export default function AdminProfilPage() {
                     <input
                       type="tel"
                       value={noTelepon}
-                      onChange={(e) => setNoTelepon(e.target.value)}
+                      onChange={(e) => setNoTelepon(e.target.value.replace(/\D/g, '').slice(0, 12))}
                       placeholder="08xxxxxxxxxx"
+                      maxLength={12}
+                      inputMode="numeric"
                       className={`w-full px-3.5 py-2.5 rounded-xl border text-xs text-gray-800 transition-all focus:outline-none focus:ring-2 ${
                         fieldErrors.no_telepon
                           ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-100'

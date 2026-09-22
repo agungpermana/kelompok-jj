@@ -472,9 +472,10 @@ export default function WargaPage() {
                 <input
                   type="text"
                   value={form.nik}
-                  onChange={(e) => setForm({ ...form, nik: e.target.value })}
+                  onChange={(e) => setForm({ ...form, nik: e.target.value.replace(/[^0-9]/g, '').slice(0, 16) })}
                   className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-[#16a34a] focus:ring-2 focus:ring-[#16a34a]/10"
                   maxLength={16}
+                  inputMode="numeric"
                   required
                 />
               </div>
