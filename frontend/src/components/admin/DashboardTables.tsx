@@ -95,18 +95,7 @@ export function PengajuanTable({ data }: { data: PengajuanRow[] }) {
         </table>
       </div>
 
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 px-3 sm:px-4 lg:px-5 py-2 sm:py-2.5 lg:py-3 border-t border-gray-100 text-[9px] sm:text-[10px] lg:text-[11px]">
-        <p className="text-gray-400">Menampilkan 1 - 5 dari 28 pengajuan</p>
-        <div className="flex items-center gap-0.5 sm:gap-1">
-          <button className="flex h-6 sm:h-7 w-6 sm:w-7 items-center justify-center rounded-md text-xs text-gray-400 hover:bg-gray-100 transition-colors">&lt;</button>
-          <button className="flex h-6 sm:h-7 w-6 sm:w-7 items-center justify-center rounded-md bg-[#16a34a] text-xs font-bold text-white">1</button>
-          <button className="flex h-6 sm:h-7 w-6 sm:w-7 items-center justify-center rounded-md text-xs text-gray-500 hover:bg-gray-100 transition-colors">2</button>
-          <button className="hidden sm:flex h-6 sm:h-7 w-6 sm:w-7 items-center justify-center rounded-md text-xs text-gray-500 hover:bg-gray-100 transition-colors">3</button>
-          <span className="text-xs text-gray-400 px-0.5 sm:px-1">...</span>
-          <button className="hidden sm:flex h-6 sm:h-7 w-6 sm:w-7 items-center justify-center rounded-md text-xs text-gray-500 hover:bg-gray-100 transition-colors">6</button>
-          <button className="flex h-6 sm:h-7 w-6 sm:w-7 items-center justify-center rounded-md text-xs text-gray-400 hover:bg-gray-100 transition-colors">&gt;</button>
-        </div>
-      </div>
+
     </div>
   );
 }

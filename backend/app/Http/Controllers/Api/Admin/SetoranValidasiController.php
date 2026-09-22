@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\SaldoPoin;
 use App\Models\StokSampah;
 use App\Models\TransaksiSetoran;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use OpenApi\Attributes as OA;
@@ -78,7 +79,7 @@ class SetoranValidasiController extends Controller
         DB::transaction(function () use ($setoran, $admin, $request) {
             $setoran->update(['validator_admin_id' => $admin->admin_id,'status_validasi' => $request->status_validasi,'catatan_validasi' => $request->catatan_validasi,'tanggal_validasi' => now()]);
             if ($request->status_validasi === 'disetujui') {
-                $saldo = SaldoPoin::firstOrCreate(['warga_id' => $setoran->warga_id], ['saldo_poin' => $setoran->saldo_poin,'terakhir_diperbarui' => now()]);
+                $saldo = SaldoPoin::firstOrCreate(['warga_id' => $setoran->warga_id], ['saldo_poin' => 0,'terakhir_diperbarui' => now()]);
                 $saldo->increment('saldo_poin', (int)$setoran->total_poin);
                 $saldo->update(['terakhir_diperbarui' => now()]);
                 foreach ($setoran->detailSetoran as $detail) {
@@ -94,6 +95,28 @@ class SetoranValidasiController extends Controller
         });
 
         $setoran->load(['detailSetoran.jenisSampah','warga','petugas','validatorAdmin','pengajuanPenjemputan']);
+
+        // Notify warga
+        if ($setoran->warga && $setoran->warga->user) {
+            if ($request->status_validasi === 'disetujui') {
+                NotificationService::send(
+                    $setoran->warga->user->id,
+                    'Setoran Disetujui',
+                    'Setoran pengajuan #' . $setoran->pengajuan_id . ' disetujui. ' . $setoran->total_poin . ' poin telah ditambahkan ke saldo Anda.',
+                    'setoran_disetujui',
+                    ['pengajuan_id' => $setoran->pengajuan_id, 'setoran_id' => $setoran->setoran_id, 'poin' => $setoran->total_poin]
+                );
+            } else {
+                NotificationService::send(
+                    $setoran->warga->user->id,
+                    'Setoran Ditolak',
+                    'Setoran pengajuan #' . $setoran->pengajuan_id . ' ditolak oleh admin.',
+                    'setoran_ditolak',
+                    ['pengajuan_id' => $setoran->pengajuan_id, 'setoran_id' => $setoran->setoran_id]
+                );
+            }
+        }
+
         return response()->json(['message' => $request->status_validasi === 'disetujui' ? 'Setoran disetujui. Poin & stok diperbarui.' : 'Setoran ditolak.','data' => $setoran]);
     }
 }

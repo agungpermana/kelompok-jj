@@ -18,7 +18,7 @@ export default function LoginPage() {
 
       {/* Main Content Area - Vertically balanced, strictly zero scroll on desktop */}
       <div className="relative z-10 w-full max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 flex-1 min-h-0 flex flex-col lg:flex-row items-center justify-center lg:justify-between gap-6 lg:gap-10 my-auto py-3 sm:py-4">
-        
+
         {/* Left Column: Overline, Headline, Subtitle, Stats Card & Illustration (Cohesive vertical unit) */}
         <div className="hidden lg:flex flex-1 flex-col justify-center items-start max-w-[500px] xl:max-w-[560px] pr-2 space-y-3 xl:space-y-3.5">
           {/* Overline & Headline Block */}
@@ -41,7 +41,7 @@ export default function LoginPage() {
             </h1>
 
             <p className="text-xs xl:text-sm text-gray-600 leading-relaxed max-w-md">
-              <strong className="font-semibold text-emerald-950">Kelola sampah, raih manfaat.</strong> Bersama Trashure, setiap sampah terpilah punya nilai tabungan nyata untuk lingkungan yang lebih hijau.
+              <strong className="font-semibold text-emerald-950">Kelola sampah, raih manfaat.</strong> Bersama Trashure, setiap sampah terpilah punya nilai nyata untuk lingkungan yang lebih hijau.
             </p>
           </div>
 

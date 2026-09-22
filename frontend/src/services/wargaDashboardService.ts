@@ -6,13 +6,21 @@ export interface DetailSampahItem {
   satuan: string;
 }
 
+export interface JadwalPenjemputan {
+  tanggal_penjemputan: string;
+  waktu_penjemputan: string;
+  status_jadwal: string;
+}
+
 export interface PengajuanTerbaru {
   pengajuan_id: number;
   tanggal_pengajuan: string;
   alamat_penjemputan: string;
   perkiraan_total_berat: number;
   status_pengajuan: string;
+  status_validasi: string | null;
   created_at: string;
+  jadwal: JadwalPenjemputan | null;
   detail_sampah: DetailSampahItem[];
 }
 

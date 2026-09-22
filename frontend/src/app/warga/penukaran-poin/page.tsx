@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 
 import {
   Search,
@@ -1187,12 +1188,13 @@ export default function PenukaranPoinPage() {
                   Riwayat Penukaran Terakhir
                 </h3>
 
-                <button
+                <Link
+                  href="/warga/riwayat-penukaran"
                   type="button"
                   className="shrink-0 text-xs font-semibold text-green-600 hover:text-green-700"
                 >
                   Lihat Semua
-                </button>
+                </Link>
 
               </div>
 

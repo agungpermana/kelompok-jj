@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\PengajuanPenjemputan;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use OpenApi\Attributes as OA;
 
@@ -281,6 +282,31 @@ class PengajuanPenjemputanController extends Controller
             'petugas',
             'admin',
         ]);
+
+        // Notify warga
+        if ($jadwal->pengajuanPenjemputan && $jadwal->pengajuanPenjemputan->warga) {
+            $wargaUser = $jadwal->pengajuanPenjemputan->warga->user;
+            if ($wargaUser) {
+                NotificationService::send(
+                    $wargaUser->id,
+                    'Pengajuan Dijadwalkan',
+                    'Pengajuan #' . $pengajuan->pengajuan_id . ' dijadwalkan penjemputan tanggal ' . $request->tanggal_penjemputan . ' jam ' . $request->waktu_penjemputan . '.',
+                    'pengajuan_dijadwalkan',
+                    ['pengajuan_id' => $pengajuan->pengajuan_id]
+                );
+            }
+        }
+
+        // Notify petugas
+        if ($jadwal->petugas && $jadwal->petugas->user) {
+            NotificationService::send(
+                $jadwal->petugas->user->id,
+                'Jadwal Penjemputan Baru',
+                'Anda ditugaskan jemput pengajuan #' . $pengajuan->pengajuan_id . ' tanggal ' . $request->tanggal_penjemputan . ' jam ' . $request->waktu_penjemputan . '.',
+                'jadwal_ditugaskan',
+                ['pengajuan_id' => $pengajuan->pengajuan_id, 'jadwal_id' => $jadwal->jadwal_id]
+            );
+        }
 
         return response()->json([
             'message' => 'Penjemputan berhasil dijadwalkan.',

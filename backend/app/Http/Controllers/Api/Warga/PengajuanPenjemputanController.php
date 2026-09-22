@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api\Warga;
 
 use App\Http\Controllers\Controller;
 use App\Models\PengajuanPenjemputan;
+use App\Models\User;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use OpenApi\Attributes as OA;
@@ -207,6 +209,18 @@ class PengajuanPenjemputanController extends Controller
         });
 
         $pengajuan->load('detailPengajuanSampah.jenisSampah');
+
+        // Notify admin
+        $adminUsers = User::where('role', 'admin')->where('status', 'aktif')->get();
+        foreach ($adminUsers as $adminUser) {
+            NotificationService::send(
+                $adminUser->id,
+                'Pengajuan Baru',
+                'Warga ' . ($warga->nama_warga ?? 'Warga') . ' mengajukan penjemputan #' . $pengajuan->pengajuan_id . '.',
+                'pengajuan_baru',
+                ['pengajuan_id' => $pengajuan->pengajuan_id]
+            );
+        }
 
         return response()->json([
             'message' => 'Pengajuan penjemputan berhasil dibuat.',
@@ -426,6 +440,29 @@ class PengajuanPenjemputanController extends Controller
         ];
 
         $pengajuan->update($updateData);
+
+        // Notify admin
+        $adminUsers = \App\Models\User::where('role', 'admin')->where('status', 'aktif')->get();
+        foreach ($adminUsers as $adminUser) {
+            NotificationService::send(
+                $adminUser->id,
+                'Pengajuan Dibatalkan',
+                'Pengajuan #' . $pengajuan->pengajuan_id . ' dibatalkan oleh warga.',
+                'pengajuan_dibatalkan',
+                ['pengajuan_id' => $pengajuan->pengajuan_id]
+            );
+        }
+
+        // Notify petugas (if assigned)
+        if ($pengajuan->jadwalPenjemputan && $pengajuan->jadwalPenjemputan->petugas && $pengajuan->jadwalPenjemputan->petugas->user) {
+            NotificationService::send(
+                $pengajuan->jadwalPenjemputan->petugas->user->id,
+                'Pengajuan Dibatalkan',
+                'Pengajuan #' . $pengajuan->pengajuan_id . ' dibatalkan oleh warga. Tugas jemput dibatalkan.',
+                'pengajuan_dibatalkan',
+                ['pengajuan_id' => $pengajuan->pengajuan_id]
+            );
+        }
 
         return response()->json([
             'message' => 'Pengajuan berhasil dibatalkan.',

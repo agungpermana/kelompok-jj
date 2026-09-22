@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\JadwalPenjemputan;
 use App\Models\JenisSampah;
 use App\Models\TransaksiSetoran;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use OpenApi\Attributes as OA;
@@ -134,6 +135,44 @@ class SetoranController extends Controller
             return $transaksi;
         });
         $transaksi->load(['detailSetoran.jenisSampah','warga','petugas','jadwalPenjemputan','pengajuanPenjemputan']);
+
+        // Notify warga + admin
+        $pengajuanId = $jadwal->pengajuan_id;
+        if ($request->konfirmasi_pengambilan === 'ya') {
+            // Notify warga: setoran menunggu validasi
+            if ($warga && $warga->user) {
+                NotificationService::send(
+                    $warga->user->id,
+                    'Setoran Dicatat',
+                    'Setoran pengajuan #' . $pengajuanId . ' berhasil dicatat. Menunggu validasi admin.',
+                    'setoran_menunggu_validasi',
+                    ['pengajuan_id' => $pengajuanId, 'setoran_id' => $transaksi->setoran_id]
+                );
+            }
+            // Notify admin
+            $adminUsers = \App\Models\User::where('role', 'admin')->where('status', 'aktif')->get();
+            foreach ($adminUsers as $adminUser) {
+                NotificationService::send(
+                    $adminUser->id,
+                    'Setoran Baru Perlu Validasi',
+                    'Setoran pengajuan #' . $pengajuanId . ' dari ' . ($warga->nama_warga ?? 'Warga') . ' menunggu validasi.',
+                    'setoran_baru_validasi',
+                    ['pengajuan_id' => $pengajuanId, 'setoran_id' => $transaksi->setoran_id]
+                );
+            }
+        } else {
+            // Notify warga: penjemputan ditolak
+            if ($warga && $warga->user) {
+                NotificationService::send(
+                    $warga->user->id,
+                    'Penjemputan Ditolak',
+                    'Penjemputan pengajuan #' . $pengajuanId . ' tidak dapat dilakukan.',
+                    'penjemputan_ditolak',
+                    ['pengajuan_id' => $pengajuanId]
+                );
+            }
+        }
+
         return response()->json(['message' => $request->konfirmasi_pengambilan === 'ya' ? 'Transaksi setoran berhasil dibuat.' : 'Penolakan penjemputan berhasil dicatat.','data' => $transaksi], 201);
     }
 }

@@ -117,19 +117,30 @@ class DashboardController extends Controller
             ->count();
 
         $pengajuanTerbaru = PengajuanPenjemputan::where('warga_id', $warga->warga_id)
-            ->where('status_pengajuan', 'diajukan')
-            ->with('detailPengajuanSampah.jenisSampah')
+            ->whereIn('status_pengajuan', ['diajukan', 'dijadwalkan', 'diproses', 'selesai', 'dibatalkan', 'ditolak'])
+            ->with(['detailPengajuanSampah.jenisSampah', 'jadwalPenjemputan', 'transaksiSetoran'])
             ->orderBy('created_at', 'desc')
+            ->limit(5)
             ->get();
 
         $pengajuanTerbaruFormatted = $pengajuanTerbaru->map(function ($pengajuan) {
+            $jadwal = $pengajuan->jadwalPenjemputan;
+            $setoran = $pengajuan->transaksiSetoran;
+            $statusValidasi = $setoran?->status_validasi;
+
             return [
                 'pengajuan_id' => $pengajuan->pengajuan_id,
                 'tanggal_pengajuan' => $pengajuan->tanggal_pengajuan?->format('Y-m-d H:i:s'),
                 'alamat_penjemputan' => $pengajuan->alamat_penjemputan,
                 'perkiraan_total_berat' => (float) $pengajuan->perkiraan_total_berat,
                 'status_pengajuan' => $pengajuan->status_pengajuan,
+                'status_validasi' => $statusValidasi,
                 'created_at' => $pengajuan->created_at?->format('Y-m-d H:i:s'),
+                'jadwal' => $jadwal ? [
+                    'tanggal_penjemputan' => $jadwal->tanggal_penjemputan?->format('Y-m-d'),
+                    'waktu_penjemputan' => $jadwal->waktu_penjemputan,
+                    'status_jadwal' => $jadwal->status_jadwal,
+                ] : null,
                 'detail_sampah' => $pengajuan->detailPengajuanSampah->map(function ($detail) {
                     return [
                         'jenis_sampah' => $detail->jenisSampah?->nama_jenis_sampah,

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Petugas;
 
 use App\Http\Controllers\Controller;
 use App\Models\JadwalPenjemputan;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use OpenApi\Attributes as OA;
 
@@ -257,6 +258,20 @@ class JadwalPenjemputanController extends Controller
         ]);
 
         $jadwal->load('pengajuanPenjemputan');
+
+        // Notify warga
+        if ($jadwal->pengajuanPenjemputan) {
+            $warga = $jadwal->pengajuanPenjemputan->warga;
+            if ($warga && $warga->user) {
+                NotificationService::send(
+                    $warga->user->id,
+                    'Penjemputan Diproses',
+                    'Penjemputan pengajuan #' . $jadwal->pengajuan_id . ' sedang dalam perjalanan.',
+                    'penjemputan_diproses',
+                    ['pengajuan_id' => $jadwal->pengajuan_id, 'jadwal_id' => $jadwal->jadwal_id]
+                );
+            }
+        }
 
         return response()->json([
             'message' => 'Penjemputan berhasil diproses.',

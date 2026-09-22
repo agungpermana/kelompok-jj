@@ -11,6 +11,9 @@ const jakartaSans = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   title: "TRASHURE - Kelola Sampah, Raih Manfaat | Masuk",
   description: "Platform digital pengelolaan bank sampah dan penjemputan sampah terpadu.",
+  icons: {
+    icon: "/favicon.svg",
+  },
 };
 
 export default function RootLayout({

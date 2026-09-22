@@ -1,7 +1,8 @@
 'use client';
 
 import React from 'react';
-import { Bell, ChevronDown, CalendarDays, User, ChevronRight } from 'lucide-react';
+import { ChevronDown, CalendarDays } from 'lucide-react';
+import NotificationBell from './NotificationBell';
 
 export interface Breadcrumb {
   label: string;
@@ -13,11 +14,10 @@ interface AppHeaderProps {
   subtitle?: string;
   breadcrumbs?: Breadcrumb[];
   showNotif?: boolean;
-  notifCount?: number;
   showDate?: boolean;
 }
 
-export default function AppHeader({ title, subtitle, breadcrumbs, showNotif = true, notifCount = 3, showDate = true }: AppHeaderProps) {
+export default function AppHeader({ title, subtitle, breadcrumbs, showNotif = true, showDate = true }: AppHeaderProps) {
   const today = new Date();
   const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
   const months = [
@@ -41,16 +41,7 @@ export default function AppHeader({ title, subtitle, breadcrumbs, showNotif = tr
         {/* Right: Actions */}
         <div className="flex items-center gap-2 sm:gap-3 lg:gap-4 flex-shrink-0">
           {/* Notification Bell */}
-          {showNotif && (
-            <button className="relative flex h-9 sm:h-10 w-9 sm:w-10 items-center justify-center rounded-lg sm:rounded-xl bg-white border border-gray-200 text-gray-500 hover:bg-gray-50 hover:text-gray-700 transition-colors shadow-sm flex-shrink-0">
-              <Bell className="h-4 sm:h-[18px] w-4 sm:w-[18px]" strokeWidth={1.8} />
-              {notifCount > 0 && (
-                <span className="absolute -top-1 -right-1 flex h-4 sm:h-5 min-w-4 sm:min-w-5 items-center justify-center rounded-full bg-[#16a34a] px-0.5 sm:px-1 text-[8px] sm:text-[10px] font-bold text-white shadow-sm">
-                  {notifCount}
-                </span>
-              )}
-            </button>
-          )}
+          {showNotif && <NotificationBell />}
 
           {/* Date - Hidden on mobile */}
           {showDate && (

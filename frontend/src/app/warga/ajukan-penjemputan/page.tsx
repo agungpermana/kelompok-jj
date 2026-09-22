@@ -247,7 +247,6 @@ export default function PengajuanPenjemputanPage() {
       <AdminHeader
         title="Pengajuan Penjemputan"
         subtitle="Ajukan penjemputan sampah yang sudah Anda pilah. Petugas kami akan mengambil sesuai jadwal."
-        notifCount={5}
       />
 
       {/* Loading State on Page Mount / Refresh */}

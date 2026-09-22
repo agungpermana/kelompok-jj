@@ -16,9 +16,8 @@ export default function JadwalModal({ isOpen, item, petugasList, isLoading, onCl
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   useEffect(() => {
     if (isOpen) {
-      const tomorrow = new Date();
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      setFormData({ petugas_id: '', tanggal_penjemputan: tomorrow.toISOString().split('T')[0], waktu_penjemputan: '09:00', catatan: '' });
+      const today = new Date();
+      setFormData({ petugas_id: '', tanggal_penjemputan: today.toISOString().split('T')[0], waktu_penjemputan: '09:00', catatan: '' });
       setMessage(null);
     }
   }, [isOpen]);
@@ -30,6 +29,10 @@ export default function JadwalModal({ isOpen, item, petugasList, isLoading, onCl
     e.preventDefault();
     if (!formData.petugas_id || !formData.tanggal_penjemputan || !formData.waktu_penjemputan) {
       setMessage({ type: 'error', text: 'Petugas, tanggal, dan waktu penjemputan harus diisi.' });
+      return;
+    }
+    if (formData.waktu_penjemputan > '17:00') {
+      setMessage({ type: 'error', text: 'Waktu penjemputan maksimal jam 17:00.' });
       return;
     }
     if (!item) return;
@@ -55,9 +58,8 @@ export default function JadwalModal({ isOpen, item, petugasList, isLoading, onCl
     }
   };
   if (!isOpen || !item) return null;
-  const minDate = new Date();
-  minDate.setDate(minDate.getDate() + 1);
-  const minDateString = minDate.toISOString().split('T')[0];
+  const today = new Date();
+  const minDateString = today.toISOString().split('T')[0];
   return (
     <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
       <div className="bg-white rounded-3xl max-w-xl w-full shadow-2xl max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-200">
@@ -78,6 +80,9 @@ export default function JadwalModal({ isOpen, item, petugasList, isLoading, onCl
             <div className="bg-[#f8fafc] rounded-2xl p-4 border border-gray-100 space-y-1 text-[13px]">
               <p className="text-gray-700"><span className="text-xs text-gray-500 font-medium">Warga: </span><span className="font-bold text-gray-900">{item.warga?.nama_warga}</span></p>
               <p className="text-gray-700"><span className="text-xs text-gray-500 font-medium">Alamat: </span><span className="font-medium">{item.alamat_penjemputan}</span></p>
+              {item.catatan && (
+                <p className="text-gray-700"><span className="text-xs text-gray-500 font-medium">Catatan Warga: </span><span className="font-medium text-amber-600">{item.catatan}</span></p>
+              )}
             </div>
             {message && (
               <div className={`p-3.5 rounded-lg flex items-start gap-2.5 ${message.type === 'success' ? 'bg-green-50 border border-green-200 text-green-700' : 'bg-red-50 border border-red-200 text-red-700'}`}>
@@ -95,12 +100,11 @@ export default function JadwalModal({ isOpen, item, petugasList, isLoading, onCl
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Tanggal Penjemputan <span className="text-red-600">*</span></label>
               <input type="date" name="tanggal_penjemputan" value={formData.tanggal_penjemputan} onChange={handleInputChange} min={minDateString} disabled={isSubmitting} className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 disabled:bg-gray-100" required />
-              <p className="text-xs text-gray-500 mt-1">Minimal H+1 dari hari ini</p>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Waktu Penjemputan <span className="text-red-600">*</span></label>
-              <input type="time" name="waktu_penjemputan" value={formData.waktu_penjemputan} onChange={handleInputChange} disabled={isSubmitting} className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 disabled:bg-gray-100" required />
-              <p className="text-xs text-gray-500 mt-1">Format: HH:MM (24-jam)</p>
+              <input type="time" name="waktu_penjemputan" value={formData.waktu_penjemputan} onChange={handleInputChange} min="08:00" max="17:00" disabled={isSubmitting} className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 disabled:bg-gray-100" required />
+              <p className="text-xs text-gray-500 mt-1">Jam operasional: 08:00 - 17:00</p>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Catatan Tambahan</label>

@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import { User, Lock, Eye, EyeOff, LogIn, AlertCircle, CheckCircle2, Leaf } from "lucide-react";
+import { User, Lock, Eye, EyeOff, LogIn, Leaf } from "lucide-react";
 import { useRouter } from "next/navigation";
+import AlertModal from "./AlertModal";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -11,16 +12,30 @@ export default function LoginForm() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [errorModal, setErrorModal] = useState<{ isOpen: boolean; message: string }>({
+    isOpen: false,
+    message: "",
+  });
+  const [successModal, setSuccessModal] = useState<{ isOpen: boolean; message: string }>({
+    isOpen: false,
+    message: "",
+  });
+  const [infoModal, setInfoModal] = useState<{ isOpen: boolean; title: string; message: string }>({
+    isOpen: false,
+    title: "",
+    message: "",
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setErrorMessage(null);
-    setSuccessMessage(null);
+    setErrorModal({ isOpen: false, message: "" });
+    setSuccessModal({ isOpen: false, message: "" });
 
     if (!login.trim() || !password) {
-      setErrorMessage("Silakan isi email/username dan password.");
+      setErrorModal({
+        isOpen: true,
+        message: "Silakan isi email/username dan password.",
+      });
       return;
     }
 
@@ -61,7 +76,10 @@ export default function LoginForm() {
         document.cookie = `trashure_role=${role}; path=/; max-age=${maxAge}; SameSite=Lax`;
       }
 
-      setSuccessMessage("Login berhasil! Mengalihkan...");
+      setSuccessModal({
+        isOpen: true,
+        message: "Login berhasil! Mengalihkan...",
+      });
 
       // Redirect after brief delay
       setTimeout(() => {
@@ -78,11 +96,13 @@ export default function LoginForm() {
         }
       }, 900);
     } catch (err: unknown) {
-      setErrorMessage(
-        err instanceof Error
-          ? err.message
-          : "Terjadi kesalahan koneksi ke server. Pastikan backend aktif."
-      );
+      setErrorModal({
+        isOpen: true,
+        message:
+          err instanceof Error
+            ? err.message
+            : "Terjadi kesalahan koneksi ke server. Pastikan backend aktif.",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -108,19 +128,36 @@ export default function LoginForm() {
       </div>
 
       {/* Error Alert */}
-      {errorMessage && (
-        <div className="mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs sm:text-sm flex items-start gap-2.5 animate-in fade-in duration-200">
-          <AlertCircle className="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" />
-          <span className="flex-1 leading-snug">{errorMessage}</span>
-        </div>
+      {errorModal.isOpen && (
+        <AlertModal
+          isOpen={errorModal.isOpen}
+          onClose={() => setErrorModal({ isOpen: false, message: "" })}
+          type="error"
+          title="Gagal"
+          message={errorModal.message}
+        />
       )}
 
       {/* Success Alert */}
-      {successMessage && (
-        <div className="mb-4 p-3 rounded-xl bg-green-50 border border-green-200 text-green-700 text-xs sm:text-sm flex items-center gap-2.5 animate-in fade-in duration-200">
-          <CheckCircle2 className="w-4 h-4 text-green-600 flex-shrink-0" />
-          <span className="flex-1 font-medium">{successMessage}</span>
-        </div>
+      {successModal.isOpen && (
+        <AlertModal
+          isOpen={successModal.isOpen}
+          onClose={() => setSuccessModal({ isOpen: false, message: "" })}
+          type="success"
+          title="Berhasil"
+          message={successModal.message}
+        />
+      )}
+
+      {/* Info Modal - Lupa Password & Hubungi Admin */}
+      {infoModal.isOpen && (
+        <AlertModal
+          isOpen={infoModal.isOpen}
+          onClose={() => setInfoModal({ isOpen: false, title: "", message: "" })}
+          type="info"
+          title={infoModal.title}
+          message={infoModal.message}
+        />
       )}
 
       {/* Form */}
@@ -190,9 +227,11 @@ export default function LoginForm() {
             href="#lupa-password"
             onClick={(e) => {
               e.preventDefault();
-              alert(
-                "Silakan hubungi administrator bank sampah Trashure untuk me-reset password akun Anda."
-              );
+              setInfoModal({
+                isOpen: true,
+                title: "Lupa Password?",
+                message: "Silakan hubungi administrator bank sampah Trashure untuk me-reset password akun Anda.",
+              });
             }}
             className="text-xs sm:text-[13px] font-medium text-[#15803d] hover:underline transition-colors"
           >
@@ -248,7 +287,11 @@ export default function LoginForm() {
           href="#hubungi-admin"
           onClick={(e) => {
             e.preventDefault();
-            alert("Silakan hubungi administrator bank sampah Trashure di lingkungan Anda untuk pendaftaran akun.");
+            setInfoModal({
+              isOpen: true,
+              title: "Hubungi Admin",
+              message: "Silakan hubungi administrator bank sampah Trashure di lingkungan Anda untuk pendaftaran akun.",
+            });
           }}
           className="font-semibold text-[#15803d] hover:underline cursor-pointer"
         >

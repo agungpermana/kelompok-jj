@@ -22,6 +22,7 @@ import {
   Search,
   Loader2,
   FileSpreadsheet,
+  Phone,
 } from 'lucide-react';
 import {
   fetchRiwayatSetoran,
@@ -101,6 +102,22 @@ function formatIndoTime(dateStr?: string | null): string {
   }
 }
 
+// Parse catatan pengajuan jadi objek rapi
+function parseCatatanPengajuan(catatan?: string | null): { jadwal?: string; kontak?: string; catatan?: string } | null {
+  if (!catatan) return null;
+  const result: { jadwal?: string; kontak?: string; catatan?: string } = {};
+  const jadwalMatch = catatan.match(/Preferensi Jadwal:\s*([^\|]+)/i);
+  if (jadwalMatch) result.jadwal = jadwalMatch[1].trim();
+  const kontakMatch = catatan.match(/Kontak:\s*([^\|]+)/i);
+  if (kontakMatch) result.kontak = kontakMatch[1].trim();
+  const catatanMatch = catatan.match(/Catatan:\s*(.+)$/i);
+  if (catatanMatch) result.catatan = catatanMatch[1].trim();
+  if (!result.jadwal && !result.kontak && !result.catatan) {
+    result.catatan = catatan;
+  }
+  return result;
+}
+
 export default function RiwayatSetoranPage() {
   const [data, setData] = useState<SetoranItem[]>([]);
   const [ringkasan, setRingkasan] = useState<RingkasanSetoran>(DEFAULT_RINGKASAN);
@@ -108,7 +125,7 @@ export default function RiwayatSetoranPage() {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
 
   // Filters
-  const [activeTab, setActiveTab] = useState<'semua' | 'diajukan' | 'menunggu' | 'disetujui' | 'ditolak' | 'dibatalkan'>('semua');
+  const [activeTab, setActiveTab] = useState<'semua' | 'diajukan' | 'dijadwalkan' | 'diproses' | 'menunggu' | 'disetujui' | 'ditolak' | 'dibatalkan'>('semua');
   const [sortOrder, setSortOrder] = useState<'terbaru' | 'terlama'>('terbaru');
   const [dariTanggal, setDariTanggal] = useState('');
   const [sampaiTanggal, setSampaiTanggal] = useState('');
@@ -147,13 +164,12 @@ export default function RiwayatSetoranPage() {
     }
   }, [toastMessage]);
 
-  // Fetch data
+  // Fetch data (selalu ambil semua, filter di client-side)
   const loadData = useCallback(async () => {
     setLoading(true);
     try {
       const [res, user] = await Promise.all([
         fetchRiwayatSetoran({
-          status: activeTab === 'semua' ? undefined : activeTab,
           sort: sortOrder,
         }),
         fetchCurrentUser(),
@@ -169,7 +185,7 @@ export default function RiwayatSetoranPage() {
     } finally {
       setLoading(false);
     }
-  }, [activeTab, sortOrder]);
+  }, [sortOrder]);
 
   useEffect(() => {
     loadData();
@@ -177,13 +193,15 @@ export default function RiwayatSetoranPage() {
 
   // Jumlah per status untuk ditampilkan di dropdown filter
   const statusCounts = useMemo(() => {
-    const counts = { semua: data.length, diajukan: 0, menunggu: 0, disetujui: 0, ditolak: 0, dibatalkan: 0 };
+    const counts = { semua: data.length, diajukan: 0, dijadwalkan: 0, diproses: 0, menunggu: 0, disetujui: 0, ditolak: 0, dibatalkan: 0 };
     data.forEach((item) => {
       const status = item.status_validasi?.toLowerCase();
       const statusPengajuan = item.status_pengajuan?.toLowerCase();
       if (statusPengajuan === 'dibatalkan') counts.dibatalkan += 1;
       else if (status === 'ditolak' || statusPengajuan === 'ditolak') counts.ditolak += 1;
       else if (statusPengajuan === 'diajukan') counts.diajukan += 1;
+      else if (statusPengajuan === 'dijadwalkan') counts.dijadwalkan += 1;
+      else if (statusPengajuan === 'diproses' || statusPengajuan === 'di proses' || statusPengajuan === 'proses') counts.diproses += 1;
       else if (status === 'menunggu') counts.menunggu += 1;
       else if (status === 'disetujui') counts.disetujui += 1;
     });
@@ -193,8 +211,10 @@ export default function RiwayatSetoranPage() {
   const statusOptions: Array<{ value: typeof activeTab; label: string }> = [
     { value: 'semua', label: 'Semua Data' },
     { value: 'diajukan', label: 'Diajukan' },
+    { value: 'dijadwalkan', label: 'Dijadwalkan' },
+    { value: 'diproses', label: 'Di Proses' },
     { value: 'menunggu', label: 'Menunggu Validasi' },
-    { value: 'disetujui', label: 'Disetujui' },
+    { value: 'disetujui', label: 'Selesai' },
     { value: 'ditolak', label: 'Ditolak' },
     { value: 'dibatalkan', label: 'Dibatalkan' },
   ];
@@ -204,7 +224,7 @@ export default function RiwayatSetoranPage() {
   // Client-side filter: tab status + rentang tanggal (seperti admin setoran sampah)
   const filteredData = useMemo(() => {
     return data.filter((item) => {
-      // Tab filter (Ditolak dan Dibatalkan terpisah)
+      // Tab filter
       if (activeTab !== 'semua') {
         const status = item.status_validasi?.toLowerCase();
         const statusPengajuan = item.status_pengajuan?.toLowerCase();
@@ -212,6 +232,8 @@ export default function RiwayatSetoranPage() {
         const isDitolak = status === 'ditolak' || statusPengajuan === 'ditolak';
 
         if (activeTab === 'diajukan' && statusPengajuan !== 'diajukan') return false;
+        if (activeTab === 'dijadwalkan' && statusPengajuan !== 'dijadwalkan') return false;
+        if (activeTab === 'diproses' && statusPengajuan !== 'diproses' && statusPengajuan !== 'di proses' && statusPengajuan !== 'proses') return false;
         if (activeTab === 'menunggu' && status !== 'menunggu') return false;
         if (activeTab === 'disetujui' && status !== 'disetujui') return false;
         if (activeTab === 'ditolak' && !isDitolak) return false;
@@ -315,7 +337,6 @@ export default function RiwayatSetoranPage() {
       <AdminHeader
         title="Riwayat Setoran"
         subtitle="Lihat riwayat setoran sampah yang Anda lakukan dan status validasinya."
-        notifCount={5}
       />
 
       {/* RINGKASAN SETORAN - Setelah Header */}
@@ -520,7 +541,6 @@ export default function RiwayatSetoranPage() {
                 const isDiajukan = item.status_pengajuan === 'diajukan';
                 const isDijadwalkan = item.status_pengajuan === 'dijadwalkan';
                 const isDiproses = item.status_pengajuan === 'diproses' || item.status_pengajuan === 'di proses' || item.status_pengajuan === 'proses';
-                const isSelesai = item.status_pengajuan === 'selesai';
                 const isDibatalkan = item.status_pengajuan === 'dibatalkan';
                 const isDitolakPengajuan = item.status_pengajuan === 'ditolak' || isDibatalkan;
                 const isRejectedOverall = isDitolak || isDitolakPengajuan;
@@ -544,7 +564,7 @@ export default function RiwayatSetoranPage() {
                         {/* Status Badge */}
                         <div>
                           {isDiajukan && (
-                            <span className="inline-flex items-center gap-1.5 bg-amber-50 text-amber-700 border border-amber-200 px-3 py-1 rounded-full text-xs font-semibold">
+                            <span className="inline-flex items-center gap-1.5 bg-gray-100 text-gray-700 border border-gray-200 px-3 py-1 rounded-full text-xs font-semibold">
                               Diajukan
                             </span>
                           )}
@@ -558,7 +578,12 @@ export default function RiwayatSetoranPage() {
                               Di Proses
                             </span>
                           )}
-                          {isSelesai && (
+                          {isMenunggu && (
+                            <span className="inline-flex items-center gap-1.5 bg-amber-50 text-amber-700 border border-amber-200 px-3 py-1 rounded-full text-xs font-semibold">
+                              Menunggu Validasi
+                            </span>
+                          )}
+                          {isDisetujui && (
                             <span className="inline-flex items-center gap-1.5 bg-[#f0fdf4] text-[#16a34a] border border-[#bbf7d0] px-3 py-1 rounded-full text-xs font-semibold">
                               Selesai
                             </span>
@@ -568,7 +593,7 @@ export default function RiwayatSetoranPage() {
                               {item.status_pengajuan === 'dibatalkan' ? 'Dibatalkan' : 'Ditolak'}
                             </span>
                           )}
-                          {!isDiajukan && !isDijadwalkan && !isDiproses && !isSelesai && !isDitolakPengajuan && item.status_pengajuan && (
+                          {!isDiajukan && !isDijadwalkan && !isDiproses && !isMenunggu && !isDisetujui && !isDitolakPengajuan && item.status_pengajuan && (
                             <span className="inline-flex items-center gap-1.5 bg-gray-50 text-gray-700 border border-gray-200 px-3 py-1 rounded-full text-xs font-semibold capitalize">
                               {item.status_pengajuan}
                             </span>
@@ -580,29 +605,35 @@ export default function RiwayatSetoranPage() {
                           <span
                             className={`text-[11px] font-semibold block mb-0.5 ${isRejectedOverall
                               ? 'text-rose-600 font-bold'
-                              : isMenunggu
-                                ? 'text-amber-700 font-bold'
+                              : isDisetujui
+                                ? 'text-[#16a34a] font-bold'
                                 : 'text-gray-400'
                               }`}
                           >
                             {isRejectedOverall
                               ? 'Status Penjemputan'
-                              : isMenunggu
+                              : isDiajukan
                                 ? 'Perkiraan Penjemputan'
-                                : 'Waktu Pengambilan'}
+                                : isDijadwalkan || isDiproses
+                                  ? 'Jadwal Penjemputan'
+                                  : 'Waktu Pengambilan'}
                           </span>
                           <div className="flex items-center gap-1.5 text-sm font-bold text-gray-900">
                             <Calendar className="h-4 w-4 text-gray-400" />
                             <span>
-                              {isMenunggu && item.perkiraan_tanggal_jemput
-                                ? formatIndoDate(item.perkiraan_tanggal_jemput)
-                                : dateIndo}
+                              {isDisetujui
+                                ? dateIndo
+                                : item.perkiraan_tanggal_jemput
+                                  ? formatIndoDate(item.perkiraan_tanggal_jemput)
+                                  : dateIndo}
                             </span>
                           </div>
                           <p className="text-xs text-gray-500 pl-5.5 font-medium mt-0.5">
-                            {isMenunggu && item.perkiraan_waktu_jemput
-                              ? item.perkiraan_waktu_jemput
-                              : timeIndo ? `${timeIndo} WIB` : ''}
+                            {isDisetujui
+                              ? (timeIndo ? `${timeIndo} WIB` : '')
+                              : item.perkiraan_waktu_jemput
+                                ? item.perkiraan_waktu_jemput
+                                : (timeIndo ? `${timeIndo} WIB` : '')}
                           </p>
                         </div>
 
@@ -659,21 +690,21 @@ export default function RiwayatSetoranPage() {
 
                         <div>
                           <p className="text-[11px] text-gray-400 font-medium">
-                            {isMenunggu ? 'Poin Sementara' : 'Poin Diterima'}
+                            Poin Diterima
                           </p>
                           <p
                             className={`text-sm font-extrabold ${isDisetujui
                               ? 'text-[#16a34a]'
-                              : isMenunggu
-                                ? 'text-amber-600'
-                                : 'text-rose-600'
+                              : isRejectedOverall
+                                ? 'text-rose-600'
+                                : 'text-gray-600'
                               }`}
                           >
-                            {isDitolak
+                            {isRejectedOverall
                               ? '0 poin'
-                              : isMenunggu
-                                ? `${formatNumber(item.total_poin_sementara)} poin`
-                                : `${formatNumber(item.total_poin)} poin`}
+                              : isDisetujui
+                                ? `${formatNumber(item.total_poin)} poin`
+                                : `${formatNumber(item.total_poin_sementara)} poin`}
                           </p>
                         </div>
                       </div>
@@ -682,14 +713,15 @@ export default function RiwayatSetoranPage() {
                       <div className="md:col-span-3 space-y-3 flex flex-col justify-between h-full">
                         <div>
                           <p className="text-[11px] text-gray-400 font-medium mb-1">
-                            {isDibatalkan ? 'Status Pengajuan' : 'Validasi oleh Admin'}
+                            {isDibatalkan ? 'Status Pengajuan' : 'Status'}
                           </p>
                           {isDisetujui && (
                             <div className="space-y-0.5">
                               <div className="flex items-center gap-1.5 text-xs font-bold text-[#16a34a]">
                                 <CheckCircle2 className="h-4 w-4" />
-                                <span>Disetujui</span>
+                                <span>Poin Sudah Masuk</span>
                               </div>
+                              <p className="text-[11px] text-gray-400 pl-5.5">Status Validasi: Disetujui Admin</p>
                               {item.tanggal_validasi && (
                                 <p className="text-[11px] text-gray-500 pl-5.5">
                                   {formatIndoDate(item.tanggal_validasi)}{' '}
@@ -699,13 +731,29 @@ export default function RiwayatSetoranPage() {
                             </div>
                           )}
 
-                          {isMenunggu && !isRejectedOverall && (
+                          {isMenunggu && (
                             <div className="space-y-0.5">
                               <div className="flex items-center gap-1.5 text-xs font-bold text-amber-600">
                                 <Clock className="h-4 w-4" />
                                 <span>Menunggu Validasi</span>
                               </div>
-                              <p className="text-[11px] text-gray-400 pl-5.5">Oleh Admin</p>
+                              <p className="text-[11px] text-gray-400 pl-5.5">Admin sedang mereview</p>
+                            </div>
+                          )}
+
+                          {!isDisetujui && !isMenunggu && !isRejectedOverall && !isDibatalkan && (
+                            <div className="space-y-0.5">
+                              <div className="flex items-center gap-1.5 text-xs font-bold text-amber-600">
+                                <Clock className="h-4 w-4" />
+                                <span>{isDiajukan ? 'Menunggu Penjadwalan' : isDijadwalkan ? 'Menunggu Petugas' : 'Dalam Proses'}</span>
+                              </div>
+                              <p className="text-[11px] text-gray-400 pl-5.5">
+                                {isDiajukan
+                                  ? 'Admin akan menjadwalkan'
+                                  : isDijadwalkan
+                                    ? 'Petugas akan datang'
+                                    : 'Sedang diambil'}
+                              </p>
                             </div>
                           )}
 
@@ -713,7 +761,7 @@ export default function RiwayatSetoranPage() {
                             <div className="space-y-0.5">
                               <div className="flex items-center gap-1.5 text-xs font-bold text-rose-600">
                                 <XCircle className="h-4 w-4" />
-                                <span>Dibatalkan oleh Warga</span>
+                                <span>Dibatalkan</span>
                               </div>
                               {item.catatan_validasi ? (
                                 <p className="text-[11px] text-gray-500 pl-5.5 line-clamp-2" title={item.catatan_validasi}>
@@ -721,7 +769,7 @@ export default function RiwayatSetoranPage() {
                                 </p>
                               ) : (
                                 <p className="text-[11px] text-gray-400 pl-5.5">
-                                  Dibatalkan sebelum dijadwalkan
+                                  Dibatalkan oleh warga
                                 </p>
                               )}
                             </div>
@@ -733,13 +781,10 @@ export default function RiwayatSetoranPage() {
                                 <XCircle className="h-4 w-4" />
                                 <span>Ditolak</span>
                               </div>
-                              {item.catatan_validasi ? (
+                              <p className="text-[11px] text-gray-400 pl-5.5">Tidak disetujui admin</p>
+                              {item.catatan_validasi && (
                                 <p className="text-[11px] text-rose-600 pl-5.5 line-clamp-2" title={item.catatan_validasi}>
                                   {item.catatan_validasi}
-                                </p>
-                              ) : (
-                                <p className="text-[11px] text-gray-400 pl-5.5">
-                                  {item.status_pengajuan === 'ditolak' ? 'Penjemputan ditolak' : 'Oleh Admin'}
                                 </p>
                               )}
                               {item.tanggal_validasi && (
@@ -838,10 +883,10 @@ export default function RiwayatSetoranPage() {
                   </h3>
                   {selectedSetoran.status_validasi === 'disetujui' && (
                     <span className="bg-green-50 text-green-700 border border-green-200 px-2.5 py-0.5 rounded-full text-[11px] font-bold">
-                      Disetujui
+                      Selesai
                     </span>
                   )}
-                  {selectedSetoran.status_validasi === 'menunggu' && selectedSetoran.status_pengajuan !== 'ditolak' && selectedSetoran.status_pengajuan !== 'dibatalkan' && (
+                  {selectedSetoran.status_validasi === 'menunggu' && (
                     <span className="bg-amber-50 text-amber-700 border border-amber-200 px-2.5 py-0.5 rounded-full text-[11px] font-bold">
                       Menunggu Validasi
                     </span>
@@ -855,11 +900,6 @@ export default function RiwayatSetoranPage() {
                       Ditolak
                     </span>
                   ) : null}
-                  {selectedSetoran.status_pengajuan && (
-                    <span className="bg-gray-100 text-gray-700 border border-gray-200 px-2 py-0.5 rounded-full text-[10px] font-medium capitalize">
-                      Pengajuan: {selectedSetoran.status_pengajuan === 'diproses' ? 'Di Proses' : selectedSetoran.status_pengajuan}
-                    </span>
-                  )}
                 </div>
                 <p className="text-xs text-gray-500 font-mono mt-0.5">
                   {formatSetoranCode(selectedSetoran.setoran_id, selectedSetoran.tanggal_setoran)}
@@ -880,33 +920,41 @@ export default function RiwayatSetoranPage() {
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3 bg-gray-50/70 p-3.5 rounded-lg sm:rounded-xl border border-gray-100 text-xs">
                 <div>
                   <span className="text-gray-400 block font-medium">
-                    {selectedSetoran.status_validasi === 'menunggu'
+                    {selectedSetoran.status_pengajuan === 'diajukan'
                       ? 'Perkiraan Tanggal Jemput'
-                      : 'Tanggal Setoran'}
+                      : selectedSetoran.status_pengajuan === 'dijadwalkan' || selectedSetoran.status_pengajuan === 'diproses'
+                        ? 'Jadwal Tanggal Jemput'
+                        : 'Tanggal Setoran'}
                   </span>
                   <span className="font-semibold text-gray-800">
-                    {selectedSetoran.status_validasi === 'menunggu' && selectedSetoran.perkiraan_tanggal_jemput
-                      ? formatIndoDate(selectedSetoran.perkiraan_tanggal_jemput)
-                      : formatIndoDate(selectedSetoran.tanggal_setoran)}
+                    {selectedSetoran.status_validasi === 'disetujui'
+                      ? formatIndoDate(selectedSetoran.tanggal_setoran)
+                      : selectedSetoran.perkiraan_tanggal_jemput
+                        ? formatIndoDate(selectedSetoran.perkiraan_tanggal_jemput)
+                        : formatIndoDate(selectedSetoran.tanggal_setoran)}
                   </span>
                 </div>
                 <div>
                   <span className="text-gray-400 block font-medium">
-                    {selectedSetoran.status_validasi === 'menunggu'
+                    {selectedSetoran.status_pengajuan === 'diajukan'
                       ? 'Perkiraan Waktu Jemput'
-                      : 'Waktu Pengambilan'}
+                      : selectedSetoran.status_pengajuan === 'dijadwalkan' || selectedSetoran.status_pengajuan === 'diproses'
+                        ? 'Jadwal Waktu Jemput'
+                        : 'Waktu Pengambilan'}
                   </span>
                   <span className="font-semibold text-gray-800">
-                    {selectedSetoran.status_validasi === 'menunggu' && selectedSetoran.perkiraan_waktu_jemput
-                      ? selectedSetoran.perkiraan_waktu_jemput
-                      : `${formatIndoTime(selectedSetoran.tanggal_setoran)} WIB`}
+                    {selectedSetoran.status_validasi === 'disetujui'
+                      ? `${formatIndoTime(selectedSetoran.tanggal_setoran)} WIB`
+                      : selectedSetoran.perkiraan_waktu_jemput
+                        ? selectedSetoran.perkiraan_waktu_jemput
+                        : `${formatIndoTime(selectedSetoran.tanggal_setoran)} WIB`}
                   </span>
                 </div>
                 <div>
                   <span className="text-gray-400 block font-medium">Petugas Lapangan</span>
                   <span className="font-semibold text-gray-800">
                     {selectedSetoran.petugas?.nama_petugas ||
-                      (selectedSetoran.status_validasi === 'menunggu'
+                      (selectedSetoran.status_pengajuan === 'diajukan'
                         ? 'Menunggu Penugasan'
                         : 'Petugas Trashure')}
                   </span>
@@ -918,50 +966,73 @@ export default function RiwayatSetoranPage() {
                   </span>
                 </div>
                 <div>
-                  <span className="text-gray-400 block font-medium">
-                    {selectedSetoran.status_validasi === 'menunggu' ? 'Poin Sementara' : 'Poin Setoran'}
-                  </span>
+                  <span className="text-gray-400 block font-medium">Poin Setoran</span>
                   <span className="font-bold text-[#16a34a]">
                     {selectedSetoran.status_validasi === 'ditolak'
                       ? '0 poin'
-                      : selectedSetoran.status_validasi === 'menunggu'
-                        ? `${formatNumber(selectedSetoran.total_poin_sementara)} poin`
-                        : `${formatNumber(selectedSetoran.total_poin)} poin`}
+                      : `${formatNumber(selectedSetoran.total_poin)} poin`}
                   </span>
                 </div>
                 <div>
-                  <span className="text-gray-400 block font-medium">
-                    {selectedSetoran.status_validasi === 'menunggu' ? 'Status Validasi' : 'Validator'}
-                  </span>
+                  <span className="text-gray-400 block font-medium">Validator</span>
                   <span className="font-semibold text-gray-800">
-                    {selectedSetoran.status_validasi === 'menunggu'
-                      ? 'Menunggu Validasi Admin'
-                      : (selectedSetoran as any).validator_admin?.nama_admin || (selectedSetoran as any).validator_petugas?.nama_petugas || 'Admin Bank Sampah'}
+                    {(selectedSetoran as any).validator_admin?.nama_admin || (selectedSetoran as any).validator_petugas?.nama_petugas || 'Admin Bank Sampah'}
                   </span>
                 </div>
               </div>
 
               {/* Catatan Validasi / Pembatalan if present */}
-              {selectedSetoran.catatan_validasi && (
-                <div
-                  className={`p-3.5 rounded-lg sm:rounded-xl text-xs flex items-start gap-2.5 ${selectedSetoran.status_pengajuan === 'dibatalkan'
-                    ? 'bg-gray-50 border border-gray-200 text-gray-800'
-                    : selectedSetoran.status_validasi === 'ditolak'
-                      ? 'bg-rose-50 border border-rose-200 text-rose-800'
-                      : 'bg-green-50 border border-green-200 text-emerald-900'
-                    }`}
-                >
-                  <AlertCircle className="h-4 w-4 flex-shrink-0 mt-0.5" />
-                  <div>
-                    <span className="font-bold block">
-                      {selectedSetoran.status_pengajuan === 'dibatalkan'
-                        ? 'Catatan Pembatalan:'
-                        : 'Catatan Validasi Admin:'}
-                    </span>
-                    <span>{selectedSetoran.catatan_validasi}</span>
+              {selectedSetoran.catatan_validasi && (() => {
+                const isDibatalkan = selectedSetoran.status_pengajuan === 'dibatalkan';
+                const isDitolak = selectedSetoran.status_validasi === 'ditolak';
+                const parsed = parseCatatanPengajuan(selectedSetoran.catatan_validasi);
+                const isParsed = parsed && (parsed.jadwal || parsed.kontak || parsed.catatan);
+
+                return (
+                  <div
+                    className={`p-3.5 rounded-lg sm:rounded-xl text-xs ${isDibatalkan
+                      ? 'bg-gray-50 border border-gray-200 text-gray-800'
+                      : isDitolak
+                        ? 'bg-rose-50 border border-rose-200 text-rose-800'
+                        : 'bg-green-50 border border-green-200 text-emerald-900'
+                      }`}
+                  >
+                    <div className="flex items-start gap-2.5">
+                      <AlertCircle className="h-4 w-4 flex-shrink-0 mt-0.5" />
+                      <div className="flex-1">
+                        <span className="font-bold block mb-1.5">
+                          {isDibatalkan
+                            ? 'Alasan Pembatalan:'
+                            : isDitolak
+                              ? 'Alasan Penolakan:'
+                              : 'Catatan Pengajuan:'}
+                        </span>
+                        {isParsed ? (
+                          <div className="space-y-1.5">
+                            {parsed.jadwal && (
+                              <div className="flex items-center gap-2">
+                                <Calendar className="h-3.5 w-3.5 text-gray-500" />
+                                <span className="font-medium text-gray-700">{parsed.jadwal}</span>
+                              </div>
+                            )}
+                            {parsed.kontak && (
+                              <div className="flex items-center gap-2">
+                                <Phone className="h-3.5 w-3.5 text-gray-500" />
+                                <span className="font-medium text-gray-700">{parsed.kontak}</span>
+                              </div>
+                            )}
+                            {parsed.catatan && (
+                              <p className="text-gray-600 pl-5.5">{parsed.catatan}</p>
+                            )}
+                          </div>
+                        ) : (
+                          <p>{selectedSetoran.catatan_validasi}</p>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                </div>
-              )}
+                );
+              })()}
 
               {/* Rincian Sampah Table */}
               <div>
@@ -1005,9 +1076,7 @@ export default function RiwayatSetoranPage() {
                             <td className="py-3 px-3 text-right font-bold text-gray-900">
                               {selectedSetoran.status_validasi === 'ditolak'
                                 ? '0 poin'
-                                : selectedSetoran.status_validasi === 'menunggu'
-                                  ? `${formatNumber(d.poin_sementara ?? d.poin)} poin`
-                                  : `${formatNumber(d.poin)} poin`}
+                                : `${formatNumber(d.poin)} poin`}
                             </td>
                           </tr>
                         ))
@@ -1029,9 +1098,7 @@ export default function RiwayatSetoranPage() {
                         <td className="py-2.5 px-3 text-right text-[#16a34a]">
                           {selectedSetoran.status_validasi === 'ditolak'
                             ? '0 poin'
-                            : selectedSetoran.status_validasi === 'menunggu'
-                              ? `${formatNumber(selectedSetoran.total_poin_sementara)} poin`
-                              : `${formatNumber(selectedSetoran.total_poin)} poin`}
+                            : `${formatNumber(selectedSetoran.total_poin)} poin`}
                         </td>
                       </tr>
                     </tfoot>
