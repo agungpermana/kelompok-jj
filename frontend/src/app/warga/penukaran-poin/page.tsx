@@ -1377,6 +1377,12 @@ export default function PenukaranPoinPage() {
 
               <button
                 type="button"
+                onClick={() =>
+                  window.open(
+                    'https://wa.me/6288213448685?text=Halo%20Trashure,%20saya%20ingin%20bertanya%20tentang%20penukaran%20poin.',
+                    '_blank'
+                  )
+                }
                 className="mt-4 flex items-center gap-2 rounded-lg bg-green-600 px-4 py-2.5 text-xs font-semibold text-white transition-colors hover:bg-green-700"
               >
 

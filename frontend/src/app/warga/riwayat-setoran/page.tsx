@@ -858,7 +858,7 @@ export default function RiwayatSetoranPage() {
               <p className="text-xs text-gray-600 mt-0.5">Hubungi kami melalui WhatsApp</p>
             </div>
             <a
-              href="https://wa.me/6281234567890?text=Halo%20Trashure,%20saya%20ingin%20bertanya%20tentang%20status%20riwayat%20setoran%20sampah%20saya."
+              href="https://wa.me/6288213448685?text=Halo%20Trashure,%20saya%20ingin%20bertanya%20tentang%20status%20riwayat%20setoran%20sampah%20saya."
               target="_blank"
               rel="noopener noreferrer"
               className="flex w-full items-center justify-center gap-2 bg-[#16a34a] hover:bg-[#15803d] text-white rounded-lg sm:rounded-xl py-2.5 px-4 text-xs font-semibold shadow-xs transition"

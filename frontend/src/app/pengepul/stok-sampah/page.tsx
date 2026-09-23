@@ -51,7 +51,7 @@ function formatKg(value: number): string {
   }) + ' kg';
 }
 
-const ADMIN_WHATSAPP = '6281234567890'; // Nomor WhatsApp admin
+const ADMIN_WHATSAPP = '6288213448685'; // Nomor WhatsApp admin
 
 function hubungiAdmin(jenisSampah?: string, stok?: number) {
   let pesan = 'Halo Admin Trashure, saya pengepul.';

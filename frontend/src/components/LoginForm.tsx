@@ -230,7 +230,7 @@ export default function LoginForm() {
               setInfoModal({
                 isOpen: true,
                 title: "Lupa Password?",
-                message: "Silakan hubungi administrator bank sampah Trashure untuk me-reset password akun Anda.",
+                message: "Silakan hubungi administrator bank sampah Trashure di 088213448685 untuk me-reset password akun Anda.",
               });
             }}
             className="text-xs sm:text-[13px] font-medium text-[#15803d] hover:underline transition-colors"
@@ -290,7 +290,7 @@ export default function LoginForm() {
             setInfoModal({
               isOpen: true,
               title: "Hubungi Admin",
-              message: "Silakan hubungi administrator bank sampah Trashure di lingkungan Anda untuk pendaftaran akun.",
+              message: "Silakan hubungi administrator bank sampah Trashure di 088213448685 untuk pendaftaran akun.",
             });
           }}
           className="font-semibold text-[#15803d] hover:underline cursor-pointer"

@@ -17,7 +17,7 @@ interface StokSampah {
 }
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
-const ADMIN_WHATSAPP = '6281234567890'; // Nomor WhatsApp admin
+const ADMIN_WHATSAPP = '6288213448685'; // Nomor WhatsApp admin
 
 const getToken = () => {
   if (typeof window === 'undefined') return '';
