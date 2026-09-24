@@ -275,7 +275,11 @@ class PetugasController extends Controller
     {
         $petugas = Petugas::with('user')->findOrFail($id);
 
+        $userId = $petugas->user_id;
+
         $validated = $request->validate([
+            'username' => 'required|string|max:50|unique:users,username,' . $userId,
+            'email' => 'required|email|max:255|unique:users,email,' . $userId,
             'nama_petugas' => 'required|string|max:100',
             'jenis_kelamin' => 'required|string|max:20',
             'alamat' => 'required|string',
@@ -283,6 +287,12 @@ class PetugasController extends Controller
             'status' => 'nullable|string|in:aktif,nonaktif',
             'password' => ['nullable', 'string', Password::min(6)],
         ], [
+            'username.required' => 'Username wajib diisi.',
+            'username.unique' => 'Username sudah digunakan, gunakan username lain.',
+            'username.max' => 'Username maksimal 50 karakter.',
+            'email.required' => 'Email wajib diisi.',
+            'email.email' => 'Format email tidak valid.',
+            'email.unique' => 'Email sudah digunakan, gunakan email lain.',
             'nama_petugas.required' => 'Nama petugas wajib diisi.',
             'nama_petugas.max' => 'Nama petugas maksimal 100 karakter.',
             'jenis_kelamin.required' => 'Jenis kelamin wajib dipilih.',
@@ -304,16 +314,17 @@ class PetugasController extends Controller
             ]);
 
             if ($petugas->user) {
-                $userUpdates = [];
+                $userUpdates = [
+                    'username' => $validated['username'],
+                    'email' => $validated['email'],
+                ];
                 if (isset($validated['status'])) {
                     $userUpdates['status'] = $validated['status'];
                 }
                 if (!empty($validated['password'])) {
                     $userUpdates['password'] = $validated['password'];
                 }
-                if (!empty($userUpdates)) {
-                    $petugas->user->update($userUpdates);
-                }
+                $petugas->user->update($userUpdates);
             }
 
             DB::commit();

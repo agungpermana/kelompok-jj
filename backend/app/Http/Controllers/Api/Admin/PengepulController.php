@@ -369,15 +369,25 @@ class PengepulController extends Controller
     )]
     public function update(Request $request, $id)
     {
-        $pengepul = Pengepul::findOrFail($id);
+        $pengepul = Pengepul::with('user')->findOrFail($id);
+
+        $userId = $pengepul->user_id;
 
         $validated = $request->validate([
+            'username' => 'required|string|max:50|unique:users,username,' . $userId,
+            'email' => 'required|email|unique:users,email,' . $userId,
             'nama_pengepul' => 'required|string|max:100',
             'alamat' => 'required|string',
             'no_telepon' => 'required|string|size:12',
             'password' => ['nullable', 'string', Password::min(6)],
             'status' => 'nullable|string|in:aktif,nonaktif',
         ], [
+            'username.required' => 'Username wajib diisi.',
+            'username.unique' => 'Username sudah digunakan, gunakan username lain.',
+            'username.max' => 'Username maksimal 50 karakter.',
+            'email.required' => 'Email wajib diisi.',
+            'email.email' => 'Format email tidak valid.',
+            'email.unique' => 'Email sudah digunakan, gunakan email lain.',
             'nama_pengepul.required' => 'Nama pengepul wajib diisi.',
             'nama_pengepul.max' => 'Nama pengepul maksimal 100 karakter.',
             'alamat.required' => 'Alamat wajib diisi.',
@@ -396,13 +406,17 @@ class PengepulController extends Controller
                 'no_telepon' => $validated['no_telepon'] ?? null,
             ]);
 
+            $userUpdates = [
+                'username' => $validated['username'],
+                'email' => $validated['email'],
+            ];
             if (isset($validated['status'])) {
-                $pengepul->user->update(['status' => $validated['status']]);
+                $userUpdates['status'] = $validated['status'];
             }
-
             if (!empty($validated['password'])) {
-                $pengepul->user->update(['password' => $validated['password']]);
+                $userUpdates['password'] = $validated['password'];
             }
+            $pengepul->user->update($userUpdates);
 
             DB::commit();
 
