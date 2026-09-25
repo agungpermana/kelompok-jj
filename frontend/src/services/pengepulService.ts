@@ -157,6 +157,8 @@ export async function updatePengepulInDB(
     alamat: payload.alamat || null,
     no_telepon: payload.noTelepon || null,
   };
+  if (payload.username) body.username = payload.username;
+  if (payload.email) body.email = payload.email;
   if (payload.password) body.password = payload.password;
   if (payload.status) body.status = payload.status;
 

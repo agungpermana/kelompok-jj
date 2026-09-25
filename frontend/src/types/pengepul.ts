@@ -30,6 +30,8 @@ export interface PengepulFormData {
 }
 
 export interface PengepulUpdateData {
+  username?: string;
+  email?: string;
   namaPengepul: string;
   alamat?: string;
   noTelepon?: string;

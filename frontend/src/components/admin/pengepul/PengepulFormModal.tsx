@@ -87,10 +87,10 @@ export default function PengepulFormModal({
 
   const susunErrorValidasi = () => {
     const err: Record<string, string> = {};
-    if (mode === 'create' && !username.trim()) {
+    if (!username.trim()) {
       err.username = 'Username wajib diisi.';
     }
-    if (mode === 'create' && !email.trim()) {
+    if (!email.trim()) {
       err.email = 'Email wajib diisi.';
     } else if (email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
       err.email = 'Format email tidak valid.';
@@ -169,7 +169,7 @@ export default function PengepulFormModal({
             <p className="text-xs text-gray-400">
               {mode === 'create'
                 ? 'Akun pengguna (users) dibuat otomatis saat pengepul ditambahkan.'
-                : 'Username dan email tidak dapat diubah.'}
+                : 'Anda dapat mengubah username, email, dan password akun pengepul.'}
             </p>
           </div>
           <button
@@ -246,25 +246,33 @@ export default function PengepulFormModal({
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-semibold text-gray-700 mb-1">
-                    Username
+                    Username <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
                     value={username}
-                    disabled
-                    className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg bg-gray-50 text-gray-500 cursor-not-allowed"
+                    onChange={(e) => setUsername(e.target.value)}
+                    className={inputClass}
+                    placeholder="Username akun"
                   />
+                  {errors.username && (
+                    <p className="text-[11px] text-red-500 mt-1">{errors.username}</p>
+                  )}
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-gray-700 mb-1">
-                    Email
+                    Email <span className="text-red-500">*</span>
                   </label>
                   <input
-                    type="text"
+                    type="email"
                     value={email}
-                    disabled
-                    className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg bg-gray-50 text-gray-500 cursor-not-allowed"
+                    onChange={(e) => setEmail(e.target.value)}
+                    className={inputClass}
+                    placeholder="email@trashure.test"
                   />
+                  {errors.email && (
+                    <p className="text-[11px] text-red-500 mt-1">{errors.email}</p>
+                  )}
                 </div>
               </div>
               <div>

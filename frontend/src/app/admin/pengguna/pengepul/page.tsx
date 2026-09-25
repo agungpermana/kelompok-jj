@@ -111,6 +111,8 @@ export default function PengepulPage() {
         setMessage({ type: 'success', text: `Pengepul "${payload.namaPengepul}" beserta akun pengguna berhasil ditambahkan.` });
       } else if (formMode === 'edit' && data.id) {
         await updatePengepulInDB(data.id, {
+          username: payload.username,
+          email: payload.email,
           namaPengepul: payload.namaPengepul,
           alamat: payload.alamat,
           noTelepon: payload.noTelepon,

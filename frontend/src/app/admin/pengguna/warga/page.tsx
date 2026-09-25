@@ -101,12 +101,13 @@ export default function WargaPage() {
 
   // Pesan peringatan sesuai field yang belum diisi / tidak valid
   const validasiForm = (): string | null => {
+    if (!form.username.trim()) return 'Username wajib diisi.';
+    if (!form.email.trim()) return 'Email wajib diisi.';
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) return 'Format email tidak valid.';
     if (!editingWarga) {
-      if (!form.username.trim()) return 'Username wajib diisi.';
-      if (!form.email.trim()) return 'Email wajib diisi.';
       if (!form.password) return 'Password wajib diisi.';
-      if (form.password.length < 6) return 'Password minimal 6 karakter.';
-    } else if (form.password && form.password.length < 6) {
+    }
+    if (form.password && form.password.length < 6) {
       return 'Password minimal 6 karakter.';
     }
     if (!form.nik.trim()) return 'NIK wajib diisi.';
@@ -433,40 +434,43 @@ export default function WargaPage() {
                   </button>
                 </div>
               )}
-              {!editingWarga && (
-                <>
-                  <div>
-                    <label className="block text-xs font-semibold text-gray-700 mb-1">Username</label>
-                    <input
-                      type="text"
-                      value={form.username}
-                      onChange={(e) => setForm({ ...form, username: e.target.value })}
-                      className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-[#16a34a] focus:ring-2 focus:ring-[#16a34a]/10"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-gray-700 mb-1">Email</label>
-                    <input
-                      type="email"
-                      value={form.email}
-                      onChange={(e) => setForm({ ...form, email: e.target.value })}
-                      className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-[#16a34a] focus:ring-2 focus:ring-[#16a34a]/10"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-gray-700 mb-1">Password</label>
-                    <input
-                      type="password"
-                      value={form.password}
-                      onChange={(e) => setForm({ ...form, password: e.target.value })}
-                      className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-[#16a34a] focus:ring-2 focus:ring-[#16a34a]/10"
-                      required
-                    />
-                  </div>
-                </>
-              )}
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-1">
+                  Username <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={form.username}
+                  onChange={(e) => setForm({ ...form, username: e.target.value })}
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-[#16a34a] focus:ring-2 focus:ring-[#16a34a]/10"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-1">
+                  Email <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="email"
+                  value={form.email}
+                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-[#16a34a] focus:ring-2 focus:ring-[#16a34a]/10"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-1">
+                  Password {editingWarga ? <span className="text-gray-400 font-normal">(Kosongkan jika tidak diubah)</span> : <span className="text-red-500">*</span>}
+                </label>
+                <input
+                  type="password"
+                  value={form.password}
+                  onChange={(e) => setForm({ ...form, password: e.target.value })}
+                  placeholder={editingWarga ? 'Kosongkan jika tidak ingin mengubah password' : 'Minimal 6 karakter'}
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-[#16a34a] focus:ring-2 focus:ring-[#16a34a]/10"
+                  required={!editingWarga}
+                />
+              </div>
               <div>
                 <label className="block text-xs font-semibold text-gray-700 mb-1">NIK (16 digit)</label>
                 <input

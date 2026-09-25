@@ -315,9 +315,14 @@ class WargaController extends Controller
     )]
     public function update(Request $request, $id)
     {
-        $warga = Warga::findOrFail($id);
+        $warga = Warga::with('user')->findOrFail($id);
+
+        $userId = $warga->user_id;
 
         $validated = $request->validate([
+            'username' => 'required|string|max:255|unique:users,username,' . $userId,
+            'email' => 'required|email|unique:users,email,' . $userId,
+            'password' => ['nullable', 'string', Password::min(6)],
             'nik' => 'required|string|size:16|unique:warga,nik,' . $id . ',warga_id',
             'nama_warga' => 'required|string|max:100',
             'jenis_kelamin' => 'required|string|in:Laki-laki,Perempuan',
@@ -325,6 +330,13 @@ class WargaController extends Controller
             'no_telepon' => 'required|string|size:12',
             'status' => 'nullable|string|in:aktif,nonaktif',
         ], [
+            'username.required' => 'Username wajib diisi.',
+            'username.unique' => 'Username sudah digunakan, gunakan username lain.',
+            'username.max' => 'Username maksimal 255 karakter.',
+            'email.required' => 'Email wajib diisi.',
+            'email.email' => 'Format email tidak valid.',
+            'email.unique' => 'Email sudah digunakan, gunakan email lain.',
+            'password.min' => 'Password minimal 6 karakter.',
             'nik.required' => 'NIK wajib diisi.',
             'nik.size' => 'NIK harus terdiri dari 16 digit.',
             'nik.unique' => 'NIK sudah terdaftar.',
@@ -349,9 +361,17 @@ class WargaController extends Controller
                 'no_telepon' => $validated['no_telepon'] ?? null,
             ]);
 
-            if (isset($validated['status'])) {
-                $warga->user->update(['status' => $validated['status']]);
+            $userUpdates = [
+                'username' => $validated['username'],
+                'email' => $validated['email'],
+            ];
+            if (!empty($validated['password'])) {
+                $userUpdates['password'] = $validated['password'];
             }
+            if (isset($validated['status'])) {
+                $userUpdates['status'] = $validated['status'];
+            }
+            $warga->user->update($userUpdates);
 
             DB::commit();
 
