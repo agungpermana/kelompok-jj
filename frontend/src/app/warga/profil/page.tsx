@@ -222,15 +222,7 @@ export default function WargaProfilPage() {
               {/* Avatar & Basic Info */}
               <div className="relative pt-8 flex flex-col items-center text-center">
                 <div className="relative">
-                  <div className="h-24 w-24 rounded-full border-4 border-white shadow-md bg-gradient-to-tr from-amber-200 to-rose-200 flex items-center justify-center text-3xl font-extrabold text-gray-800 overflow-hidden">
-                    <img
-                      src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80"
-                      alt={namaWarga || 'Warga'}
-                      className="h-full w-full object-cover"
-                      onError={(e) => {
-                        (e.currentTarget as HTMLElement).style.display = 'none';
-                      }}
-                    />
+                  <div className="h-24 w-24 rounded-full border-4 border-white shadow-md bg-gradient-to-br from-emerald-400 to-[#16a34a] flex items-center justify-center text-3xl font-extrabold text-white overflow-hidden">
                     <span className="select-none">
                       {(namaWarga || username || 'W').charAt(0).toUpperCase()}
                     </span>

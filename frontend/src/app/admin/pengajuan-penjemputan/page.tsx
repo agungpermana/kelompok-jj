@@ -29,9 +29,11 @@ export default function PengajuanPenjemputanPage() {
     try {
       const data = await fetchPengajuanList();
       setItems(data);
+      return data;
     } catch (err: any) {
       console.error('Error fetching pengajuan list:', err);
       setMessage({ type: 'error', text: err.message || 'Gagal mengambil data pengajuan penjemputan.' });
+      return [];
     } finally {
       setIsLoading(false);
     }
@@ -98,9 +100,11 @@ export default function PengajuanPenjemputanPage() {
     setIsJadwalModalOpen(true);
   };
 
-  const handleScheduleSuccess = () => {
+  const handleScheduleSuccess = async () => {
+    const data = await loadPengajuanData();
+    const fresh = data.find((d) => d.pengajuan_id === selectedItem?.pengajuan_id);
+    if (fresh) setSelectedItem(fresh);
     setMessage({ type: 'success', text: 'Penjemputan berhasil dijadwalkan. Data akan diperbarui.' });
-    loadPengajuanData();
   };
 
   const handleOpenScheduleFromDetail = () => {

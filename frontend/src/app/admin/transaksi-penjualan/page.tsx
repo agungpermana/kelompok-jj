@@ -63,7 +63,6 @@ export default function TransaksiPenjualanPage() {
 
   // Filter state
   const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState('semua');
   const [dariTanggal, setDariTanggal] = useState('');
   const [sampaiTanggal, setSampaiTanggal] = useState('');
 
@@ -165,7 +164,6 @@ export default function TransaksiPenjualanPage() {
         const no = `PJL-${s.penjualan_id}`.toLowerCase();
         if (!pengepul.includes(q) && !no.includes(q)) return false;
       }
-      if (statusFilter !== 'semua' && s.status_transaksi !== statusFilter) return false;
       if (dariTanggal) {
         const tgl = new Date(s.tanggal_transaksi).toISOString().slice(0, 10);
         if (tgl < dariTanggal) return false;
@@ -176,7 +174,7 @@ export default function TransaksiPenjualanPage() {
       }
       return true;
     });
-  }, [list, search, statusFilter, dariTanggal, sampaiTanggal]);
+  }, [list, search, dariTanggal, sampaiTanggal]);
 
   // Pagination
   const paginated = useMemo(() => {
@@ -187,7 +185,6 @@ export default function TransaksiPenjualanPage() {
 
   const resetFilter = () => {
     setSearch('');
-    setStatusFilter('semua');
     setDariTanggal('');
     setSampaiTanggal('');
     setCurrentPage(1);
@@ -408,16 +405,6 @@ export default function TransaksiPenjualanPage() {
             />
           </div>
           <div className="flex flex-wrap items-center gap-3">
-            <select
-              value={statusFilter}
-              onChange={e => { setStatusFilter(e.target.value); setCurrentPage(1); }}
-              className="px-3 py-2 border border-gray-200 rounded-xl text-[13px] focus:outline-none focus:border-[#16a34a] bg-white"
-            >
-              <option value="semua">Semua Status</option>
-              <option value="selesai">Selesai</option>
-              <option value="diajukan">Diajukan</option>
-              <option value="dibatalkan">Dibatalkan</option>
-            </select>
             <input
               type="date"
               value={dariTanggal}

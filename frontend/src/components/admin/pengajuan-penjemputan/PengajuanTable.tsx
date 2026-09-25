@@ -59,14 +59,6 @@ export default function PengajuanTable({
     );
   }
 
-  if (items.length === 0) {
-    return (
-      <div className="bg-white rounded-2xl border border-gray-100 p-8 text-center">
-        <p className="text-gray-500 text-sm">Tidak ada data pengajuan penjemputan</p>
-      </div>
-    );
-  }
-
   return (
     <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
       <div className="overflow-x-auto">
@@ -82,7 +74,22 @@ export default function PengajuanTable({
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
-            {items.map((item) => (
+            {items.length === 0 ? (
+              <tr>
+                <td colSpan={6} className="px-6 py-12 text-center">
+                  <div className="flex flex-col items-center gap-2">
+                    <Calendar className="w-8 h-8 text-gray-300" />
+                    <p className="text-sm font-medium text-gray-500">
+                      Tidak ada data pengajuan penjemputan
+                    </p>
+                    <p className="text-xs text-gray-400">
+                      Belum ada pengajuan yang cocok dengan filter saat ini.
+                    </p>
+                  </div>
+                </td>
+              </tr>
+            ) : (
+              items.map((item) => (
               <tr key={item.pengajuan_id} className="hover:bg-gray-50 transition-colors">
                 <td className="px-6 py-4 text-sm text-gray-700">
                   <div className="flex flex-col">
@@ -132,7 +139,8 @@ export default function PengajuanTable({
                   </div>
                 </td>
               </tr>
-            ))}
+              ))
+            )}
           </tbody>
         </table>
       </div>
@@ -145,7 +153,7 @@ export default function PengajuanTable({
         <div className="flex gap-2">
           <button
             onClick={() => onPageChange(Math.max(1, currentPage - 1))}
-            disabled={currentPage === 1}
+            disabled={currentPage === 1 || totalPages === 0}
             className="px-3 py-1 border border-gray-200 rounded-lg text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             Sebelumnya
@@ -165,7 +173,7 @@ export default function PengajuanTable({
           ))}
           <button
             onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
-            disabled={currentPage === totalPages}
+            disabled={currentPage === totalPages || totalPages === 0}
             className="px-3 py-1 border border-gray-200 rounded-lg text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             Berikutnya

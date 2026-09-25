@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { X, MapPin, Phone, FileText, User as UserIcon } from 'lucide-react';
+import { X, MapPin, Phone, FileText, User as UserIcon, HardHat } from 'lucide-react';
 import WasteIcon from '@/components/common/WasteIcon';
 import { PengajuanPenjemputan } from '@/services/adminPengajuanService';
 interface PengajuanDetailModalProps {
@@ -100,6 +100,29 @@ export default function PengajuanDetailModal({ isOpen, item, onClose, onSchedule
                 <MapPin className="h-3.5 w-3.5 text-gray-400 mt-0.5 flex-shrink-0" />
                 <span>{item.alamat_penjemputan}</span>
               </p>
+            </div>
+          </div>
+
+          {/* Petugas Info */}
+          <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-xs space-y-2.5">
+            <div className="flex items-center gap-2 text-gray-800 font-bold text-sm">
+              <HardHat className="h-4 w-4 text-[#16a34a]" />
+              <span>Informasi Petugas</span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+              <div>
+                <span className="text-gray-400">Nama Petugas:</span>
+                <p className="font-semibold text-gray-800 text-sm">
+                  {item.jadwalPenjemputan?.petugas?.nama_petugas || '-'}
+                </p>
+              </div>
+              <div>
+                <span className="text-gray-400">Nomor Telepon:</span>
+                <p className="font-semibold text-gray-800 text-sm flex items-center gap-1">
+                  <Phone className="h-3 w-3 text-gray-400" />
+                  {item.jadwalPenjemputan?.petugas?.no_telepon || '-'}
+                </p>
+              </div>
             </div>
           </div>
 

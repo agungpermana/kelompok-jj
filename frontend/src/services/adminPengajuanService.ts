@@ -74,6 +74,15 @@ function getAuthHeaders(): HeadersInit {
   };
 }
 
+function normalizePengajuan(raw: any): PengajuanPenjemputan {
+  if (!raw || typeof raw !== 'object') return raw;
+  return {
+    ...raw,
+    detailPengajuanSampah: raw.detailPengajuanSampah ?? raw.detail_pengajuan_sampah ?? [],
+    jadwalPenjemputan: raw.jadwalPenjemputan ?? raw.jadwal_penjemputan ?? undefined,
+  };
+}
+
 export async function fetchPengajuanList(): Promise<PengajuanPenjemputan[]> {
   try {
     const res = await fetch(`${getApiUrl()}/admin/pengajuan`, {
@@ -83,7 +92,8 @@ export async function fetchPengajuanList(): Promise<PengajuanPenjemputan[]> {
       throw new Error(`Failed to fetch pengajuan list (${res.status})`);
     }
     const json = await res.json();
-    return json.data || [];
+    const rows = json.data || [];
+    return Array.isArray(rows) ? rows.map(normalizePengajuan) : [];
   } catch (err) {
     console.error('Error fetching pengajuan list:', err);
     throw err;
@@ -99,7 +109,7 @@ export async function fetchPengajuanDetail(id: number): Promise<PengajuanPenjemp
       throw new Error(`Failed to fetch pengajuan detail (${res.status})`);
     }
     const json = await res.json();
-    return json.data;
+    return normalizePengajuan(json.data);
   } catch (err) {
     console.error('Error fetching pengajuan detail:', err);
     throw err;
